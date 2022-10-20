@@ -7,29 +7,36 @@ import Loading from "/src/components/shared/loading";
 
 import { QueryKeys } from "/src/constants/query-keys";
 import { getQuestionsByCourseApi } from "/src/helpers/fetchers";
+import { useContext,useState, useEffect} from "react";
+import CourseContext from "../context/courseContext";
 
 export default function UserCourseTest() {
   // location
   const {
-    params: { courseId },
+    params: { testId },
   } = useMatch();
+  
 
-  // query
-  const questionsQuery = useQuery(
-    [QueryKeys.QUESTIONS_BY_COURSE, courseId],
-    () => getQuestionsByCourseApi(courseId)
-  );
+  const ctxQuestions = useContext(CourseContext);
+  const {arrTest} = ctxQuestions;
+
+  const testIndex = arrTest.findIndex(object => {
+  return object.testId === testId;
+});
+
 
   return (
     <div className="space-y-4 lg:space-y-8">
       <h2 className="text-2xl font-bold lg:text-3xl">Test</h2>
-      {questionsQuery.isLoading ? (
-        <Loading />
-      ) : questionsQuery.isError ? (
-        <Error text={questionsQuery.error.response.data?.message} />
-      ) : (
-        <QuestionList questions={questionsQuery.data} isMarking />
+      <h3 className="text-1xl font-bold lg:text-1xl">Instruction to the learner</h3>
+
+      {arrTest[testIndex].instructions.map((instruction, index)=>
+        <li key={index} style={{margin:0}}>{instruction}</li>
       )}
+      
+      
+    <QuestionList questions={arrTest[testIndex].questions} isMarking />
+
     </div>
-  );
+  ); 
 }

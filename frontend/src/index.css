@@ -13,3 +13,13 @@
 .card-body {
   @apply p-6;
 }
+
+.btn-mainColor{
+  background-color: #E86820;
+  border: none;
+}
+
+.btn-mainColor:hover{
+  background-color: #E86820;
+}
+

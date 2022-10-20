@@ -1,7 +1,7 @@
 import { useMatch } from "@tanstack/react-location";
 import clsx from "clsx";
 import { useAtom } from "jotai";
-import { isEmpty, keys, sampleSize } from "lodash-es";
+import { forEach, isEmpty, keys, sampleSize } from "lodash-es";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "react-query";
@@ -13,10 +13,23 @@ import { QueryKeys } from "/src/constants/query-keys";
 
 import { postTestResultsInCourseApi } from "/src/helpers/fetchers";
 import { userAtom } from "/src/stores/auth.store";
+import { setDoc, getDoc, doc} from "firebase/firestore";
+import { db } from "/src/firebase";
 
 const NUM_QUESTIONS_EACH_TEST = 10;
 
 export default function QuestionList({ questions, isMarking }) {
+
+
+
+const [selectedAnswers, setSelectedAnswers] = useState([])
+
+const handelSelectedAnswers = (answer) =>{
+ 
+   setSelectedAnswers(prev => [...prev,answer])
+
+}
+
   // location
   const {
     params: { courseId },
@@ -44,41 +57,26 @@ export default function QuestionList({ questions, isMarking }) {
     }
   );
 
-  // atom
-  const [user] = useAtom(userAtom);
-
   const [isModal, setIsModal] = useState(false);
   const [score, setScore] = useState(0);
   const [correctAnswerIds, setCorrectAnswerIds] = useState([]);
+  const [isCorrect, setIsCorrect] = useState(false)
 
-  // memo
-  const mark = useMemo(() => {
-    const totalQ = isMarking ? NUM_QUESTIONS_EACH_TEST : questions.length;
-    const percentage = score / totalQ;
-    if (percentage >= 0.8) return "HD";
-    if (percentage >= 0.7) return "DI";
-    if (percentage >= 0.6) return "CR";
-    if (percentage >= 0.5) return "PA";
-    return "NN";
-  }, [score]);
-
-  const questionSample = useMemo(() => {
-    return isMarking
-      ? sampleSize(questions, NUM_QUESTIONS_EACH_TEST)
-      : questions;
-  }, [questions]);
+ 
 
   const onSubmit = (data) => {
     openModal();
 
-    const correctAnswerIds = keys(data).filter((key) => data[key] === "true");
+    const correctAnswerIds = selectedAnswers.filter((answer) => answer.isCorrect === true);
     setCorrectAnswerIds(correctAnswerIds);
 
     const score = correctAnswerIds.length;
     setScore(score);
 
-    if (isMarking) testResultMutation.mutate({ score, userId: user._id });
+    handleRanking()
+
   };
+
 
   const openModal = () => setIsModal(true);
   const closeModal = () => setIsModal(false);
@@ -90,7 +88,7 @@ export default function QuestionList({ questions, isMarking }) {
         {!isEmpty(errors) && <Error text="You must answer all questions" />}
 
         {/* list */}
-        {questionSample.map((question, index) => (
+        {/* {questionSample.map((question, index) => (
           <Question
             question={question}
             key={question._id}
@@ -99,10 +97,22 @@ export default function QuestionList({ questions, isMarking }) {
             disabled={score}
             isCorrect={correctAnswerIds.includes(question._id)}
           />
+        ))} */}
+
+        {questions.map((question, index) => (
+          <Question
+            question={question}
+            key={index}
+            index={question.index}
+            image = {question.image}
+            answers = {question.answers}
+            disabled={score}
+            handelSelectedAnswers={handelSelectedAnswers}
+          />
         ))}
 
         {/* submit */}
-        <button className="btn btn-primary">Submit</button>
+        <button className="btn btn-mainColor">Submit</button>
       </form>
 
       {/* modal */}
@@ -112,13 +122,13 @@ export default function QuestionList({ questions, isMarking }) {
             <h3 className="text-lg font-bold uppercase">Test result</h3>
             <p>
               You scored <span className="font-bold">{score}</span> points out
-              of {questionSample.length}
+              of {questions.length}
             </p>
-            <p>
+            {/* <p>
               You got <span className="font-bold">{mark}</span>
-            </p>
+            </p> */}
             <div className="modal-action">
-              <button onClick={closeModal} className="btn btn-primary">
+              <button onClick={closeModal} className="btn btn-main-Color">
                 OK
               </button>
             </div>

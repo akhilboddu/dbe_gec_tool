@@ -7,12 +7,11 @@ import {
   UserIcon,
 } from "@heroicons/react/24/outline";
 import { Link, useLocation, useNavigate } from "@tanstack/react-location";
+import React, {useState} from "react"
 import clsx from "clsx";
-import { useAtom } from "jotai";
-import { RESET } from "jotai/utils";
-import { isEmpty } from "lodash-es";
-
-import { userAtom } from "/src/stores/auth.store";
+import { auth } from "/src/firebase";
+import { signOut } from "firebase/auth";
+import Logo from '../../assets/dbe_logo.png'
 
 export default function Header() {
   // location
@@ -21,15 +20,22 @@ export default function Header() {
     current: { pathname },
   } = useLocation();
 
-  // atom
-  const [user, setUser] = useAtom(userAtom);
 
   const logout = () => {
-    setUser(RESET);
-    navigate({ to: "/login" });
+    
+    signOut(auth).then(()=>{
+      console.log("Successfully signed out")
+      navigate({ to: "/login" });
+
+    }).catch((error)=>{
+      console.log(error)
+    })
+    
   };
 
+
   const isAdminPage = pathname.startsWith("/admin");
+
 
   return (
     <nav
@@ -41,31 +47,19 @@ export default function Header() {
         {/* start */}
         <div className="mr-auto flex flex-wrap">
           <Link to="/" className="btn btn-ghost">
-            <CpuChipIcon className="h-8 w-8" />
-            <span className="text-xl font-bold">
-              <span>re</span>
-              <span className="text-primary">learn</span>
-            </span>
+            <img src={Logo} alt="logo" className="w-32 pt-0"/>
           </Link>
           <Link to="/" className="btn btn-ghost gap-1">
             <HomeIcon className="h-5 w-5" />
             Home
           </Link>
-          {user.role === "admin" && (
-            <Link to="/admin/courses" className="btn btn-ghost gap-1">
-              <AdjustmentsVerticalIcon className="h-5 w-5" />
-              Admin Dashboard
-            </Link>
-          )}
         </div>
 
-        {/* end */}
         <div className="ml-auto">
-          {!isEmpty(user) ? (
+          {auth.currentUser ? (
             <div className="dropdown dropdown-end">
               <label tabIndex={0} className="btn btn-ghost">
-                <AtSymbolIcon className="h-5 w-5" />
-                {user.username}
+                {auth.currentUser.email}
               </label>
               <ul
                 tabIndex={0}
@@ -84,7 +78,7 @@ export default function Header() {
               </ul>
             </div>
           ) : (
-            <Link className="btn btn-primary" to="/login">
+            <Link className="btn btn-mainColor" to="/login">
               Log in
             </Link>
           )}

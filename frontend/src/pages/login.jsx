@@ -1,8 +1,10 @@
-import { Link, useNavigate } from "@tanstack/react-location";
+import { Link, Navigate, useNavigate } from "@tanstack/react-location";
 import clsx from "clsx";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useAtom } from "jotai";
 import { useForm } from "react-hook-form";
 import { useMutation } from "react-query";
+import { auth } from "../firebase";
 
 import Error from "/src/components/shared/error";
 
@@ -19,7 +21,7 @@ export default function Login() {
   // form
   const { register, handleSubmit } = useForm();
 
-  //   query
+   // query
   const loginMutation = useMutation((data) => loginApi(data), {
     onSuccess: (data) => {
       setUser(data);
@@ -27,8 +29,27 @@ export default function Login() {
     },
   });
 
+  // const onSubmit = (data) => {
+  //   loginMutation.mutate(data);
+  // };
+
   const onSubmit = (data) => {
-    loginMutation.mutate(data);
+    //loginMutation.mutate(data);
+
+    signInWithEmailAndPassword(auth, data.username, data.password)
+    .then((userCredential) => {
+      // Signed in 
+      const user = userCredential.user;
+      
+      navigate({to:"/", required: true})
+      // ...
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(errorMessage)
+
+    });
   };
 
   return (
@@ -58,11 +79,16 @@ export default function Login() {
           />
         </div>
 
-        <button
-          className={clsx("btn btn-primary mt-4", {
+        {/* <button
+          className={clsx("btn btn-primary mt-4"
+          , {
             loading: loginMutation.isLoading,
           })}
         >
+          Sign in
+        </button> */}
+
+        <button className={"btn btn-mainColor mt-4"}>
           Sign in
         </button>
 

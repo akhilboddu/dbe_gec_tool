@@ -1,7 +1,6 @@
 import { Outlet, ReactLocation, Router } from "@tanstack/react-location";
 import { Provider } from "jotai";
 import { QueryClient, QueryClientProvider } from "react-query";
-
 import CheckLogin from "/src/components/authentication/check-login";
 import CheckLogout from "/src/components/authentication/check-logout";
 import Layout from "/src/components/layouts/layout";
@@ -18,6 +17,9 @@ import UserCourseTest from "/src/pages/user-course-test";
 import UserInfo from "/src/pages/user-info";
 import UserLessonDetail from "/src/pages/user-lesson-detail";
 import UserQuestionDetail from "/src/pages/user-question-detail";
+
+import { CourseContextProvider } from "./context/courseContext";
+import { auth } from "./firebase";
 
 const queryClient = new QueryClient();
 const location = new ReactLocation();
@@ -55,59 +57,51 @@ const routes = [
         ),
       },
       {
-        path: "/courses/:courseId",
+        path: "/tests/:testId",
         children: [
           {
             path: "/",
-            element: <UserCourseDetail />,
-          },
-          {
-            path: "/test/",
             element: (
-              <CheckLogin>
-                <UserCourseTest />
-              </CheckLogin>
-            ),
-          },
-          {
-            path: "/leaderboard/",
-            element: <CourseLeaderboard />,
-          },
+            <CheckLogin>
+            <UserCourseTest/>
+            </CheckLogin>
+            )
+          }  
         ],
       },
       {
         path: "/lessons/:lessonId/",
         element: (
-          <CheckLogin>
+          // <CheckLogin>
             <UserLessonDetail />
-          </CheckLogin>
+          // </CheckLogin>
         ),
       },
       {
         path: "/questions/:questionId/",
         element: (
-          <CheckLogin>
+          // <CheckLogin>
             <UserQuestionDetail />
-          </CheckLogin>
+          // </CheckLogin>
         ),
       },
       {
         path: "/admin",
         element: (
-          <CheckLogin>
+          // <CheckLogin>
             <Outlet />
-          </CheckLogin>
+          // </CheckLogin>
         ),
         children: [
           {
-            path: "/courses",
+            path: "/test",
             children: [
               {
                 path: "/",
                 element: <AdminCourses />,
               },
               {
-                path: "/:courseId/lessons",
+                path: "/:testId/lessons",
                 element: <AdminLessons />,
               },
             ],
@@ -126,10 +120,14 @@ const routes = [
 ];
 
 function App() {
+
+  console.log(auth.currentUser)
   return (
     <QueryClientProvider client={queryClient}>
       <Provider>
+        <CourseContextProvider>
         <Router routes={routes} location={location} />
+        </CourseContextProvider>
       </Provider>
     </QueryClientProvider>
   );

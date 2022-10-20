@@ -1,20 +1,25 @@
 import { Link } from "@tanstack/react-location";
 
-export default function CourseCard({ course }) {
+export default function CourseCard({ test }) {
   return (
     <div className="card card-bordered w-full bg-base-300 lg:aspect-2/1">
       <div className="card-body">
-        <h3 className="card-title">{course.title}</h3>
+        <h3 className="card-title">{test.Title}</h3>
 
         <div className="lg:relative lg:flex-1">
           <p className="lg:absolute lg:inset-0 lg:overflow-hidden">
-            {course.description}
+            {test.description}
           </p>
         </div>
 
+        
         <div className="card-actions justify-end">
-          <Link to={`/courses/${course._id}`} className="btn">
-            Learn
+          <div className="btn btn-mainColor">
+            {test.duration}
+          </div>
+
+          <Link to={`/tests/${test.testId}`} className="btn">
+            Take Test
           </Link>
         </div>
       </div>

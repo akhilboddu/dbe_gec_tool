@@ -20,7 +20,7 @@ export default function CourseLeaderboard() {
     () => getTestResultsByCourseApi(courseId)
   );
 
-  console.log(testResultsQuery);
+  //console.log(testResultsQuery);
 
   return (
     <div className="space-y-4 lg:space-y-8">
