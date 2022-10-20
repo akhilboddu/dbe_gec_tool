@@ -24,6 +24,7 @@ export default function QuestionList({ questions, isMarking }) {
 
 const [selectedAnswers, setSelectedAnswers] = useState([])
 
+
 const handelSelectedAnswers = (answer) =>{
  
    setSelectedAnswers(prev => [...prev,answer])
@@ -58,9 +59,10 @@ const handelSelectedAnswers = (answer) =>{
   );
 
   const [isModal, setIsModal] = useState(false);
-  const [score, setScore] = useState(0);
+  const [score, setScore] = useState(null);
   const [correctAnswerIds, setCorrectAnswerIds] = useState([]);
   const [isCorrect, setIsCorrect] = useState(false)
+  const [showAnswers,setShowAnswers] = useState(0)
 
  
 
@@ -75,6 +77,7 @@ const handelSelectedAnswers = (answer) =>{
 
     handleRanking()
 
+    setShowAnswers(selectedAnswers)
   };
 
 
@@ -129,7 +132,7 @@ const handelSelectedAnswers = (answer) =>{
             </p> */}
             <div className="modal-action">
               <button onClick={closeModal} className="btn btn-main-Color">
-                OK
+              View Results
               </button>
             </div>
           </div>

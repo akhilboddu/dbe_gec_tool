@@ -14,7 +14,7 @@ export default function Question({
   isCorrect
 })
 { 
-  
+  console.log(disabled)
   return (
     <div className="space-y-4">
       {question.questionHeading&& <h1 className="font-bold">{question.questionHeading}</h1>}
@@ -39,7 +39,7 @@ export default function Question({
             /> 
             <label htmlFor={answer.answerId}>{answer.text}</label>
 
-            {disabled?(
+            {disabled || disabled ===0?(
               answer.isCorrect=== true?<Success text={"This is the correct answer."} /> : null
             ):null}
           </div>
