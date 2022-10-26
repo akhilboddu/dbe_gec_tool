@@ -121,7 +121,7 @@ const routes = [
 
 function App() {
 
-  console.log(auth.currentUser)
+  
   return (
     <QueryClientProvider client={queryClient}>
       <Provider>

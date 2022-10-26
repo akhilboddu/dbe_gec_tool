@@ -1,8 +1,7 @@
 import { useMatch } from "@tanstack/react-location";
 import clsx from "clsx";
-import { useAtom } from "jotai";
-import { forEach, isEmpty, keys, sampleSize } from "lodash-es";
-import { useMemo, useState } from "react";
+import { isEmpty } from "lodash-es";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "react-query";
 
@@ -10,11 +9,7 @@ import Question from "/src/components/question/question";
 import Error from "/src/components/shared/error";
 import Info from "/src/components/shared/info";
 import { QueryKeys } from "/src/constants/query-keys";
-
 import { postTestResultsInCourseApi } from "/src/helpers/fetchers";
-import { userAtom } from "/src/stores/auth.store";
-import { setDoc, getDoc, doc} from "firebase/firestore";
-import { db } from "/src/firebase";
 
 const NUM_QUESTIONS_EACH_TEST = 10;
 
@@ -23,11 +18,12 @@ export default function QuestionList({ questions, isMarking }) {
 
 
 const [selectedAnswers, setSelectedAnswers] = useState([])
+const [correctAnswerIds,setCorrectAnswerIds] = useState()
 
 
 const handelSelectedAnswers = (answer) =>{
- 
-   setSelectedAnswers(prev => [...prev,answer])
+  
+  setSelectedAnswers(prev => [...prev,answer])
 
 }
 
@@ -60,53 +56,40 @@ const handelSelectedAnswers = (answer) =>{
 
   const [isModal, setIsModal] = useState(false);
   const [score, setScore] = useState(null);
-  const [correctAnswerIds, setCorrectAnswerIds] = useState([]);
-  const [isCorrect, setIsCorrect] = useState(false)
-  const [showAnswers,setShowAnswers] = useState(0)
 
- 
 
-  const onSubmit = (data) => {
+  
+  const onSubmit = () => {
+    
     openModal();
 
     const correctAnswerIds = selectedAnswers.filter((answer) => answer.isCorrect === true);
+    console.log(selectedAnswers)
     setCorrectAnswerIds(correctAnswerIds);
 
     const score = correctAnswerIds.length;
     setScore(score);
 
-    handleRanking()
-
-    setShowAnswers(selectedAnswers)
   };
 
 
   const openModal = () => setIsModal(true);
   const closeModal = () => setIsModal(false);
 
+  
   return !isEmpty(questions) ? (
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 pl-4">
-        {/* error */}
+
         {!isEmpty(errors) && <Error text="You must answer all questions" />}
 
-        {/* list */}
-        {/* {questionSample.map((question, index) => (
-          <Question
-            question={question}
-            key={question._id}
-            index={index + 1}
-            register={register}
-            disabled={score}
-            isCorrect={correctAnswerIds.includes(question._id)}
-          />
-        ))} */}
 
         {questions.map((question, index) => (
           <Question
             question={question}
             key={index}
             index={question.index}
+            register={register}
             image = {question.image}
             answers = {question.answers}
             disabled={score}
