@@ -21,7 +21,7 @@ export default function Register() {
 
   const onSubmit = (data) => {
 
-    const {email,password, full_name, emis_number, class_name,school_name} = data;
+    const {email,password, full_name, emis_number, class_name,school_name, Grade} = data;
 
     createUserWithEmailAndPassword(auth,email,password)
     .then((results)=>{
@@ -34,7 +34,8 @@ export default function Register() {
           full_name: full_name,
           class_name: class_name,
           school_name: school_name,
-          emis_number: emis_number
+          emis_number: emis_number,
+          Grade: Grade
         });
         console.log("Document written with ID: ");
       } catch (e) {
@@ -98,6 +99,17 @@ export default function Register() {
             type="text"
             className="input input-bordered"
             {...register("school_name", { required: true })}
+          />
+        </div>
+        {/* Form control for Grade */}
+        <div className="form-control">
+          <label className="label">
+            <span className="label-text">Grade</span>
+          </label>
+          <input
+            type="text"
+            className="input input-bordered"
+            {...register("Grade", { required: true })}
           />
         </div>
 

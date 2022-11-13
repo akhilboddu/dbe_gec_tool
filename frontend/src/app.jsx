@@ -55,6 +55,13 @@ const routes = [
             <Register />
           </CheckLogout>
         ),
+      },{
+          path: "/ranking/:testId",
+          element: (
+            <CheckLogin>
+            <CourseLeaderboard/>
+            </CheckLogin>
+          )
       },
       {
         path: "/tests/:testId",
@@ -72,25 +79,19 @@ const routes = [
       {
         path: "/lessons/:lessonId/",
         element: (
-          // <CheckLogin>
             <UserLessonDetail />
-          // </CheckLogin>
         ),
       },
       {
         path: "/questions/:questionId/",
         element: (
-          // <CheckLogin>
             <UserQuestionDetail />
-          // </CheckLogin>
         ),
       },
       {
         path: "/admin",
         element: (
-          // <CheckLogin>
             <Outlet />
-          // </CheckLogin>
         ),
         children: [
           {

@@ -1,7 +1,7 @@
-import { useMatch } from "@tanstack/react-location";
+import { Link, useMatch } from "@tanstack/react-location";
 import clsx from "clsx";
 import { isEmpty } from "lodash-es";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "react-query";
 
@@ -9,7 +9,11 @@ import Question from "/src/components/question/question";
 import Error from "/src/components/shared/error";
 import Info from "/src/components/shared/info";
 import { QueryKeys } from "/src/constants/query-keys";
+import { auth, db } from "/src/firebase";
 import { postTestResultsInCourseApi } from "/src/helpers/fetchers";
+import CourseContext from "/src/context/courseContext";
+import { arrayRemove, arrayUnion, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+
 
 const NUM_QUESTIONS_EACH_TEST = 10;
 
@@ -19,7 +23,12 @@ export default function QuestionList({ questions, isMarking }) {
 
 const [selectedAnswers, setSelectedAnswers] = useState([])
 const [correctAnswerIds,setCorrectAnswerIds] = useState()
+const userData= {}
 
+
+useEffect(()=>{
+  
+},[])
 
 const handelSelectedAnswers = (answer) =>{
   
@@ -27,10 +36,59 @@ const handelSelectedAnswers = (answer) =>{
 
 }
 
+const fethUserData = async()=>{
+        
+  const docRef = doc(db,"users", auth.currentUser.uid)
+  const docSnap = await getDoc(docRef)
+  
+  if(docSnap.data()){
+      Object.assign(userData,docSnap.data())
+  }
+  else{
+      console.log("There is no user data")
+  }
+  
+}
+
+const handleRanking= async(score)=>{
+  
+  fethUserData().then(async()=>{
+
+    const {full_name,school_name,Grade,email,} =userData
+
+  const docRef = doc(db,"ranking",testId)
+  const docSnap = await getDoc(docRef)
+
+
+    
+  if(!docSnap.data()){
+    setDoc(docRef, {ranking:[{full_name:full_name,school_name:school_name,Grade:Grade,email:email,test:testId,score:score}]})
+  }else{
+    
+    docSnap.data().ranking.map((item,index)=>{
+
+      
+      if(item.email == email){
+        console.log("User already on rank")
+        updateDoc(docRef,{ranking:arrayRemove(docSnap.data().ranking[index])})
+      }
+    })
+
+    updateDoc(docRef,{ranking:arrayUnion({full_name:full_name,school_name:school_name,Grade:Grade,email:email,test:testId,score:score})})
+
+
+
+  }
+
+  })
+  
+  
+} 
   // location
   const {
-    params: { courseId },
+    params: { testId }
   } = useMatch();
+
 
   // form
   const {
@@ -70,6 +128,8 @@ const handelSelectedAnswers = (answer) =>{
     const score = correctAnswerIds.length;
     setScore(score);
 
+    handleRanking(score);
+
   };
 
 
@@ -91,14 +151,21 @@ const handelSelectedAnswers = (answer) =>{
             index={question.index}
             register={register}
             image = {question.image}
+            heading= {question.heading}
             answers = {question.answers}
             disabled={score}
             handelSelectedAnswers={handelSelectedAnswers}
           />
         ))}
 
-        {/* submit */}
-        <button className="btn btn-mainColor">Submit</button>
+        
+
+        {score?(
+          <Link to={`/ranking/${testId}`}><button className="btn btn-mainColor">Ranking</button></Link>
+        ):(
+          <button className="btn btn-mainColor">Submit</button>
+        )}
+        
       </form>
 
       {/* modal */}
@@ -110,13 +177,16 @@ const handelSelectedAnswers = (answer) =>{
               You scored <span className="font-bold">{score}</span> points out
               of {questions.length}
             </p>
-            {/* <p>
-              You got <span className="font-bold">{mark}</span>
-            </p> */}
+    
             <div className="modal-action">
               <button onClick={closeModal} className="btn btn-main-Color">
               View Results
               </button>
+              <Link to={`/ranking/${testId}`} >
+              <button className="btn btn-mainColor">
+              Ranking Page
+              </button>
+              </Link>
             </div>
           </div>
         </div>

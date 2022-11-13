@@ -1,5 +1,8 @@
+import {useState} from "react"
 import { useMatch } from "@tanstack/react-location";
+import { doc, getDoc } from "firebase/firestore";
 import { useQuery } from "react-query";
+import { db } from "../firebase";
 
 import Error from "/src/components/shared/error";
 import Loading from "/src/components/shared/loading";
@@ -7,39 +10,55 @@ import TestResultTable from "/src/components/test-result/test-result-table";
 
 import { QueryKeys } from "/src/constants/query-keys";
 import { getTestResultsByCourseApi } from "/src/helpers/fetchers";
+import { useEffect } from "react";
 
 export default function CourseLeaderboard() {
   // location
   const {
-    params: { courseId },
+    params: { testId },
   } = useMatch();
 
-  // query
-  const testResultsQuery = useQuery(
-    [QueryKeys.TEST_RESULTS_BY_COURSE, courseId],
-    () => getTestResultsByCourseApi(courseId)
-  );
+    const [ranking, setRanking] = useState(null)
 
-  //console.log(testResultsQuery);
 
+    useEffect(()=>{
+      fetchRankings()
+      
+    },[])
+
+    const fetchRankings= async()=>{
+
+      const docRef = doc(db,"ranking",testId)
+      const docSnap = await getDoc(docRef);
+
+      if(docSnap){
+        setRanking(docSnap.data().ranking)
+      }else{
+        console.log("No such document")
+      }
+
+    }
+
+    
+    
+    
+   
   return (
     <div className="space-y-4 lg:space-y-8">
       <div className="flex items-center gap-2 lg:gap-4">
         <button
-          className="btn btn-primary"
+          className="btn btn-mainColor"
           onClick={() => window.history.back()}
         >
           Back
         </button>
-        <h2 className="text-2xl font-bold lg:text-3xl">Leaderboard</h2>
+        <h2 className="text-2xl font-bold lg:text-3xl">Marks List</h2>
       </div>
 
-      {testResultsQuery.isLoading ? (
+      {!ranking? (
         <Loading />
-      ) : testResultsQuery.isError || !testResultsQuery.data ? (
-        <Error text={testResultsQuery.error.response?.data?.message} />
       ) : (
-        <TestResultTable testResults={testResultsQuery.data} />
+        <TestResultTable testResults={ranking} />
       )}
     </div>
   );

@@ -8,7 +8,8 @@ export default function Question({
   disabled,
   answers,
   image,
-  handelSelectedAnswers
+  handelSelectedAnswers,
+  heading
 })
 { 
 
@@ -25,7 +26,9 @@ export default function Question({
     <div className="space-y-4">
       {question.questionHeading&& <h1 className="font-bold">{question.questionHeading}</h1>}
       
+      {heading? <h1 className="font-bold">{heading}</h1>: ""}
         {image? <img src={image} alt="someimage" />:""} 
+        
 
       <p>
         {index}. {question.text}
@@ -46,7 +49,7 @@ export default function Question({
             
             <label 
             
-            htmlFor={answer.answerId}>{answer.text}</label>
+            htmlFor={answer.answerId}>{answer.image?<img src={answer.image} alt={answer.index}/>:answer.text}</label>
           </div>
          
          
@@ -59,14 +62,6 @@ export default function Question({
               isCorrect=== true?<Success text={"This is the correct answer."} /> : <Error text={"Wrong Answer"}/>
             ):null}
 
-
-      {/* {disabled ? (
-         isCorrect? (
-          <Success text={question.description} />
-        ) : (
-          <Error text={question.description} />
-        )
-      ) : null} */}
     </div>
   );
     }

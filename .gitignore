@@ -9,3 +9,5 @@
 *.sln
 *.sw?
 .backend
+.constants
+.stores

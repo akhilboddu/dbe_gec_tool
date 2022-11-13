@@ -1,15 +1,19 @@
 import dayjs from "dayjs";
 
 export default function TestResultTable({ testResults }) {
+
+  
   return (
     <div className="overflow-x-auto">
       <table className="table-zebra table w-full">
         <thead>
           <tr>
             <th />
-            <th>Username</th>
+            <th>Full Name</th>
+            <th>School Name</th>
+            <th>Grade Name</th>
             <th>Score</th>
-            <th>Date</th>
+            <th>Test ID</th>
           </tr>
         </thead>
 
@@ -18,12 +22,16 @@ export default function TestResultTable({ testResults }) {
             <tr key={testResult._id}>
               {/* index */}
               <th>{index + 1}</th>
-              {/* username */}
-              <td>{testResult.user.username}</td>
+              {/* full name */}
+              <td>{testResult.full_name}</td>
+              {/* school name */}
+              <td>{testResult.school_name}</td>
+              {/* class name */}
+              <td>{testResult.Grade}</td>
               {/* score */}
               <td>{testResult.score}</td>
-              {/* date */}
-              <td>{dayjs(testResult.createdAt).format("DD/MM/YYYY h:mm A")}</td>
+              {/* Test */}
+              <td>{testResult.test}</td>
             </tr>
           ))}
         </tbody>
