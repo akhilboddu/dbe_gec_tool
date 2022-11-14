@@ -58,9 +58,9 @@ const routes = [
       },{
           path: "/ranking/:testId",
           element: (
-            <CheckLogin>
+            
             <CourseLeaderboard/>
-            </CheckLogin>
+          
           )
       },
       {
