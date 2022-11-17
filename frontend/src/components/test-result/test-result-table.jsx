@@ -19,7 +19,7 @@ export default function TestResultTable({ testResults }) {
 
         <tbody>
           {testResults.map((testResult, index) => (
-            <tr key={testResult._id}>
+            <tr key={index}>
               {/* index */}
               <th>{index + 1}</th>
               {/* full name */}

@@ -6,6 +6,7 @@ import CheckLogout from "/src/components/authentication/check-logout";
 import Layout from "/src/components/layouts/layout";
 import Error from "/src/components/shared/error";
 import AdminCourses from "/src/pages/admin-courses";
+import Rankings from "./pages/rankings"
 import AdminLessons from "/src/pages/admin-lessons";
 import AdminQuestions from "/src/pages/admin-questions";
 import CourseLeaderboard from "/src/pages/course-leaderboard";
@@ -41,6 +42,14 @@ const routes = [
         ),
       },
       {
+        path: "/ranking/",
+        element: (
+          
+            < Rankings/>
+        
+        ),
+      },
+      {
         path: "/login/",
         element: (
           <CheckLogout>
@@ -58,9 +67,7 @@ const routes = [
       },{
           path: "/ranking/:testId",
           element: (
-            
             <CourseLeaderboard/>
-          
           )
       },
       {

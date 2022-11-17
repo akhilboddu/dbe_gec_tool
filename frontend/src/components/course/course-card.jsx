@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-location";
 
-export default function CourseCard({ test }) {
+export default function CourseCard({ test, }) {
   return (
     <div className="card card-bordered w-full bg-base-300 lg:aspect-2/1">
       <div className="card-body">

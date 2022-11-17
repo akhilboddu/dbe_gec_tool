@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-location";
 import logo from "../../assets/dbe_logo.png" 
 
 export default function Footer() {
@@ -9,6 +10,9 @@ export default function Footer() {
         </div>
         <div>
           <span className="footer-title w-full">Company</span>
+          <Link className="link link-hover" to="/ranking">
+          Rankings
+          </Link>
           <a className="link link-hover">About us</a>
           <a className="link link-hover">Contact</a>
         </div>
@@ -16,7 +20,7 @@ export default function Footer() {
           <span className="footer-title w-full">Legal</span>
           <a className="link link-hover">Terms of use</a>
           <a className="link link-hover">Privacy policy</a>
-          <a className="link link-hover">Cookie policy</a>
+          
         </div>
       </div>
     </footer>
