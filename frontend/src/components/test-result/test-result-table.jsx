@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 
-export default function TestResultTable({ testResults }) {
+export default function TestResultTable({ testResults=[] }) {
 
   
   return (
@@ -18,7 +18,7 @@ export default function TestResultTable({ testResults }) {
         </thead>
 
         <tbody>
-          {testResults.map((testResult, index) => (
+          {testResults?.map((testResult, index) => (
             <tr key={index}>
               {/* index */}
               <th>{index + 1}</th>

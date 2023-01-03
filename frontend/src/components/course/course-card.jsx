@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-location";
 
-export default function CourseCard({ test, }) {
+export default function CourseCard({ test, isTest }) {
   return (
     <div className="card card-bordered w-full bg-base-300 lg:aspect-2/1">
       <div className="card-body">
@@ -12,14 +12,11 @@ export default function CourseCard({ test, }) {
           </p>
         </div>
 
-        
         <div className="card-actions justify-end">
-          <div className="btn btn-mainColor">
-            {test.duration}
-          </div>
+          <div className="btn-mainColor btn">{test.duration}</div>
 
           <Link to={`/tests/${test.testId}`} className="btn">
-            Take Test
+            {isTest ? "Take Test" : "View Assignment"}
           </Link>
         </div>
       </div>

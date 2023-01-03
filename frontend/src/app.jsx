@@ -6,7 +6,7 @@ import CheckLogout from "/src/components/authentication/check-logout";
 import Layout from "/src/components/layouts/layout";
 import Error from "/src/components/shared/error";
 import AdminCourses from "/src/pages/admin-courses";
-import Rankings from "./pages/rankings"
+import Rankings from "./pages/rankings";
 import AdminLessons from "/src/pages/admin-lessons";
 import AdminQuestions from "/src/pages/admin-questions";
 import CourseLeaderboard from "/src/pages/course-leaderboard";
@@ -19,8 +19,11 @@ import UserInfo from "/src/pages/user-info";
 import UserLessonDetail from "/src/pages/user-lesson-detail";
 import UserQuestionDetail from "/src/pages/user-question-detail";
 
+import Tests from "./pages/Tests/tests";
 import { CourseContextProvider } from "./context/courseContext";
 import { auth } from "./firebase";
+import Assignments from "./pages/Assignments/assignments";
+import Grades from "./pages/Grades/grades";
 
 const queryClient = new QueryClient();
 const location = new ReactLocation();
@@ -42,12 +45,32 @@ const routes = [
         ),
       },
       {
-        path: "/ranking/",
+        path: "/tests/",
         element: (
-          
-            < Rankings/>
-        
+          <CheckLogin>
+            <Tests />
+          </CheckLogin>
         ),
+      },
+      {
+        path: "/assignments/",
+        element: (
+          <CheckLogin>
+            <Assignments />
+          </CheckLogin>
+        ),
+      },
+      {
+        path: "/grades/",
+        element: (
+          <CheckLogin>
+            <Grades />
+          </CheckLogin>
+        ),
+      },
+      {
+        path: "/ranking/",
+        element: <Rankings />,
       },
       {
         path: "/login/",
@@ -64,11 +87,10 @@ const routes = [
             <Register />
           </CheckLogout>
         ),
-      },{
-          path: "/ranking/:testId",
-          element: (
-            <CourseLeaderboard/>
-          )
+      },
+      {
+        path: "/ranking/:testId",
+        element: <CourseLeaderboard />,
       },
       {
         path: "/tests/:testId",
@@ -76,30 +98,24 @@ const routes = [
           {
             path: "/",
             element: (
-            <CheckLogin>
-            <UserCourseTest/>
-            </CheckLogin>
-            )
-          }  
+              <CheckLogin>
+                <UserCourseTest />
+              </CheckLogin>
+            ),
+          },
         ],
       },
       {
         path: "/lessons/:lessonId/",
-        element: (
-            <UserLessonDetail />
-        ),
+        element: <UserLessonDetail />,
       },
       {
         path: "/questions/:questionId/",
-        element: (
-            <UserQuestionDetail />
-        ),
+        element: <UserQuestionDetail />,
       },
       {
         path: "/admin",
-        element: (
-            <Outlet />
-        ),
+        element: <Outlet />,
         children: [
           {
             path: "/test",
@@ -128,13 +144,11 @@ const routes = [
 ];
 
 function App() {
-
-  
   return (
     <QueryClientProvider client={queryClient}>
       <Provider>
         <CourseContextProvider>
-        <Router routes={routes} location={location} />
+          <Router routes={routes} location={location} />
         </CourseContextProvider>
       </Provider>
     </QueryClientProvider>
