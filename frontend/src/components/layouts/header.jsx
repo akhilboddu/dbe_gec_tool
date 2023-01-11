@@ -28,7 +28,7 @@ export default function Header() {
     signOut(auth)
       .then(() => {
         console.log("Successfully signed out");
-        navigate({ to: "/login" });
+        navigate({ to: "/login/" });
       })
       .catch((error) => {
         console.log(error);
@@ -94,7 +94,7 @@ export default function Header() {
               </ul>
             </div>
           ) : (
-            <Link className="btn-mainColor btn" to="/login">
+            <Link className="btn-mainColor btn" to="/login/">
               Log in
             </Link>
           )}

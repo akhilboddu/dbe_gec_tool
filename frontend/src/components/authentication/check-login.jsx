@@ -20,7 +20,7 @@ const CheckLogin =({children})=>{
   const currentUser = auth.currentUser
 
   return(
-    currentUser ? children : <Navigate to="/login" replace />
+    currentUser ? children : <Navigate to="/login/" replace />
   )
   
 }

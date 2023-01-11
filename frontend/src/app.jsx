@@ -7,6 +7,7 @@ import Layout from "/src/components/layouts/layout";
 import Error from "/src/components/shared/error";
 import AdminCourses from "/src/pages/admin-courses";
 import Rankings from "./pages/rankings";
+import TeacherDashboard from "./pages/Teacher/TeacherDashboard"
 import AdminLessons from "/src/pages/admin-lessons";
 import AdminQuestions from "/src/pages/admin-questions";
 import CourseLeaderboard from "/src/pages/course-leaderboard";
@@ -21,9 +22,10 @@ import UserQuestionDetail from "/src/pages/user-question-detail";
 
 import Tests from "./pages/Tests/tests";
 import { CourseContextProvider } from "./context/courseContext";
-import { auth } from "./firebase";
 import Assignments from "./pages/Assignments/assignments";
 import Grades from "./pages/Grades/grades";
+import CreateTest from "./pages/Teacher/Create-Tests/Create-Test";
+import CreateAssessments from "./pages/Teacher/Create-Assessments/Create-Assessments";
 
 const queryClient = new QueryClient();
 const location = new ReactLocation();
@@ -73,7 +75,7 @@ const routes = [
         element: <Rankings />,
       },
       {
-        path: "/login/",
+        path: "/login/:role",
         element: (
           <CheckLogout>
             <Login />
@@ -81,12 +83,32 @@ const routes = [
         ),
       },
       {
-        path: "/register/",
+        path: "/register/:role",
         element: (
           <CheckLogout>
             <Register />
           </CheckLogout>
         ),
+      },{
+        path: "/teacher-dashboard/",
+        element:(
+            <TeacherDashboard/>
+        )
+      },{
+        path: "/dashboard/create-test",
+        element:(
+          <CheckLogin>
+          <CreateTest/>
+          </CheckLogin>
+        )
+      },
+      {
+        path: "/dashboard/create-assessment",
+        element:(
+          <CheckLogin>
+          <CreateAssessments/>
+          </CheckLogin>
+        )
       },
       {
         path: "/ranking/:testId",

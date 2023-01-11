@@ -1,23 +1,23 @@
-import { Link, useNavigate } from "@tanstack/react-location";
+import { Link, useNavigate, useMatch } from "@tanstack/react-location";
 import clsx from "clsx";
 import { createUserWithEmailAndPassword, EmailAuthCredential } from "firebase/auth";
 import { useForm } from "react-hook-form";
 import { auth, db } from "../firebase";
-import { addDoc, collection, setDoc,doc} from "firebase/firestore";
+import { addDoc, collection, setDoc,doc, startAfter} from "firebase/firestore";
 import "../index.css"
+import Error from "../components/shared/error";
 
-import Error from "/src/components/shared/error";
 
-import { registerApi } from "/src/helpers/fetchers";
-import { userAtom } from "/src/stores/auth.store";
+
 
 export default function Register() {
   // router
   const navigate = useNavigate();
+  const {params:{role}} = useMatch()
 
+  console.log(role)
   // form
   const { register, handleSubmit } = useForm();
-
 
   const onSubmit = (data) => {
 
@@ -27,20 +27,44 @@ export default function Register() {
     .then((results)=>{
 
       console.log(results.user.uid)
-      try {
-        setDoc(doc(db, "users",results.user.uid),{
-          uid: results.user.uid,
-          email: email,
-          full_name: full_name,
-          class_name: class_name,
-          school_name: school_name,
-          emis_number: emis_number,
-          Grade: Grade
-        });
-        console.log("Document written with ID: ");
-      } catch (e) {
-        console.error("Error adding document: ", e);
+
+      // Check if its a teacher 
+      if(role==='teacher'){
+        try {
+          setDoc(doc(db, "teachers",results.user.uid),{
+            uid: results.user.uid,
+            email: email,
+            full_name: full_name,
+            class_name: class_name,
+            school_name: school_name,
+            emis_number: emis_number,
+            Grade: Grade
+          }).then((data)=>{
+
+            console.log(data)
+            navigate({to:"/dashboard"})
+          })
+
+        } catch (e) {
+          console.log(e.message)
+        }
+      }else{
+        try {
+          setDoc(doc(db, "users",results.user.uid),{
+            uid: results.user.uid,
+            email: email,
+            full_name: full_name,
+            class_name: class_name,
+            school_name: school_name,
+            emis_number: emis_number,
+            Grade: Grade
+          })
+          console.log("Document written with ID: ");
+        } catch (e) {
+          console.error("Error adding document: ", e);
+        }
       }
+      
 
     })
     .then(()=>{

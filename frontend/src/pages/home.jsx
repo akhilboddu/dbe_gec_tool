@@ -12,16 +12,22 @@ import { Link } from "@tanstack/react-location";
 
 import { QueryKeys } from "/src/constants/query-keys";
 import { getCoursesApi } from "/src/helpers/fetchers";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { db } from "../firebase";
+import { useState } from "react";
+import { useEffect } from "react";
 
 export default function Home() {
   const courseCtx = useContext(CourseContext);
-  const { arrTest } = courseCtx;
+  const {arrTest} = courseCtx
+
 
   // query
   const coursesQuery = useQuery([QueryKeys.COURSES], getCoursesApi);
 
   return (
-    <div className="space-y-4 lg:space-y-8">
+    <>
+    {arrTest ? (<div className="space-y-4 lg:space-y-8">
       <h2 className="text-2xl font-bold lg:text-3xl">Welcome Learner</h2>
 
       <Info
@@ -46,7 +52,7 @@ export default function Home() {
             </div>
 
             <div className="card-actions justify-end">
-              <Link to={`/tests`} className="btn border-none bg-mainColor">
+              <Link to={`/tests/`} className="btn border-none bg-mainColor">
                 View now
               </Link>
             </div>
@@ -104,6 +110,8 @@ export default function Home() {
           </div>
         </div>
       </div>
-    </div>
+    </div>): <Loading/>}
+
+</>
   );
 }

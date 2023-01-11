@@ -1,5 +1,4 @@
-import { Link, Navigate, useNavigate } from "@tanstack/react-location";
-import clsx from "clsx";
+import { Link, Navigate, useMatch, useNavigate } from "@tanstack/react-location";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useAtom } from "jotai";
 import { useForm } from "react-hook-form";
@@ -14,7 +13,9 @@ import { userAtom } from "/src/stores/auth.store";
 export default function Login() {
   // router
   const navigate = useNavigate();
+  const {params:{role}} = useMatch()
 
+  console.log(role)
   // atom
   const [user, setUser] = useAtom(userAtom);
 
@@ -29,9 +30,7 @@ export default function Login() {
     },
   });
 
-  // const onSubmit = (data) => {
-  //   loginMutation.mutate(data);
-  // };
+
 
   const onSubmit = (data) => {
     //loginMutation.mutate(data);
@@ -41,11 +40,16 @@ export default function Login() {
       // Signed in 
       const user = userCredential.user;
       
-      navigate({to:"/", required: true})
+
+      // Check if its a teacher 
+      if(role==='teacher'){
+        navigate({to:"/dashboard", required:true})
+      }else{
+        navigate({to:"/", required: true})
+      }
       // ...
     })
     .catch((error) => {
-      const errorCode = error.code;
       const errorMessage = error.message;
       console.log(errorMessage)
 

@@ -1,8 +1,13 @@
-import React, { createContext } from "react";
+import { doc, getDoc } from "firebase/firestore";
+import React, { createContext, useEffect } from "react";
+import { useState } from "react";
+import { db } from "../firebase";
 
 const CourseContext = createContext();
 
 export const CourseContextProvider = (props) => {
+
+
   const arrTest = [
     {
       testId: "MathematicsGrade9",
@@ -88,11 +93,6 @@ export const CourseContextProvider = (props) => {
           questionId: 3,
           image: "https://i.ibb.co/P1M7XnV/Math-sect1-quest3.png",
           text: "What is the rule and the value for 𝑥?",
-          correctAnswer: {
-            answerId: "q2a3",
-            text: "5/2",
-            isCorrect: true,
-          },
           answers: [
             //Answers for Question 1
             {
@@ -123,11 +123,6 @@ export const CourseContextProvider = (props) => {
           questionId: 4,
           image: null,
           text: "Volume of a cylinder is 𝑉 = 𝜋𝑟 2 ℎ, ℎ = 2 50 cm, 𝜋 = 3,14 and 𝑟 = 15 cm. What is the volume the cylinder, in cm³?",
-          correctAnswer: {
-            answerId: "q4a3",
-            text: "5/2",
-            isCorrect: true,
-          },
           answers: [
             //Answers for Question 4
             {
@@ -158,11 +153,6 @@ export const CourseContextProvider = (props) => {
           questionId: 5,
           image: "https://i.ibb.co/VHbk42C/maths-qeust5.png",
           text: "Which formula best represents the given 𝑥 and 𝑦 values?",
-          correctAnswer: {
-            answerId: "q5a3",
-            text: "5/2",
-            isCorrect: true,
-          },
           answers: [
             //Answers for Question 5
             {
@@ -193,11 +183,6 @@ export const CourseContextProvider = (props) => {
           questionId: 6,
           image: "https://i.ibb.co/VHbk42C/maths-qeust5.png",
           text: "Which formula best represents the given 𝑥 and 𝑦 values?",
-          correctAnswer: {
-            answerId: "q6a3",
-            text: "5/2",
-            isCorrect: true,
-          },
           answers: [
             //Answers for Question 6
             {
@@ -265,11 +250,6 @@ export const CourseContextProvider = (props) => {
           questionId: 8,
           image: "https://i.ibb.co/hg4LJm0/maths-quest8.png",
           text: "Which of the following graphs is represented by the given graphs?",
-          correctAnswer: {
-            answerId: "q8a3",
-            text: "5/2",
-            isCorrect: true,
-          },
           answers: [
             //Answers for Question 8
             {
@@ -300,11 +280,6 @@ export const CourseContextProvider = (props) => {
           index: "9",
           questionId: 9,
           text: "Which one of the following phrases best describes the gradient of graph 𝑓?",
-          correctAnswer: {
-            answerId: "q9a3",
-            text: "5/2",
-            isCorrect: true,
-          },
           answers: [
             //Answers for Question 9
             {
@@ -334,11 +309,6 @@ export const CourseContextProvider = (props) => {
           index: "10",
           questionId: 10,
           text: "Which one of the following graphs best describes an undefined gradient?",
-          correctAnswer: {
-            answerId: "q10a3",
-            text: "5/2",
-            isCorrect: true,
-          },
           answers: [
             //Answers for Question 10
             {
