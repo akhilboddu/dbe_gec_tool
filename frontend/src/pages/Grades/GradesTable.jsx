@@ -1,6 +1,10 @@
 import React from "react";
+import { Link } from "@tanstack/react-location";
 
-function GradesTable() {
+
+function GradesTable({result}) {
+  console.log("table", result);
+  const teacherId = "jhasdk";
   const testResults = [
     {
       Subject: "Mathematics",
@@ -56,35 +60,41 @@ function GradesTable() {
 
   return (
     <div className="my-6 overflow-x-auto">
-      <table className="table-zebra table w-full">
+      <table className="table w-full table-zebra">
         <thead>
           <tr>
             <th />
             <th>Subject</th>
-            <th>Task</th>
-            <th>Term</th>
+            <th>Date</th>
+            {/* <th>Term</th> */}
             <th>Mark</th>
 
-            <th>Weighting</th>
+            <th>Status</th>
+            <th>Action</th>
           </tr>
         </thead>
 
         <tbody>
-          {testResults?.map((testResult, index) => (
-            <tr key={index}>
+          {result?.map((testResult, index) => (
+            <tr key={index} >
               {/* index */}
               <th>{index + 1}</th>
               {/* full name */}
-              <td>{testResult.Subject}</td>
+              <td>{testResult.subject}</td>
               {/* school name */}
-              <td>{testResult.Task}</td>
+              <td>{testResult.date}</td>
               {/* class name */}
-              <td>{testResult.Term}</td>
+              {/* <td>{testResult.Term}</td> */}
               {/* score */}
-              <td>{testResult.Mark}</td>
+              <td>{testResult.score}</td>
               {/* Test */}
               {/* <td>{testResult.Grade}</td> */}
-              <td>{testResult.Weighting}</td>
+              <td>{testResult.status === "evaluationPending" ? "Evaluation Pending" : "Evaluated"}</td>
+              <td>
+              <Link to={testResult.status === "evaluationPending" ? `/result/${testResult.test}/${testResult.attemptId}/${testResult.id}/${teacherId}`: `/result/${testResult.test}/${testResult.attemptId}`} className="btn">
+                  View
+              </Link>
+              </td>
             </tr>
           ))}
         </tbody>

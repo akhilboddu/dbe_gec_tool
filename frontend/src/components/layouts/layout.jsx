@@ -5,9 +5,9 @@ import Header from "/src/components/layouts/header";
 
 export default function Layout() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex flex-col min-h-screen">
       <Header />
-      <div className="container flex-1 py-4 lg:py-8">
+      <div className="container flex-1 py-4 mt-16 lg:py-8">
         <Outlet />
       </div>
       <Footer />

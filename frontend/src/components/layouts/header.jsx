@@ -39,32 +39,32 @@ export default function Header() {
 
   return (
     <nav
-      className={clsx("shadow-md", {
+      className={clsx("shadow-md", "bg-white", "fixed", "w-[100%]", "z-10",  {
         "bg-error": isAdminPage,
       })}
     >
-      <div className="container navbar flex-wrap">
+      <div className="container flex-wrap navbar">
         {/* start */}
-        <div className="mr-auto flex flex-wrap">
+        <div className="flex flex-wrap mr-auto">
           <Link to="/" className="btn btn-ghost">
             <img src={Logo} alt="logo" className="w-32 pt-0" />
           </Link>
-          <Link to="/" className="btn btn-ghost gap-1">
-            <HomeIcon className="h-5 w-5" />
+          <Link to="/" className="gap-1 btn btn-ghost">
+            <HomeIcon className="w-5 h-5" />
             Home
           </Link>
           {auth.currentUser ? (
             <>
-              <Link to="/tests" className="btn btn-ghost gap-1">
-                <ShieldExclamationIcon className="h-5 w-5" />
+              <Link to="/tests" className="gap-1 btn btn-ghost">
+                <ShieldExclamationIcon className="w-5 h-5" />
                 Tests
               </Link>
-              <Link to="/assignments" className="btn btn-ghost gap-1">
-                <BookOpenIcon className="h-5 w-5" />
+              <Link to="/assignments" className="gap-1 btn btn-ghost">
+                <BookOpenIcon className="w-5 h-5" />
                 Assignments
               </Link>
-              <Link to="/grades" className="btn btn-ghost gap-1">
-                <StarIcon className="h-5 w-5" />
+              <Link to="/grades" className="gap-1 btn btn-ghost">
+                <StarIcon className="w-5 h-5" />
                 Grades
               </Link>
             </>
@@ -79,16 +79,16 @@ export default function Header() {
               </label>
               <ul
                 tabIndex={0}
-                className="dropdown-content menu rounded-box menu-compact mt-3 w-52 bg-base-200 p-2 shadow-lg"
+                className="p-2 mt-3 shadow-lg dropdown-content menu rounded-box menu-compact w-52 bg-base-200"
               >
                 <li>
                   <Link to="/user">
-                    <UserIcon className="h-5 w-5" /> Profile
+                    <UserIcon className="w-5 h-5" /> Profile
                   </Link>
                 </li>
                 <li onClick={logout}>
                   <span>
-                    <ArrowRightOnRectangleIcon className="h-5 w-5" /> Log out
+                    <ArrowRightOnRectangleIcon className="w-5 h-5" /> Log out
                   </span>
                 </li>
               </ul>
