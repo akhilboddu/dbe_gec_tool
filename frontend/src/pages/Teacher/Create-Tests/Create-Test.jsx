@@ -1,5 +1,6 @@
-import React, { useEffect, useReducer } from "react";
-import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import React, { useEffect, useReducer, useContext} from "react";
+import CourseContext from "/src/context/courseContext";
+import { doc, updateDoc, arrayUnion, arrayRemove, setDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL} from "firebase/storage";
 import { useState } from "react";
 import { render } from "react-dom";
@@ -11,7 +12,8 @@ import { db } from "/src/firebase";
 
 const CreateTest = ()=>{
 
-  
+     const ctxQuestions = useContext(CourseContext);
+    const {arrTest} = ctxQuestions;
 
     const { register, handleSubmit } = useForm();
     const [questionIndex,setQuestionIndex] = useState(0)
@@ -20,32 +22,35 @@ const CreateTest = ()=>{
     const [answerExplanation,setAnswerExplanation] = useState("")
     const [answerIndex,setAnswerIndex] = useState(0)
 
+    const [answers,setAnswers] = useState([{}]);
+    const [questions, setQuestions] = useState([{}]);
+    
+
     const addAnswer = (e)=>{
       
       e.preventDefault()
 
-      console.log(answerText, answerExplanation)
-
-
-      test.questions[questionIndex].answers[answerIndex] =(
-        {
+      setAnswers(prev=> [...prev,{
+         
           answerId: `answer-${questionIndex}`,
           text: answerText,
           isCorrect: answerCorrect,
           explanation: answerExplanation
-        }
-      )
-
+        }])
+      
+      
       setAnswerIndex((prev)=>prev+1);
 
-      console.log(test.questions[questionIndex].answers)
+      console.log(answers,"answers")
+
     }
+
+
+
 
     const addQuestion = (data)=>{
       
-      console.log(data);
 
-      
       const file = data["question-image-0"][0]
 
       console.log(file.name)
@@ -62,24 +67,40 @@ const CreateTest = ()=>{
 
           console.log("url downloaded: url," + url)
 
-      test.testId = data.titleId
-      test.Title = data.title
-      test.description= data.description
-      test.duration = data.duration
-      test.questions[questionIndex]=({
+            answers.shift()
+            setQuestions(prev => [...prev,{
 
-        index: questionIndex +1,
-        questionId: questionIndex + 1,
-        image: url,
-        text: data[`question-text-${questionIndex}`],
-        type: "mcq", //mcq
-        answers: [...test.questions[questionIndex].answers],
-      })
+              index: questionIndex +1,
+              questionId: questionIndex + 1,
+              image: url,
+              text: data[`question-text-${questionIndex}`],
+              type: "mcq", //mcq
+              answers: [...answers],
+            }])
 
-      setQuestionIndex(test.questions.length -1);
+            
 
-      console.log(questionIndex)
-      console.log(test)
+            setTest({
+              testId : data.titleId,
+              Title :data.title,
+              description :data.description,
+              duration :data.duration,
+              teacherId :data.teacherId
+            })
+
+            // test.testId = data.titleId
+            // test.Title = data.title
+            // test.description = data.description
+            // test.duration = data.duration
+            // test.teacherId = data.teacherId
+            
+            console.log(questions, "This is the questions after its set")
+
+
+            setQuestionIndex(prev => prev + 1);
+            setAnswers([{}])
+
+            console.log(test)
 
         })
       });
@@ -91,44 +112,51 @@ const CreateTest = ()=>{
     const saveTest = async(e)=>{
 
       e.preventDefault()
-        console.log("Test saved")
-        console.log(test)
+      //   console.log("Test saved")
+      //   console.log(test)
 
-        const testRef = doc(db, "test", "test");
+      //   const testRef = doc(db, "test", "test");
 
-        await updateDoc(testRef, {
-          arrTest: arrayUnion(test)
-      });
+      //   await updateDoc(testRef, {
+      //     arrTest: arrayUnion(test)
+      // });
 
+
+      console.log("Test being saved")
+
+      questions.shift()
+      test.questions = [...questions]
+
+      setTest(prev => ({...prev,questions:[...questions]}));
+
+      setDoc(doc(db,'test',test.testId),test).then((res)=>{
+
+        console.log(res)
+      })
+
+
+      console.log(test)
 
     }
 
 
-    const [test,setTest] =useState({
-        testId: "MathematicsGrade9",
-        Title: "Mathematics Grade 9 (2021)",
-        duration: "90 min",
-        description: "National Assessment, Read the Instruction Carefull",
+    const [test,setTest]=useState({
+        testId: "",
+        Title: "",
+        duration: "",
+        description: "",
         instructions: [
           "Read all the instructions and questions carefully.",
           "Choose the letter of the correct answer.",
           "Answer all questions.",
           "The duration of this test is 90 minutes.",
         ],
-        questions: [{
-            index: "",
-            questionId: "",
-            image: "",
-            text: "data[`question-text-${questionIndex}`]",
-            type: "mcq", //mcq
-            answers: [
-            {
-            
-          }]
-          }
-        ],
+        questions: [],
 });
 
+useEffect(()=>{
+  // console.log(test, "Test in useEffect")
+},[test])
 
     return(
         <div className="mt-10 sm:mt-0">
@@ -156,6 +184,11 @@ const CreateTest = ()=>{
                     </div>
 
                     <div className="col-span-6 sm:col-span-4">
+                      <label  htmlFor="Title" className="block text-md font-medium text-gray-700">Teacher's ID</label>
+                      <input type="text" name="Title" id="Title"  className="bg-gray-100 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" {...register("teacherId", {required: true})}/>
+                    </div>
+
+                    <div className="col-span-6 sm:col-span-4">
                       <label htmlFor="description" className="block text-md font-medium text-gray-700">Description</label>
                       <input type="text" name="description" id="description" className="bg-gray-100 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" {...register("description", {required: true})}/>
                     </div>
@@ -164,19 +197,12 @@ const CreateTest = ()=>{
                       <label htmlFor="duration" className="block text-md font-medium text-gray-700">Duration</label>
                       <input type="text" name="duration" id="duration" className="bg-gray-100 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" {...register("duration", {required: true})}/>
                     </div>
-                    
-                    <div className="col-span-6 sm:col-span-4">
-                      <h2 className="block text-lg font-medium text-gray-900">Questions</h2>
-                    </div>
 
-                    {test.questions.map((question,index)=>(
-                        <TestQuestions addAnswer={addAnswer} register={register} index={index}/>
+                    {questions.map((question,index)=>(
+                        <TestQuestions answers={answers} addAnswer={addAnswer} register={register} index={index} questionIndex={questionIndex} setAnswerText={setAnswerText} setAnswerCorrect={setAnswerCorrect} setAnswerExplanation={setAnswerExplanation}/>
                     ))}
 
-                    {test.questions[questionIndex].answers.map((answer,index)=>(
-                        <QuestionAnswer addAnswer={addAnswer} index={index} setAnswerText={setAnswerText} setAnswerCorrect={setAnswerCorrect} setAnswerExplanation={setAnswerExplanation}/>
-                    ))}
-
+                  
                   </div>
                 </div>
 

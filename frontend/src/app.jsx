@@ -97,9 +97,9 @@ const routes = [
       },{
         path: "/dashboard/create-test",
         element:(
-          <CheckLogin>
+          
           <CreateTest/>
-          </CheckLogin>
+          
         )
       },
       {

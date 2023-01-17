@@ -8,28 +8,32 @@ import Loading from "/src/components/shared/loading";
 import CourseContext from "/src/context/courseContext";
 import { useContext } from "react";
 import CourseCardList from "/src/components/course/course-card-list";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
 import { db } from "/src/firebase";
 
 function tests() {
   // const courseCtx = useContext(CourseContext);
   // const { arrTest } = courseCtx;
 
-  const [arrTest,setArrTest] = useState(null)
+  const arrTest = []
   const [testIndex,setTestIndex] = useState()
 
 
   useEffect(()=>{
     getTest()
-  
   },[])
 
-  const getTest=async()=>{
-       getDoc(doc(db,"test","test")).then((results)=>{
-        setArrTest(results.data().arrTest)
+  const getTest= async()=>{
+      
+    const docSnap = await getDocs(collection(db,"test"))
 
-      })
-  }
+    docSnap.forEach(doc => {
+      console.log(doc.data())
+     arrTest.push(doc.data())
+    });
+
+    }
+  
   
 
   return (

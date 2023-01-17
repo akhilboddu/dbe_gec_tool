@@ -8,8 +8,8 @@ const QuestionAnswer =({addAnswer, register,index,setAnswerText,setAnswerCorrect
         
         <div class="col-span-6 sm:col-span-4">
         
-        
-        <label  class="block text-md font-medium text-gray-700">Text</label>
+
+        <label  class="block text-md font-medium text-gray-700">{`Answer ${index+1} text`}</label>
         <input type="text" name={`answer-text-${index}`} class="bg-gray-100 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" onChange={(e)=>{setAnswerText(e.target.value)}}/>
       </div>
 
