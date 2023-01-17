@@ -44,7 +44,6 @@ export default function QuestionList({
   const navigate = useNavigate();
   const userData = {};
 
-
   const handelSelectedAnswers = (answer) => {
     if (!teacherId) {
       setSelectedAnswers((prev) => {
@@ -62,11 +61,14 @@ export default function QuestionList({
         let data = prev;
         const i = data.findIndex((o) => o.question === answer.question);
         if (i !== -1) {
-          if (answer.teacherNote !== "") {
+          if (answer.teacherNote) {
             data[i].teacherNote = answer.teacherNote;
           }
-          if (answer.isCorrect) {
+          if (answer.isCorrect !== undefined) {
             data[i].isCorrect = answer.isCorrect;
+          }
+          if (answer.marks) {
+            data[i].marks = answer.marks;
           }
         } else {
           data.push(answer);
@@ -76,7 +78,7 @@ export default function QuestionList({
     }
   };
 
-  const fethUserData = async () => {
+  const fetchUserData = async () => {
     const docRef = doc(db, "users", auth.currentUser.uid);
     const docSnap = await getDoc(docRef);
 
@@ -88,7 +90,7 @@ export default function QuestionList({
   };
 
   const handleRanking = async (score) => {
-    fethUserData().then(async () => {
+    fetchUserData().then(async () => {
       const { full_name, school_name, Grade, email } = userData;
 
       const docRef = doc(db, "ranking", testId);
@@ -178,7 +180,7 @@ export default function QuestionList({
       let newCorrectAnswers = 0;
       teacherNotes.forEach((element) => {
         if (element.isCorrect) {
-          newCorrectAnswers += 1;
+          newCorrectAnswers = Number(newCorrectAnswers) + Number(element.marks);
         }
         attemptData.answers = attemptData.answers.map((a) => {
           if (a.question == element.question) {
@@ -187,7 +189,7 @@ export default function QuestionList({
           return a;
         });
       });
-      attemptData.score = attemptData.score + newCorrectAnswers;
+      attemptData.score = Number(attemptData.score) + Number(newCorrectAnswers);
       updateAttemptedTest(attemptData);
     }
   };
@@ -211,7 +213,7 @@ export default function QuestionList({
   };
 
   const saveTestScore = async (finalScore, textAnswersArr) => {
-    fethUserData().then(async () => {
+    fetchUserData().then(async () => {
       const { uid } = userData;
       const current = new Date();
       const date = `${current.getDate()}/${
@@ -314,7 +316,7 @@ export default function QuestionList({
       <div>
         <div className={clsx("modal mt-0", { "modal-open": isModal })}>
           <div className="space-y-4 modal-box">
-            <h3 className="text-lg font-bold uppercase">Test result</h3>
+            <h3 className="text-lg font-bold uppercase">{textAnswers.length > 0 ? "Provisional Result": "Test result"}</h3>
             <p>
               You scored <span className="font-bold">{score}</span> points out
               of {questions.length}

@@ -42,6 +42,11 @@ export default function Question({
     handelSelectedAnswers(finalAnswer);
   };
 
+  const handleMarks = (e) => {
+    const finalAnswer = { ...prevSelected, marks: e.target.value };
+    handelSelectedAnswers(finalAnswer);
+  };
+
   const isChecked = (answer) => {
     if (resultCheck) {
       return answer.answerId == prevSelected?.answerId && resultCheck;
@@ -75,7 +80,7 @@ export default function Question({
   };
 
   const renderTestInput = (index) => {
-    if(!teacher && !resultCheck) {
+    if (!teacher && !resultCheck) {
       return (
         <textarea
           id={index}
@@ -95,18 +100,18 @@ export default function Question({
           className="input input-bordered h-[auto] w-[100%]"
         />
       );
-      }
-      if (teacher) {
-        return (
-          <textarea
-            id={index}
-            disabled={resultCheck ? true : false}
-            value={prevSelected ? prevSelected.answer : ""}
-            onChange={handleInputChange}
-            className="input input-bordered h-[auto] w-[100%]"
-          />
-        );
-        } 
+    }
+    if (teacher) {
+      return (
+        <textarea
+          id={index}
+          disabled={resultCheck ? true : false}
+          value={prevSelected ? prevSelected.answer : ""}
+          onChange={handleInputChange}
+          className="input input-bordered h-[auto] w-[100%]"
+        />
+      );
+    }
   };
 
   const teacherAnswerCheck = (choice) => {
@@ -139,11 +144,17 @@ export default function Question({
           />
           <label htmlFor={"teacher-" + question.index}>Incorrect</label>
         </div>
-        
+
         <div className="pl-4 space-y-2">
+          <p>Marks</p>
+          <input
+            className="input input-bordered"
+            type="number"
+            onChange={handleMarks}
+          />
+          <p>Remark</p>
           <textarea
             onChange={handleTeacherNoteChange}
-            placeholder="Remark"
             className="input input-bordered h-[auto] w-[100%]"
           />
         </div>
@@ -192,7 +203,14 @@ export default function Question({
       <div className="pl-4 space-y-2">
         {question.type == "text" ? renderTestInput(index) : renderMcq()}
       </div>
-      {resultCheck && prevSelected.teacherNote?<p><span className="text-gray-400">Teacher's Note:</span> {prevSelected.teacherNote}</p>: ''}
+      {resultCheck && prevSelected.teacherNote ? (
+        <p>
+          <span className="text-gray-400">Teacher's Note:</span>{" "}
+          {prevSelected.teacherNote}
+        </p>
+      ) : (
+        ""
+      )}
       <div className="py-4">{renderMessage()}</div>
       {teacher && question.type == "text" ? renderTeacherInputs() : null}
     </div>
