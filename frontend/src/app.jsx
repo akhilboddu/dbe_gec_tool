@@ -128,6 +128,32 @@ const routes = [
         ],
       },
       {
+        path: "/result/:testId/:attemptId/:gradeId/:teacherId",
+        children: [
+          {
+            path: "/",
+            element: (
+              <CheckLogin>
+                <UserCourseTest />
+              </CheckLogin>
+            ),
+          },
+        ],
+      },
+      {
+        path: "/result/:testId/:attemptId",
+        children: [
+          {
+            path: "/",
+            element: (
+              <CheckLogin>
+                <UserCourseTest />
+              </CheckLogin>
+            ),
+          },
+        ],
+      },
+      {
         path: "/lessons/:lessonId/",
         element: <UserLessonDetail />,
       },
