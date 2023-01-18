@@ -17,11 +17,6 @@ function tests() {
   const [test, setTest] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // query
-  // const { isLoading, isError, data } = useQuery(
-  //   [QueryKeys.COURSES],
-  //   getCoursesApi
-  // );
 
   useEffect(() => {
     const dataFetch = async () => {

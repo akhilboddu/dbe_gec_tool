@@ -13,6 +13,7 @@ export default function Question({
   heading,
   resultCheck,
   prevSelected,
+  explanation,
   teacher,
 }) {
   const [isCorrect, setIsCorrect] = useState();
@@ -172,9 +173,9 @@ export default function Question({
       (disabled === 0 && !resultCheck && question.type !== "text")
     ) {
       if (isCorrect) {
-        return <Success text={"This is the correct answer."} />;
+        return <Success text={explanation? explanation : "This is the correct answer."} />;
       } else {
-        return <Error text={"Wrong Answer"} />;
+        return <Error text={explanation? explanation : "Wrong Answer"} />;
       }
     } else if (resultCheck) {
       if (question.type == "text" && prevSelected?.isCorrect == undefined) {

@@ -301,6 +301,7 @@ export default function QuestionList({
             image={question.image}
             heading={question.heading}
             answers={question.answers}
+            explanation={question.explanation}
             disabled={score}
             handelSelectedAnswers={handelSelectedAnswers}
             resultCheck={attemptData ? true : false}

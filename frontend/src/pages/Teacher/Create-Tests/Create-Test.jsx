@@ -18,7 +18,7 @@ const CreateTest = ()=>{
     const { register, handleSubmit } = useForm();
     const [questionIndex,setQuestionIndex] = useState(0)
     const [answerText,setAnswerText] = useState()
-    const [answerCorrect,setAnswerCorrect] = useState(false)
+    const [answerCorrect,setAnswerCorrect] = useState(true)
     const [answerExplanation,setAnswerExplanation] = useState("")
     const [answerIndex,setAnswerIndex] = useState(0)
 
@@ -35,7 +35,6 @@ const CreateTest = ()=>{
           answerId: `answer-${questionIndex}`,
           text: answerText,
           isCorrect: answerCorrect,
-          explanation: answerExplanation
         }])
       
       
@@ -51,7 +50,7 @@ const CreateTest = ()=>{
     const addQuestion = (data)=>{
       
 
-      const file = data["question-image-0"][0]
+      const file = data["question-image-0"][0]? data["question-image-0"][0] : ""
 
       console.log(file.name)
       const storage = getStorage();
@@ -68,9 +67,12 @@ const CreateTest = ()=>{
           console.log("url downloaded: url," + url)
 
             answers.shift()
+
+            console.log(answerCorrect)
             setQuestions(prev => [...prev,{
 
               index: questionIndex +1,
+              explanation: data[`question-explanation-${questionIndex}`],
               questionId: questionIndex + 1,
               image: url,
               text: data[`question-text-${questionIndex}`],
@@ -85,15 +87,10 @@ const CreateTest = ()=>{
               Title :data.title,
               description :data.description,
               duration :data.duration,
-              teacherId :data.teacherId
+              teacherId :data.teacherId,
+              instructions: test.instructions
             })
 
-            // test.testId = data.titleId
-            // test.Title = data.title
-            // test.description = data.description
-            // test.duration = data.duration
-            // test.teacherId = data.teacherId
-            
             console.log(questions, "This is the questions after its set")
 
 
@@ -112,16 +109,7 @@ const CreateTest = ()=>{
     const saveTest = async(e)=>{
 
       e.preventDefault()
-      //   console.log("Test saved")
-      //   console.log(test)
-
-      //   const testRef = doc(db, "test", "test");
-
-      //   await updateDoc(testRef, {
-      //     arrTest: arrayUnion(test)
-      // });
-
-
+      
       console.log("Test being saved")
 
       questions.shift()
