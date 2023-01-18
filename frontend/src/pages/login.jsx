@@ -43,7 +43,7 @@ export default function Login() {
 
       // Check if its a teacher 
       if(role==='teacher'){
-        navigate({to:"/dashboard", required:true})
+        navigate({to:"/teacher-dashboard", required:true})
       }else{
         navigate({to:"/", required: true})
       }
@@ -57,9 +57,9 @@ export default function Login() {
   };
 
   return (
-    <div className="card card-bordered mx-auto max-w-md">
+    <div className="max-w-md mx-auto card card-bordered">
       <form className="card-body" onSubmit={handleSubmit(onSubmit)}>
-        <h2 className="card-title mb-4 text-2xl">Log in to your account</h2>
+        <h2 className="mb-4 text-2xl card-title">Log in to your account</h2>
 
         <div className="form-control">
           <label className="label">

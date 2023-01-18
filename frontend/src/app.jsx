@@ -71,6 +71,14 @@ const routes = [
         ),
       },
       {
+        path: "/grades/:teacherId",
+        element: (
+          <CheckLogin>
+            <Grades />
+          </CheckLogin>
+        ),
+      },
+      {
         path: "/ranking/",
         element: <Rankings />,
       },

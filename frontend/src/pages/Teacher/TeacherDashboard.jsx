@@ -1,9 +1,28 @@
 import React from "react";
 import Info from "../../components/shared/info";
 import { Link } from "@tanstack/react-location";
+import { auth } from "/src/firebase";
 
-const TeacherDashboard=()=> {
+const TeacherDashboard = () => {
 
+
+  const cards = [
+    {
+      title: "Test",
+      action: "Create",
+      url: "/dashboard/create-test",
+    },
+    {
+      title: "Assessments",
+      action: "Create",
+      url: "/dashboard/create-assessment",
+    },
+    {
+      title: "Grades",
+      action: "View",
+      url: `/grades/${auth.currentUser.uid}`,
+    },
+  ];
 
   return (
     <div className="space-y-4 lg:space-y-8">
@@ -12,44 +31,33 @@ const TeacherDashboard=()=> {
       <Info
         text={"You are upto date with all your assignments. Great stuff!"}
       />
-    
+
       <div className="flex">
-        <div className="card card-bordered ml-4 w-1/4 bg-base-300 lg:aspect-2/1">
-          <div className="card-body">
-            <h3 className="card-title">Test</h3>
-
-            <div className="lg:relative lg:flex-1">
-              <p className="lg:absolute lg:inset-0 lg:overflow-hidden">{}</p>
+        {cards.map((card, index) => {
+          return (
+            <div
+              key={index}
+              className="w-1/4 ml-4 card card-bordered bg-base-300 lg:aspect-2/1"
+            >
+              <div className="card-body">
+                <h3 className="card-title">{card.title}</h3>
+                <div className="lg:relative lg:flex-1">
+                  <p className="lg:absolute lg:inset-0 lg:overflow-hidden">
+                    {}
+                  </p>
+                </div>
+                <div className="justify-end card-actions">
+                  <Link to={card.url} className="border-none btn bg-mainColor">
+                    {card.action}
+                  </Link>
+                </div>
+              </div>
             </div>
-
-            <div className="card-actions justify-end">
-              <Link to={`/dashboard/create-test`} className="btn border-none bg-mainColor">
-                Create
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        <div className="card card-bordered ml-4 w-1/4 bg-base-300 lg:aspect-2/1">
-          <div className="card-body">
-            <h3 className="card-title">Assessments</h3>
-
-            <div className="lg:relative lg:flex-1">
-              <p className="lg:absolute lg:inset-0 lg:overflow-hidden">{}</p>
-            </div>
-
-            <div className="card-actions justify-end">
-              <Link to={`/dashboard/create-assessment`} className="btn border-none bg-mainColor">
-                Create 
-              </Link>
-            </div>
-          </div>
-        </div>
-
-       
+          );
+        })}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default TeacherDashboard
+export default TeacherDashboard;

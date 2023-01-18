@@ -6,24 +6,26 @@ import { auth, db } from "/src/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { useState } from "react";
 import Loading from "/src/components/shared/loading";
-
+import { useMatch } from "@tanstack/react-location";
 
 function grades() {
   const [result, setResult] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedSubject, setSelectedSubject] = useState("all");
 
+  const {
+    params: { teacherId },
+  } = useMatch();
+  console.log(teacherId);
+
   useEffect(() => {
-    const dataFetch = async () => {
+    const fetchAllData = async () => {
       try {
         const dataArray = [];
-        const q = query(
-          collection(db, "grades"),
-          where("student", "==", auth.currentUser.uid),
-        );
+        const q = query(collection(db, "grades"));
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
-          dataArray.push({...doc.data(), id: doc.id});
+          dataArray.push({ ...doc.data(), id: doc.id });
         });
         setResult(dataArray);
         setLoading(false);
@@ -33,7 +35,30 @@ function grades() {
       }
     };
 
-    dataFetch();
+    const fetchByStudentId = async () => {
+      try {
+        const dataArray = [];
+        const q = query(
+          collection(db, "grades"),
+          where("student", "==", auth.currentUser.uid)
+        );
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          dataArray.push({ ...doc.data(), id: doc.id });
+        });
+        setResult(dataArray);
+        setLoading(false);
+      } catch (e) {
+        console.error("Error fetching document: ", e);
+        setLoading(false);
+      }
+    };
+
+    if (teacherId) {
+      fetchAllData();
+    } else {
+      fetchByStudentId();
+    }
   }, []);
 
   const filterData = (sub) => {
@@ -59,7 +84,11 @@ function grades() {
       <div className="my-5">
         <Info text="Grades can be synced with SA-SAMS or displayed in tabular format here." />
       </div>
-      {loading ? <Loading /> : <GradesTable result={getResult()} />}
+      {loading ? (
+        <Loading />
+      ) : (
+        <GradesTable result={getResult()} teacherId={teacherId} />
+      )}
     </>
   );
 }

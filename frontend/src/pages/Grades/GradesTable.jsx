@@ -1,62 +1,41 @@
 import React from "react";
 import { Link } from "@tanstack/react-location";
 
-
-function GradesTable({result}) {
+function GradesTable({ result, teacherId }) {
   console.log("table", result);
-  const teacherId = "jhasdk";
-  const testResults = [
-    {
-      Subject: "Mathematics",
-      Task: "Assignment 1",
-      Term: "1",
-      Mark: "44/50",
 
-      Weighting: "16%",
-    },
-    {
-      Subject: "Mathematics",
-      Task: "Assignment 1",
-      Term: "1",
-      Mark: "44/50",
-
-      Weighting: "16%",
-    },
-    {
-      Subject: "Mathematics",
-      Task: "Assignment 1",
-      Term: "1",
-      Mark: "44/50",
-
-      Weighting: "16%",
-    },
-
-    {
-      Subject: "Mathematics",
-      Task: "Assignment 1",
-      Term: "1",
-      Mark: "44/50",
-
-      Weighting: "16%",
-    },
-    {
-      Subject: "Mathematics",
-      Task: "Assignment 1",
-      Term: "1",
-      Mark: "44/50",
-
-      Weighting: "16%",
-    },
-    {
-      Subject: "Mathematics",
-      Task: "Assignment 1",
-      Term: "1",
-      Mark: "44/50",
-
-      Weighting: "16%",
-    },
-    
-  ];
+  const renderButton = (tResult) => {
+    if (tResult.status === "evaluated") {
+      return (
+        <Link
+          to={`/result/${tResult.test}/${tResult.attemptId}`}
+          className="btn btn-mainColor"
+        >
+          View
+        </Link>
+      );
+    } else {
+      if (!teacherId) {
+        return (
+          <Link
+            to={`/result/${tResult.test}/${tResult.attemptId}`}
+            className="btn btn-mainColor"
+          >
+            View
+          </Link>
+        );
+      } else {
+        return (
+          <Link
+            to={`/result/${tResult.test}/${tResult.attemptId}/${tResult.id}/${teacherId}`}
+            className="btn"
+          >
+            Evaluate
+          </Link>
+        );
+      }
+    }
+  };
 
   return (
     <div className="my-6 overflow-x-auto">
@@ -76,7 +55,7 @@ function GradesTable({result}) {
 
         <tbody>
           {result?.map((testResult, index) => (
-            <tr key={index} >
+            <tr key={index}>
               {/* index */}
               <th>{index + 1}</th>
               {/* full name */}
@@ -89,12 +68,12 @@ function GradesTable({result}) {
               <td>{testResult.score}</td>
               {/* Test */}
               {/* <td>{testResult.Grade}</td> */}
-              <td>{testResult.status === "evaluationPending" ? "Evaluation Pending" : "Evaluated"}</td>
               <td>
-              <Link to={testResult.status === "evaluationPending" ? `/result/${testResult.test}/${testResult.attemptId}/${testResult.id}/${teacherId}`: `/result/${testResult.test}/${testResult.attemptId}`} className="btn">
-                  View
-              </Link>
+                {testResult.status === "evaluationPending"
+                  ? "Evaluation Pending"
+                  : "Evaluated"}
               </td>
+              <td>{renderButton(testResult)}</td>
             </tr>
           ))}
         </tbody>

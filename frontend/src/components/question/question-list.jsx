@@ -206,7 +206,7 @@ export default function QuestionList({
         status: "evaluated",
         score: data.score,
       });
-      navigate({ to: "/grades", replace: true });
+      navigate({ to: `/grades/${auth.currentUser.uid}`, replace: true });
     } catch (e) {
       console.log(e);
     }
