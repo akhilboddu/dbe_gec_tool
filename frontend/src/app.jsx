@@ -26,6 +26,7 @@ import Assignments from "./pages/Assignments/assignments";
 import Grades from "./pages/Grades/grades";
 import CreateTest from "./pages/Teacher/Create-Tests/Create-Test";
 import CreateAssessments from "./pages/Teacher/Create-Assessments/Create-Assessments";
+import Notifications from 'react-notify-toast'
 
 const queryClient = new QueryClient();
 const location = new ReactLocation();

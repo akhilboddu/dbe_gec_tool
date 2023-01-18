@@ -7,8 +7,10 @@ import { auth } from "../firebase";
 
 import Error from "/src/components/shared/error";
 
+
 import { loginApi } from "/src/helpers/fetchers";
 import { userAtom } from "/src/stores/auth.store";
+import {notify} from "react-notify-toast";
 
 export default function Login() {
   // router
@@ -50,8 +52,9 @@ export default function Login() {
       // ...
     })
     .catch((error) => {
-      const errorMessage = error.message;
-      console.log(errorMessage)
+      console.log(error.code)
+      if(error.code === "auth/wrong-password")
+      notify.show(`Incorrect Password`, "error",2000,"right")
 
     });
   };

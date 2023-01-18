@@ -8,7 +8,7 @@ import { set, useForm } from "react-hook-form";
 import QuestionAnswer from "../Question-answers";
 import TestQuestions from "../Test-questions";
 import { db } from "/src/firebase";
-
+import {notify} from "react-notify-toast"
 
 const CreateTest = ()=>{
 
@@ -40,7 +40,7 @@ const CreateTest = ()=>{
       
       setAnswerIndex((prev)=>prev+1);
 
-      console.log(answers,"answers")
+      notify.show(`Answer ${answerIndex+1} added`, "success", 2000)
 
     }
 
@@ -97,7 +97,8 @@ const CreateTest = ()=>{
             setQuestionIndex(prev => prev + 1);
             setAnswers([{}])
 
-            console.log(test)
+            notify.show(`Question ${questionIndex+1} added`, "success",2000)
+
 
         })
       });
@@ -123,7 +124,8 @@ const CreateTest = ()=>{
       })
 
 
-      console.log(test)
+     
+      notify.show(`Test Successfully Published`, "success", 2000)
 
     }
 
