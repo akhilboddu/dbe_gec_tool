@@ -13,6 +13,9 @@ export default function Footer() {
           <Link className="link link-hover" to="/ranking">
           Rankings
           </Link>
+          <Link className="link link-hover" to="/login/teacher">
+          Teacher Login
+          </Link>
           <a className="link link-hover">About us</a>
           <a className="link link-hover">Contact</a>
         </div>
