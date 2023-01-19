@@ -7,8 +7,7 @@ import {
   UserIcon,
   BookOpenIcon,
   ShieldExclamationIcon,
-  StarIcon
-
+  StarIcon,
 } from "@heroicons/react/24/outline";
 import { Link, useLocation, useNavigate } from "@tanstack/react-location";
 import React, { useState } from "react";
@@ -23,11 +22,13 @@ export default function Header() {
   const {
     current: { pathname },
   } = useLocation();
+  const userEmail = localStorage.getItem("user");
 
   const logout = () => {
     signOut(auth)
       .then(() => {
         console.log("Successfully signed out");
+        localStorage.removeItem("user");
         navigate({ to: "/login/" });
       })
       .catch((error) => {
@@ -39,7 +40,7 @@ export default function Header() {
 
   return (
     <nav
-      className={clsx("shadow-md", "bg-white", "fixed", "w-[100%]", "z-10",  {
+      className={clsx("shadow-md", "bg-white", "fixed", "w-[100%]", "z-10", {
         "bg-error": isAdminPage,
       })}
     >
@@ -53,7 +54,7 @@ export default function Header() {
             <HomeIcon className="w-5 h-5" />
             Home
           </Link>
-          {auth.currentUser ? (
+          {userEmail ? (
             <>
               <Link to="/tests" className="gap-1 btn btn-ghost">
                 <ShieldExclamationIcon className="w-5 h-5" />
@@ -72,10 +73,10 @@ export default function Header() {
         </div>
 
         <div className="ml-auto">
-          {auth.currentUser ? (
-            <div className="dropdown-end dropdown">
+          {userEmail ? (
+            <div className="dropdown dropdown-end">
               <label tabIndex={0} className="btn btn-ghost">
-                {auth.currentUser.email}
+                {userEmail}
               </label>
               <ul
                 tabIndex={0}
