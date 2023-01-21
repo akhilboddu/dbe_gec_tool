@@ -3,6 +3,19 @@ import React from "react";
 
 const QuestionAnswer =({addAnswer, register,index,setAnswerText,setAnswerCorrect,setAnswerExplanation})=>{
 
+
+  const handleOnChange=(value)=>{
+
+    if(value=="false"){
+      setAnswerCorrect(false)
+    }else{
+      setAnswerCorrect(true)
+    }
+      
+  }
+
+
+
     return(
         <>
         
@@ -15,7 +28,7 @@ const QuestionAnswer =({addAnswer, register,index,setAnswerText,setAnswerCorrect
 
       <div class="col-span-6 sm:col-span-4">
         <label class="block text-md font-medium text-gray-700">True/False</label>
-        <select name={`answer-correct-${index}`} onChange={(e)=>{e.target.value="false"? setAnswerCorrect(false):setAnswerCorrect(true) }}>
+        <select name={`answer-correct-${index}`} onChange={(e)=>handleOnChange(e.target.value)}>
           <option value={true}>True</option>
           <option value={false}>False</option>
         </select>

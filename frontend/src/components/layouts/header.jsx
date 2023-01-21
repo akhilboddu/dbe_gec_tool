@@ -10,20 +10,27 @@ import {
   StarIcon
 
 } from "@heroicons/react/24/outline";
-import { Link, useLocation, useNavigate } from "@tanstack/react-location";
+import { Link, useLocation, useNavigate, useMatch } from "@tanstack/react-location";
 import React, { useState } from "react";
+// import { useLocation } from "react-router-dom";
 import clsx from "clsx";
 import { auth } from "/src/firebase";
 import { signOut } from "firebase/auth";
 import Logo from "../../assets/dbe_logo.png";
+import { useEffect } from "react";
 
 export default function Header() {
   // location
   const navigate = useNavigate();
-  const {
-    current: { pathname },
-  } = useLocation();
+  // const {
+  //   current: { pathname },
+  // } = useLocation();
 
+  const currentLocation = useLocation()
+
+  const currentPath = currentLocation.current.pathname
+
+  console.log(currentPath.endsWith("create-test"))
   const logout = () => {
     signOut(auth)
       .then(() => {
@@ -35,7 +42,9 @@ export default function Header() {
       });
   };
 
-  const isAdminPage = pathname.startsWith("/admin");
+  const isAdminPage = null;
+  
+ 
 
   return (
     <nav
@@ -49,13 +58,13 @@ export default function Header() {
           <Link to="/" className="btn btn-ghost">
             <img src={Logo} alt="logo" className="w-32 pt-0" />
           </Link>
-          <Link to="/" className="gap-1 btn btn-ghost">
+          <Link to={currentPath.endsWith("teacher")?"/teacher-dashboard":"/"} className="gap-1 btn btn-ghost">
             <HomeIcon className="w-5 h-5" />
             Home
           </Link>
           {auth.currentUser ? (
             <>
-              <Link to="/tests" className="gap-1 btn btn-ghost">
+              <Link to={currentPath.endsWith("create-test") || currentPath.endsWith("create-assessment")?"/tests/teacher":"/tests"} className="gap-1 btn btn-ghost">
                 <ShieldExclamationIcon className="w-5 h-5" />
                 Tests
               </Link>

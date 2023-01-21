@@ -48,12 +48,22 @@ const routes = [
         ),
       },
       {
-        path: "/tests/",
+        path: "/tests",
         element: (
           <CheckLogin>
             <Tests />
           </CheckLogin>
         ),
+        children:[
+          {
+            path:"/:teacher",
+            element: (
+              <CheckLogin>
+                <Tests />
+              </CheckLogin>
+            )
+          }
+        ]
       },
       {
         path: "/assignments/",

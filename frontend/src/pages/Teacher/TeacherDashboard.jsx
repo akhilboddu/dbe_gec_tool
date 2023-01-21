@@ -13,7 +13,7 @@ const TeacherDashboard = () => {
       url: "/dashboard/create-test",
     },
     {
-      title: "Assessments",
+      title: "Assessment",
       action: "Create",
       url: "/dashboard/create-assessment",
     },

@@ -30,6 +30,7 @@ const CreateTest = ()=>{
       
       e.preventDefault()
 
+      console.log(answerCorrect)
       setAnswers(prev=> [...prev,{
          
           answerId: `answer-${questionIndex}`,
@@ -39,6 +40,7 @@ const CreateTest = ()=>{
       
       
       setAnswerIndex((prev)=>prev+1);
+      setAnswerCorrect(true)
 
       notify.show(`Answer ${answerIndex+1} added`, "success", 2000)
 
@@ -68,13 +70,13 @@ const CreateTest = ()=>{
 
             answers.shift()
 
-            console.log(answerCorrect)
+            
             setQuestions(prev => [...prev,{
 
               index: questionIndex +1,
               explanation: data[`question-explanation-${questionIndex}`],
               questionId: questionIndex + 1,
-              image: url,
+              image: file==""? null: url,
               text: data[`question-text-${questionIndex}`],
               type: "mcq", //mcq
               answers: [...answers],

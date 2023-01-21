@@ -1,5 +1,6 @@
-import React, { useEffect, useReducer } from "react";
-import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import React, { useEffect, useReducer, useContext} from "react";
+import CourseContext from "/src/context/courseContext";
+import { doc, updateDoc, arrayUnion, arrayRemove, setDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL} from "firebase/storage";
 import { useState } from "react";
 import { render } from "react-dom";
@@ -7,46 +8,51 @@ import { set, useForm } from "react-hook-form";
 import QuestionAnswer from "../Question-answers";
 import TestQuestions from "../Test-questions";
 import { db } from "/src/firebase";
-
+import {notify} from "react-notify-toast"
 
 const CreateAssessments = ()=>{
 
-  
+     const ctxQuestions = useContext(CourseContext);
+    const {arrTest} = ctxQuestions;
 
     const { register, handleSubmit } = useForm();
     const [questionIndex,setQuestionIndex] = useState(0)
     const [answerText,setAnswerText] = useState()
-    const [answerCorrect,setAnswerCorrect] = useState(false)
+    const [answerCorrect,setAnswerCorrect] = useState(true)
     const [answerExplanation,setAnswerExplanation] = useState("")
     const [answerIndex,setAnswerIndex] = useState(0)
+
+    const [answers,setAnswers] = useState([{}]);
+    const [questions, setQuestions] = useState([{}]);
+    
 
     const addAnswer = (e)=>{
       
       e.preventDefault()
 
-      console.log(answerText, answerExplanation)
-
-
-      test.questions[questionIndex].answers[answerIndex] =(
-        {
+      console.log(answerCorrect)
+      setAnswers(prev=> [...prev,{
+         
           answerId: `answer-${questionIndex}`,
           text: answerText,
           isCorrect: answerCorrect,
-          explanation: answerExplanation
-        }
-      )
-
+        }])
+      
+      
       setAnswerIndex((prev)=>prev+1);
+      setAnswerCorrect(true)
 
-      console.log(test.questions[questionIndex].answers)
+      notify.show(`Answer ${answerIndex+1} added`, "success", 2000)
+
     }
+
+
+
 
     const addQuestion = (data)=>{
       
-      console.log(data);
 
-      
-      const file = data["question-image-0"][0]
+      const file = data["question-image-0"][0]? data["question-image-0"][0] : ""
 
       console.log(file.name)
       const storage = getStorage();
@@ -62,24 +68,39 @@ const CreateAssessments = ()=>{
 
           console.log("url downloaded: url," + url)
 
-      test.testId = data.titleId
-      test.Title = data.title
-      test.description= data.description
-      test.duration = data.duration
-      test.questions[questionIndex]=({
+            answers.shift()
 
-        index: questionIndex +1,
-        questionId: questionIndex + 1,
-        image: url,
-        text: data[`question-text-${questionIndex}`],
-        type: "mcq", //mcq
-        answers: [...test.questions[questionIndex].answers],
-      })
+            
+            setQuestions(prev => [...prev,{
 
-      setQuestionIndex(test.questions.length -1);
+              index: questionIndex +1,
+              explanation: data[`question-explanation-${questionIndex}`],
+              questionId: questionIndex + 1,
+              image: file==""? null: url,
+              text: data[`question-text-${questionIndex}`],
+              type: "mcq", //mcq
+              answers: [...answers],
+            }])
 
-      console.log(questionIndex)
-      console.log(test)
+            
+
+            setTest({
+              testId : data.titleId,
+              Title :data.title,
+              description :data.description,
+              duration :data.duration,
+              teacherId :data.teacherId,
+              instructions: test.instructions
+            })
+
+            console.log(questions, "This is the questions after its set")
+
+
+            setQuestionIndex(prev => prev + 1);
+            setAnswers([{}])
+
+            notify.show(`Question ${questionIndex+1} added`, "success",2000)
+
 
         })
       });
@@ -91,52 +112,51 @@ const CreateAssessments = ()=>{
     const saveTest = async(e)=>{
 
       e.preventDefault()
-        console.log("Test saved")
-        console.log(test)
+      
+      console.log("Test being saved")
 
-        const testRef = doc(db, "test", "test");
+      questions.shift()
+      test.questions = [...questions]
 
-        await updateDoc(testRef, {
-          arrTest: arrayUnion(test)
-      });
+      setTest(prev => ({...prev,questions:[...questions]}));
 
+      setDoc(doc(db,'test',test.testId),test).then((res)=>{
+
+        console.log(res)
+      })
+
+
+     
+      notify.show(`Test Successfully Published`, "success", 2000)
 
     }
 
 
-    const [test,setTest] =useState({
-        testId: "MathematicsGrade9",
-        Title: "Mathematics Grade 9 (2021)",
-        duration: "90 min",
-        description: "National Assessment, Read the Instruction Carefull",
+    const [test,setTest]=useState({
+        testId: "",
+        Title: "",
+        duration: "",
+        description: "",
         instructions: [
           "Read all the instructions and questions carefully.",
           "Choose the letter of the correct answer.",
           "Answer all questions.",
           "The duration of this test is 90 minutes.",
         ],
-        questions: [{
-            index: "",
-            questionId: "",
-            image: "",
-            text: "data[`question-text-${questionIndex}`]",
-            type: "mcq", //mcq
-            answers: [
-            {
-            
-          }]
-          }
-        ],
+        questions: [],
 });
 
+useEffect(()=>{
+  // console.log(test, "Test in useEffect")
+},[test])
 
     return(
         <div className="mt-10 sm:mt-0">
         <div className="md:grid md:grid-cols-2 md:gap-6">
           <div className="md:col-span-1">
             <div className="px-4 sm:px-0">
-              <h3 className="text-xl font-medium leading-6 text-gray-900">Create Assessments</h3>
-              <p className="mt-1 text-sm text-gray-600">This page allows you to create a Assessments.</p>
+              <h3 className="text-xl font-medium leading-6 text-gray-900">Create Test</h3>
+              <p className="mt-1 text-sm text-gray-600">This page allows you to create a test.</p>
             </div>
           </div>
           <div className="mt-5 md:col-span-2 md:mt-0">
@@ -156,6 +176,11 @@ const CreateAssessments = ()=>{
                     </div>
 
                     <div className="col-span-6 sm:col-span-4">
+                      <label  htmlFor="Title" className="block text-md font-medium text-gray-700">Teacher's ID</label>
+                      <input type="text" name="Title" id="Title"  className="bg-gray-100 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" {...register("teacherId", {required: true})}/>
+                    </div>
+
+                    <div className="col-span-6 sm:col-span-4">
                       <label htmlFor="description" className="block text-md font-medium text-gray-700">Description</label>
                       <input type="text" name="description" id="description" className="bg-gray-100 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" {...register("description", {required: true})}/>
                     </div>
@@ -164,19 +189,12 @@ const CreateAssessments = ()=>{
                       <label htmlFor="duration" className="block text-md font-medium text-gray-700">Duration</label>
                       <input type="text" name="duration" id="duration" className="bg-gray-100 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" {...register("duration", {required: true})}/>
                     </div>
-                    
-                    <div className="col-span-6 sm:col-span-4">
-                      <h2 className="block text-lg font-medium text-gray-900">Questions</h2>
-                    </div>
 
-                    {test.questions.map((question,index)=>(
-                        <TestQuestions addAnswer={addAnswer} register={register} index={index}/>
+                    {questions.map((question,index)=>(
+                        <TestQuestions answers={answers} addAnswer={addAnswer} register={register} index={index} questionIndex={questionIndex} setAnswerText={setAnswerText} setAnswerCorrect={setAnswerCorrect} setAnswerExplanation={setAnswerExplanation}/>
                     ))}
 
-                    {test.questions[questionIndex].answers.map((answer,index)=>(
-                        <QuestionAnswer addAnswer={addAnswer} index={index} setAnswerText={setAnswerText} setAnswerCorrect={setAnswerCorrect} setAnswerExplanation={setAnswerExplanation}/>
-                    ))}
-
+                  
                   </div>
                 </div>
 

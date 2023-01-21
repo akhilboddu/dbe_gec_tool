@@ -8,7 +8,7 @@ const TestQuestions = ({addAnswer, register, index, questionIndex,setAnswerText,
     return(
         <>
          <div className="col-span-6 sm:col-span-4">
-                      <h2 className="block text-lg font-medium text-gray-900">{`Questions ${index+1}`}</h2>
+                      <h2 className="block text-lg font-medium text-gray-900">{`Question ${index+1}`}</h2>
         </div>
 
         <div class="col-span-6 sm:col-span-4">
