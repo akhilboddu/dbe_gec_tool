@@ -10,17 +10,17 @@ const TeacherDashboard = () => {
     {
       title: "Test",
       action: "Create",
-      url: "/dashboard/create-test",
+      url: "/dashboard/create-test/teacher",
     },
     {
-      title: "Assessment",
+      title: "assignments",
       action: "Create",
-      url: "/dashboard/create-assessment",
+      url: "/dashboard/create-assignments/teacher",
     },
     {
       title: "Grades",
       action: "View",
-      url: `/grades/${auth.currentUser.uid}`,
+      url: `/grades/${auth.currentUser.uid}/teacher`,
     },
   ];
 

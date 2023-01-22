@@ -53,17 +53,7 @@ const routes = [
           <CheckLogin>
             <Tests />
           </CheckLogin>
-        ),
-        children:[
-          {
-            path:"/:teacher",
-            element: (
-              <CheckLogin>
-                <Tests />
-              </CheckLogin>
-            )
-          }
-        ]
+        )
       },
       {
         path: "/assignments/",
@@ -109,7 +99,7 @@ const routes = [
           </CheckLogout>
         ),
       },{
-        path: "/teacher-dashboard/",
+        path: "/teacher-dashboard/teacher",
         element:(
             <TeacherDashboard/>
         )
@@ -122,7 +112,7 @@ const routes = [
         )
       },
       {
-        path: "/dashboard/create-assessment",
+        path: "/dashboard/create-assignments/teacher",
         element:(
           <CheckLogin>
           <CreateAssessments/>
@@ -134,17 +124,12 @@ const routes = [
         element: <CourseLeaderboard />,
       },
       {
-        path: "/tests/:testId",
-        children: [
-          {
-            path: "/",
+        path: "/:testId",
             element: (
-              <CheckLogin>
+             
                 <UserCourseTest />
-              </CheckLogin>
-            ),
-          },
-        ],
+             
+            )
       },
       {
         path: "/result/:testId/:attemptId/:gradeId/:teacherId",

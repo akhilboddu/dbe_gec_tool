@@ -45,7 +45,7 @@ export default function Login() {
 
       // Check if its a teacher 
       if(role==='teacher'){
-        navigate({to:"/teacher-dashboard", required:true})
+        navigate({to:"/teacher-dashboard/teacher", required:true})
       }else{
         navigate({to:"/", required: true})
       }

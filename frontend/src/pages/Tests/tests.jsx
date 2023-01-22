@@ -12,8 +12,8 @@ import { db } from "/src/firebase";
 import { collection, getDocs } from "firebase/firestore";
 
 function tests() {
-  const courseCtx = useContext(CourseContext);
-  const { arrTest } = courseCtx;
+  // const courseCtx = useContext(CourseContext);
+  // const { arrTest } = courseCtx;
   const [test, setTest] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -39,7 +39,7 @@ function tests() {
   }, []);
 
   return (
-    arrTest ? (<div className="space-y-4 lg:space-y-8">
+    test ? (<div className="space-y-4 lg:space-y-8">
       <h2 className="text-2xl font-bold lg:text-3xl">Tests</h2>
       {/* 
       {coursesQuery.isLoading ? (

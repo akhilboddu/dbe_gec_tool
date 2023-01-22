@@ -30,7 +30,6 @@ export default function Header() {
 
   const currentPath = currentLocation.current.pathname
 
-  console.log(currentPath.endsWith("create-test"))
   const logout = () => {
     signOut(auth)
       .then(() => {
@@ -55,24 +54,24 @@ export default function Header() {
       <div className="container flex-wrap navbar">
         {/* start */}
         <div className="flex flex-wrap mr-auto">
-          <Link to="/" className="btn btn-ghost">
+          <Link to={currentPath.endsWith("teacher")? "/teacher-dashboard/teacher":"/"} className="btn btn-ghost">
             <img src={Logo} alt="logo" className="w-32 pt-0" />
           </Link>
-          <Link to={currentPath.endsWith("teacher")?"/teacher-dashboard":"/"} className="gap-1 btn btn-ghost">
+          <Link to={currentPath.endsWith("teacher")? "/teacher-dashboard/teacher":"/"} className="gap-1 btn btn-ghost">
             <HomeIcon className="w-5 h-5" />
             Home
           </Link>
           {auth.currentUser ? (
             <>
-              <Link to={currentPath.endsWith("create-test") || currentPath.endsWith("create-assessment")?"/tests/teacher":"/tests"} className="gap-1 btn btn-ghost">
+              <Link to={currentPath.endsWith("teacher")?"/tests/teacher":"/tests"} className="gap-1 btn btn-ghost">
                 <ShieldExclamationIcon className="w-5 h-5" />
                 Tests
               </Link>
-              <Link to="/assignments" className="gap-1 btn btn-ghost">
+              <Link to={currentPath.endsWith("teacher")?"/tests/teacher":"/assignments"} className="gap-1 btn btn-ghost">
                 <BookOpenIcon className="w-5 h-5" />
                 Assignments
               </Link>
-              <Link to="/grades" className="gap-1 btn btn-ghost">
+              <Link to={currentPath.endsWith("teacher")?"/grades/teacher":"/grades"} className="gap-1 btn btn-ghost">
                 <StarIcon className="w-5 h-5" />
                 Grades
               </Link>

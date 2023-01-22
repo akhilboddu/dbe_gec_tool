@@ -155,8 +155,8 @@ useEffect(()=>{
         <div className="md:grid md:grid-cols-2 md:gap-6">
           <div className="md:col-span-1">
             <div className="px-4 sm:px-0">
-              <h3 className="text-xl font-medium leading-6 text-gray-900">Create Test</h3>
-              <p className="mt-1 text-sm text-gray-600">This page allows you to create a test.</p>
+              <h3 className="text-xl font-medium leading-6 text-gray-900">Create Assignments</h3>
+              <p className="mt-1 text-sm text-gray-600">This page allows you to create assignments.</p>
             </div>
           </div>
           <div className="mt-5 md:col-span-2 md:mt-0">
