@@ -1,4 +1,4 @@
-import { Link, useMatch, useNavigate } from "@tanstack/react-location";
+import { Link, useMatch, useNavigate, useLocation } from "@tanstack/react-location";
 import clsx from "clsx";
 import { isEmpty } from "lodash-es";
 import { useEffect, useState } from "react";
@@ -42,6 +42,8 @@ export default function QuestionList({
   const [score, setScore] = useState(attemptData?.score);
   const [textAnswers, setTextAnswers] = useState([]);
   const navigate = useNavigate();
+  const currentLocation = useLocation()
+  const currentPath = currentLocation.current.pathname
   const userData = {};
 
   const handelSelectedAnswers = (answer) => {
@@ -336,7 +338,7 @@ export default function QuestionList({
               <button onClick={closeModal} className="btn-main-Color btn">
                 View Results
               </button>
-              <Link to={`/ranking/${testId}`}>
+              <Link to={currentPath.endsWith(`teacher`)? `/ranking/${testId}/teacher`:`/ranking/${testId}`}>
                 <button className="btn-mainColor btn">Ranking Page</button>
               </Link>
             </div>

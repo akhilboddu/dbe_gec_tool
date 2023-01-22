@@ -80,7 +80,7 @@ const routes = [
         ),
       },
       {
-        path: "/ranking/",
+        path: "/ranking",
         element: <Rankings />,
       },
       {
