@@ -1,10 +1,14 @@
 import React, { useContext } from "react";
-import { Link } from "@tanstack/react-location";
+import { Link, useLocation } from "@tanstack/react-location";
 import CourseContext from "../context/courseContext";
 
 const rankings = () => {
   const ctxTest = useContext(CourseContext);
   const { arrTest } = ctxTest;
+
+  const currentLocation = useLocation()
+
+  const currentPath = currentLocation.current.pathname
 
   return (
     <>
@@ -24,7 +28,7 @@ const rankings = () => {
 
               <div className="card-actions justify-end">
                 <Link
-                  to={`/ranking/${test.testId}`}
+                  to={currentPath.endsWith("teacher")?`/ranking/${test.testId}/teacher`:`/ranking/${test.testId}`}
                   className="btn border-none bg-mainColor"
                 >
                   Ranking Page
