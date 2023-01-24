@@ -67,10 +67,10 @@ export default function Header() {
                 <ShieldExclamationIcon className="w-5 h-5" />
                 Tests
               </Link>
-              <Link to={currentPath.endsWith("teacher")?"/assignments/teacher":"/assignments"} className="gap-1 btn btn-ghost">
+              {/* <Link to={currentPath.endsWith("teacher")?"/assignments/teacher":"/assignments"} className="gap-1 btn btn-ghost">
                 <BookOpenIcon className="w-5 h-5" />
                 Assignments
-              </Link>
+              </Link> */}
               <Link to={currentPath.endsWith("teacher")?"/grades/teacher":"/grades"} className="gap-1 btn btn-ghost">
                 <StarIcon className="w-5 h-5" />
                 Grades

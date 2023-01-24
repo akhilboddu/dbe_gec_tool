@@ -12,11 +12,11 @@ const TeacherDashboard = () => {
       action: "Create",
       url: "/dashboard/create-test/teacher",
     },
-    {
-      title: "assignments",
-      action: "Create",
-      url: "/dashboard/create-assignments/teacher",
-    },
+    // {
+    //   title: "assignments",
+    //   action: "Create",
+    //   url: "/dashboard/create-assignments/teacher",
+    // },
     {
       title: "Grades",
       action: "View",
