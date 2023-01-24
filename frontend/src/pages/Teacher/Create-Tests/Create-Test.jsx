@@ -17,6 +17,7 @@ const CreateTest = ()=>{
 
     const { register, handleSubmit } = useForm();
     const [questionIndex,setQuestionIndex] = useState(0)
+    const [questionType,setQuestionType] = useState("mcq")
     const [answerText,setAnswerText] = useState()
     const [answerCorrect,setAnswerCorrect] = useState(true)
     const [answerExplanation,setAnswerExplanation] = useState("")
@@ -30,8 +31,9 @@ const CreateTest = ()=>{
       
       e.preventDefault()
 
-      console.log(answerCorrect)
-      setAnswers(prev=> [...prev,{
+      
+      if(questionType == "mcq"){
+        setAnswers(prev=> [...prev,{
          
           answerId: `answer-${questionIndex}`,
           text: answerText,
@@ -46,6 +48,7 @@ const CreateTest = ()=>{
 
     }
 
+      }
 
 
 
@@ -78,7 +81,7 @@ const CreateTest = ()=>{
               questionId: questionIndex + 1,
               image: file==""? null: url,
               text: data[`question-text-${questionIndex}`],
-              type: "mcq", //mcq
+              type: questionType,
               answers: [...answers],
             }])
 
@@ -98,7 +101,7 @@ const CreateTest = ()=>{
 
             setQuestionIndex(prev => prev + 1);
             setAnswers([{}])
-
+            setQuestionType("mcq")
             notify.show(`Question ${questionIndex+1} added`, "success",2000)
 
 
@@ -191,7 +194,7 @@ useEffect(()=>{
                     </div>
 
                     {questions.map((question,index)=>(
-                        <TestQuestions answers={answers} addAnswer={addAnswer} register={register} index={index} questionIndex={questionIndex} setAnswerText={setAnswerText} setAnswerCorrect={setAnswerCorrect} setAnswerExplanation={setAnswerExplanation}/>
+                        <TestQuestions answers={answers} addAnswer={addAnswer} register={register} index={index} questionIndex={questionIndex} questionType={questionType} setQuestionType={setQuestionType}  setAnswerText={setAnswerText} setAnswerCorrect={setAnswerCorrect} setAnswerExplanation={setAnswerExplanation}/>
                     ))}
 
                   

@@ -17,6 +17,7 @@ const CreateAssessments = ()=>{
 
     const { register, handleSubmit } = useForm();
     const [questionIndex,setQuestionIndex] = useState(0)
+    const [questionType,setQuestionType] = useState("mcq")
     const [answerText,setAnswerText] = useState()
     const [answerCorrect,setAnswerCorrect] = useState(true)
     const [answerExplanation,setAnswerExplanation] = useState("")
@@ -30,7 +31,7 @@ const CreateAssessments = ()=>{
       
       e.preventDefault()
 
-      console.log(answerCorrect)
+      
       setAnswers(prev=> [...prev,{
          
           answerId: `answer-${questionIndex}`,
@@ -98,6 +99,7 @@ const CreateAssessments = ()=>{
 
             setQuestionIndex(prev => prev + 1);
             setAnswers([{}])
+            setQuestionType("mcq")
 
             notify.show(`Question ${questionIndex+1} added`, "success",2000)
 
@@ -120,14 +122,11 @@ const CreateAssessments = ()=>{
 
       setTest(prev => ({...prev,questions:[...questions]}));
 
-      setDoc(doc(db,'test',test.testId),test).then((res)=>{
-
-        console.log(res)
-      })
+      setDoc(doc(db,'assignments',test.testId),test)
 
 
      
-      notify.show(`Test Successfully Published`, "success", 2000)
+      notify.show(`Assignment Successfully Published`, "success", 2000)
 
     }
 
@@ -155,8 +154,8 @@ useEffect(()=>{
         <div className="md:grid md:grid-cols-2 md:gap-6">
           <div className="md:col-span-1">
             <div className="px-4 sm:px-0">
-              <h3 className="text-xl font-medium leading-6 text-gray-900">Create Assignments</h3>
-              <p className="mt-1 text-sm text-gray-600">This page allows you to create assignments.</p>
+              <h3 className="text-xl font-medium leading-6 text-gray-900">Create Assignment</h3>
+              <p className="mt-1 text-sm text-gray-600">This page allows you to create an assignment.</p>
             </div>
           </div>
           <div className="mt-5 md:col-span-2 md:mt-0">
@@ -166,12 +165,12 @@ useEffect(()=>{
                   <div className="grid grid-cols-6 gap-6">
 
                   <div className="col-span-6 sm:col-span-4">
-                      <label  htmlFor="Title-Id" className="block text-md font-medium text-gray-700">Test ID</label>
+                      <label  htmlFor="Title-Id" className="block text-md font-medium text-gray-700">Assignment ID</label>
                       <input type="text" name="Title-Id" id="Title-Id"  className="bg-gray-100 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" {...register("titleId", {required: true})}/>
                   </div>
                     
                     <div className="col-span-6 sm:col-span-4">
-                      <label  htmlFor="Title" className="block text-md font-medium text-gray-700">Test Title</label>
+                      <label  htmlFor="Title" className="block text-md font-medium text-gray-700">Assignment Title</label>
                       <input type="text" name="Title" id="Title"  className="bg-gray-100 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" {...register("title", {required: true})}/>
                     </div>
 
@@ -191,7 +190,7 @@ useEffect(()=>{
                     </div>
 
                     {questions.map((question,index)=>(
-                        <TestQuestions answers={answers} addAnswer={addAnswer} register={register} index={index} questionIndex={questionIndex} setAnswerText={setAnswerText} setAnswerCorrect={setAnswerCorrect} setAnswerExplanation={setAnswerExplanation}/>
+                        <TestQuestions answers={answers} addAnswer={addAnswer} register={register} index={index} questionIndex={questionIndex} questionType={questionType} setQuestionType={setQuestionType}  setAnswerText={setAnswerText} setAnswerCorrect={setAnswerCorrect} setAnswerExplanation={setAnswerExplanation}/>
                     ))}
 
                   

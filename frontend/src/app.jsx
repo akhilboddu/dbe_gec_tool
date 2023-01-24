@@ -56,11 +56,11 @@ const routes = [
         )
       },
       {
-        path: "/assignments/",
+        path: "/assignments/:teacher",
         element: (
-          <CheckLogin>
+          
             <Assignments />
-          </CheckLogin>
+          
         ),
       },
       {

@@ -2,7 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import QuestionAnswer from "./Question-answers";
 
-const TestQuestions = ({addAnswer, register, index, questionIndex,setAnswerText,setAnswerCorrect,setAnswerExplanation, answers})=>{
+const TestQuestions = ({addAnswer, register, index, questionIndex,questionType,setQuestionType,setAnswerText,setAnswerCorrect,setAnswerExplanation, answers})=>{
 
 
     return(
@@ -29,8 +29,17 @@ const TestQuestions = ({addAnswer, register, index, questionIndex,setAnswerText,
         <div className="col-span-6 sm:col-span-4">
             <h2 className="block text-md font-medium text-gray-700">Question answers</h2>
         </div>
+
         
-        {answers.map((answer,index)=>(
+      <div class="col-span-6 sm:col-span-4">
+        <label class="block text-md font-medium text-gray-700">Type of Question</label>
+        <select name={`question-type-${index}`} onChange={(e)=>setQuestionType(e.target.value)}>
+          <option value={"mcq"}>Multiple Choice Question</option>
+          <option value={"text"}>Text</option>
+        </select>
+        </div>
+        
+        {questionType== "mcq" && answers.map((answer,index)=>(
             <QuestionAnswer key={index} addAnswer={addAnswer} index={index} setAnswerText={setAnswerText} setAnswerCorrect={setAnswerCorrect} setAnswerExplanation={setAnswerExplanation}/>
         ))}
 
