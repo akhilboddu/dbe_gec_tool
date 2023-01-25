@@ -32,9 +32,11 @@ export default function UserCourseTest() {
   useEffect(() => {
     const testFetch = async () => {
       setLoading(true);
+      console.log("Loading test data");
       const docRef = doc(db, "test", testId);
       const docSnap = await getDoc(docRef);
       setTestData(docSnap.data());
+      console.log(docSnap.data());
       if (attemptId) {
         attemptedAnswersFetch();
       }
@@ -44,7 +46,9 @@ export default function UserCourseTest() {
     const attemptedAnswersFetch = async () => {
       const docRef = doc(db, "attempted_results", attemptId);
       const docSnap = await getDoc(docRef);
+      console.log(docSnap.data());
       setAttemptData(docSnap.data());
+      setLoading(false);
     };
 
     if (testId) {

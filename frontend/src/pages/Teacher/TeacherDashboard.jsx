@@ -20,7 +20,7 @@ const TeacherDashboard = () => {
     {
       title: "Grades",
       action: "View",
-      url: `/grades/${auth.currentUser.uid}/teacher`,
+      url: `/grades/${auth.currentUser?.uid}`,
     },
   ];
 

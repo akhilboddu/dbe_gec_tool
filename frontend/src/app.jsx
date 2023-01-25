@@ -7,7 +7,7 @@ import Layout from "/src/components/layouts/layout";
 import Error from "/src/components/shared/error";
 import AdminCourses from "/src/pages/admin-courses";
 import Rankings from "./pages/rankings";
-import TeacherDashboard from "./pages/Teacher/TeacherDashboard"
+import TeacherDashboard from "./pages/Teacher/TeacherDashboard";
 import AdminLessons from "/src/pages/admin-lessons";
 import AdminQuestions from "/src/pages/admin-questions";
 import CourseLeaderboard from "/src/pages/course-leaderboard";
@@ -26,7 +26,7 @@ import Assignments from "./pages/Assignments/assignments";
 import Grades from "./pages/Grades/grades";
 import CreateTest from "./pages/Teacher/Create-Tests/Create-Test";
 import CreateAssessments from "./pages/Teacher/Create-Assessments/Create-Assessments";
-import Notifications from 'react-notify-toast'
+import Notifications from "react-notify-toast";
 
 const queryClient = new QueryClient();
 const location = new ReactLocation();
@@ -53,15 +53,11 @@ const routes = [
           <CheckLogin>
             <Tests />
           </CheckLogin>
-        )
+        ),
       },
       {
         path: "/assignments/:teacher",
-        element: (
-          
-            <Assignments />
-          
-        ),
+        element: <Assignments />,
       },
       {
         path: "/grades/",
@@ -98,26 +94,22 @@ const routes = [
             <Register />
           </CheckLogout>
         ),
-      },{
-        path: "/teacher-dashboard/teacher",
-        element:(
-            <TeacherDashboard/>
-        )
-      },{
+      },
+      {
+        path: "/teacher-dashboard",
+        element: <TeacherDashboard />,
+      },
+      {
         path: "/dashboard/create-test",
-        element:(
-          
-          <CreateTest/>
-          
-        )
+        element: <CreateTest />,
       },
       {
         path: "/dashboard/create-assignments/teacher",
-        element:(
+        element: (
           <CheckLogin>
-          <CreateAssessments/>
+            <CreateAssessments />
           </CheckLogin>
-        )
+        ),
       },
       {
         path: "/ranking/:testId",
@@ -125,11 +117,7 @@ const routes = [
       },
       {
         path: "/:testId",
-            element: (
-             
-                <UserCourseTest />
-             
-            )
+        element: <UserCourseTest />,
       },
       {
         path: "/result/:testId/:attemptId/:gradeId/:teacherId",
