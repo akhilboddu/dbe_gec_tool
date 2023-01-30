@@ -9,36 +9,41 @@ import {
   ShieldExclamationIcon,
   StarIcon,
 } from "@heroicons/react/24/outline";
-import { Link, useLocation, useNavigate, useMatch } from "@tanstack/react-location";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useMatch,
+} from "@tanstack/react-location";
 import React, { useState } from "react";
-// import { useLocation } from "react-router-dom";
 import clsx from "clsx";
 import { auth } from "/src/firebase";
 import { signOut } from "firebase/auth";
 import Logo from "../../assets/dbe_logo.png";
-import { useEffect } from "react";
 
 export default function Header() {
   // location
   const navigate = useNavigate();
-  // const {
-  //   current: { pathname },
-  // } = useLocation();
 
-  const currentLocation = useLocation()
+  const currentLocation = useLocation();
 
-  const currentPath = currentLocation.current.pathname
+  const currentPath = currentLocation.current.pathname;
   const {
     current: { pathname },
   } = useLocation();
-  const userEmail = localStorage.getItem("user");
+  const user = JSON.parse(localStorage.getItem("user"));
 
   const logout = () => {
     signOut(auth)
       .then(() => {
         console.log("Successfully signed out");
         localStorage.removeItem("user");
-        navigate({ to: "/login/" });
+
+        if (user.role === "teacher") {
+          navigate({ to: "/login/teacher" });
+        } else {
+          navigate({ to: "/login/" });
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -46,8 +51,6 @@ export default function Header() {
   };
 
   const isAdminPage = null;
-  
- 
 
   return (
     <nav
@@ -58,24 +61,41 @@ export default function Header() {
       <div className="container flex-wrap navbar">
         {/* start */}
         <div className="flex flex-wrap mr-auto">
-          <Link to={currentPath.endsWith("teacher")? "/teacher-dashboard/teacher":"/"} className="btn btn-ghost">
+          <Link
+            to={
+              currentPath.endsWith("teacher")
+                ? "/teacher-dashboard/teacher"
+                : "/"
+            }
+            className="btn btn-ghost"
+          >
             <img src={Logo} alt="logo" className="w-32 pt-0" />
           </Link>
-          <Link to={currentPath.endsWith("teacher")? "/teacher-dashboard/teacher":"/"} className="gap-1 btn btn-ghost">
-            <HomeIcon className="w-5 h-5" />
-            Home
-          </Link>
-          {userEmail ? (
+
+          {user?.email ? (
             <>
-              <Link to={currentPath.endsWith("teacher")?"/tests/teacher":"/tests"} className="gap-1 btn btn-ghost">
+              <Link
+                to={user?.role === "teacher" ? "/teacher-dashboard" : "/"}
+                className="gap-1 btn btn-ghost"
+              >
+                <HomeIcon className="w-5 h-5" />
+                Home
+              </Link>
+              <Link
+                to={
+                  currentPath.endsWith("teacher") ? "/tests/teacher" : "/tests"
+                }
+                className="gap-1 btn btn-ghost"
+              >
                 <ShieldExclamationIcon className="w-5 h-5" />
                 Tests
               </Link>
-              {/* <Link to={currentPath.endsWith("teacher")?"/assignments/teacher":"/assignments"} className="gap-1 btn btn-ghost">
-                <BookOpenIcon className="w-5 h-5" />
-                Assignments
-              </Link> */}
-              <Link to={currentPath.endsWith("teacher")?"/grades/teacher":"/grades"} className="gap-1 btn btn-ghost">
+              <Link
+                to={
+                  user?.role === "teacher" ? `/grades/${user?.id}` : "/grades"
+                }
+                className="gap-1 btn btn-ghost"
+              >
                 <StarIcon className="w-5 h-5" />
                 Grades
               </Link>
@@ -84,10 +104,10 @@ export default function Header() {
         </div>
 
         <div className="ml-auto">
-          {userEmail ? (
-            <div className="dropdown dropdown-end">
+          {user?.email ? (
+            <div className="dropdown-end dropdown">
               <label tabIndex={0} className="btn btn-ghost">
-                {userEmail}
+                {user?.email}
               </label>
               <ul
                 tabIndex={0}

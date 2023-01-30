@@ -1,4 +1,9 @@
-import { Link, useMatch, useNavigate, useLocation } from "@tanstack/react-location";
+import {
+  Link,
+  useMatch,
+  useNavigate,
+  useLocation,
+} from "@tanstack/react-location";
 import clsx from "clsx";
 import { isEmpty } from "lodash-es";
 import { useEffect, useState } from "react";
@@ -42,8 +47,8 @@ export default function QuestionList({
   const [score, setScore] = useState(attemptData?.score);
   const [textAnswers, setTextAnswers] = useState([]);
   const navigate = useNavigate();
-  const currentLocation = useLocation()
-  const currentPath = currentLocation.current.pathname
+  const currentLocation = useLocation();
+  const currentPath = currentLocation.current.pathname;
   const userData = {};
 
   const handelSelectedAnswers = (answer) => {
@@ -207,6 +212,8 @@ export default function QuestionList({
       await updateDoc(gradeRef, {
         status: "evaluated",
         score: data.score,
+        percentage:
+          Math.floor((data.score / questions.length) * 100 * 100) / 100,
       });
       navigate({ to: `/grades/${auth.currentUser.uid}`, replace: true });
     } catch (e) {
@@ -251,6 +258,8 @@ export default function QuestionList({
         date: date,
         subject: subject,
         attemptId: attemptId,
+        percentage:
+          Math.floor((finalScore / questions.length) * 100 * 100) / 100,
         status: textAnswersArr.length > 0 ? "evaluationPending" : "evaluated",
       });
       console.log("Document written with ID: ", docRef.id);
@@ -319,7 +328,9 @@ export default function QuestionList({
       <div>
         <div className={clsx("modal mt-0", { "modal-open": isModal })}>
           <div className="space-y-4 modal-box">
-            <h3 className="text-lg font-bold uppercase">{textAnswers.length > 0 ? "Provisional Result": "Test result"}</h3>
+            <h3 className="text-lg font-bold uppercase">
+              {textAnswers.length > 0 ? "Provisional Result" : "Test result"}
+            </h3>
             <p>
               You scored <span className="font-bold">{score}</span> points out
               of {questions.length}
@@ -338,7 +349,13 @@ export default function QuestionList({
               <button onClick={closeModal} className="btn-main-Color btn">
                 View Results
               </button>
-              <Link to={currentPath.endsWith(`teacher`)? `/ranking/${testId}/teacher`:`/ranking/${testId}`}>
+              <Link
+                to={
+                  currentPath.endsWith(`teacher`)
+                    ? `/ranking/${testId}/teacher`
+                    : `/ranking/${testId}`
+                }
+              >
                 <button className="btn-mainColor btn">Ranking Page</button>
               </Link>
             </div>

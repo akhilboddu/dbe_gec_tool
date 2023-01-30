@@ -37,7 +37,11 @@ const routes = [
     children: [
       {
         path: "/",
-        element: <Home />,
+        element: (
+          <CheckLogin>
+            <Home />
+          </CheckLogin>
+        )
       },
       {
         path: "/user/",
@@ -116,10 +120,6 @@ const routes = [
         element: <CourseLeaderboard />,
       },
       {
-        path: "/:testId",
-        element: <UserCourseTest />,
-      },
-      {
         path: "/result/:testId/:attemptId/:gradeId/:teacherId",
         children: [
           {
@@ -144,6 +144,10 @@ const routes = [
             ),
           },
         ],
+      },
+      {
+        path: "/:testId",
+        element: <UserCourseTest />,
       },
       {
         path: "/lessons/:lessonId/",

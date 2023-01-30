@@ -9,7 +9,7 @@ function GradesTable({ result, teacherId }) {
       return (
         <Link
           to={`/result/${tResult.test}/${tResult.attemptId}`}
-          className="btn btn-mainColor"
+          className="btn-mainColor btn"
         >
           View
         </Link>
@@ -19,7 +19,7 @@ function GradesTable({ result, teacherId }) {
         return (
           <Link
             to={`/result/${tResult.test}/${tResult.attemptId}`}
-            className="btn btn-mainColor"
+            className="btn-mainColor btn"
           >
             View
           </Link>
@@ -42,12 +42,11 @@ function GradesTable({ result, teacherId }) {
       <table className="table w-full table-zebra">
         <thead>
           <tr>
-            <th />
+            <th style={{zIndex: 0 }} />
             <th>Subject</th>
             <th>Date</th>
-            {/* <th>Term</th> */}
             <th>Mark</th>
-
+            <th>Percentage</th>
             <th>Status</th>
             <th>Action</th>
           </tr>
@@ -57,17 +56,16 @@ function GradesTable({ result, teacherId }) {
           {result?.map((testResult, index) => (
             <tr key={index}>
               {/* index */}
-              <th>{index + 1}</th>
-              {/* full name */}
+              <th style={{zIndex: 0 }}>{index + 1}</th>
+              {/* Subject */}
               <td>{testResult.subject}</td>
-              {/* school name */}
+              {/* test date */}
               <td>{testResult.date}</td>
-              {/* class name */}
-              {/* <td>{testResult.Term}</td> */}
               {/* score */}
               <td>{testResult.score}</td>
-              {/* Test */}
-              {/* <td>{testResult.Grade}</td> */}
+              {/* Percentage */}
+              <td>{testResult?.percentage ? `${testResult?.percentage}%` : ''} </td>
+              {/* Status */}
               <td>
                 {testResult.status === "evaluationPending"
                   ? "Evaluation Pending"

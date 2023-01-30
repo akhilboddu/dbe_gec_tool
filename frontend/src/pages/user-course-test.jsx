@@ -10,12 +10,15 @@ import { getQuestionsByCourseApi } from "/src/helpers/fetchers";
 import { useContext, useState, useEffect } from "react";
 import CourseContext from "../context/courseContext";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import { db, auth } from "../firebase";
 
 export default function UserCourseTest() {
   // location
   const {
     params: { testId, attemptId, gradeId, teacherId },
+  } = useMatch();
+  const {
+    params: p1,
   } = useMatch();
 
   const ctxQuestions = useContext(CourseContext);
@@ -32,11 +35,9 @@ export default function UserCourseTest() {
   useEffect(() => {
     const testFetch = async () => {
       setLoading(true);
-      console.log("Loading test data");
       const docRef = doc(db, "test", testId);
       const docSnap = await getDoc(docRef);
       setTestData(docSnap.data());
-      console.log(docSnap.data());
       if (attemptId) {
         attemptedAnswersFetch();
       }
@@ -46,7 +47,6 @@ export default function UserCourseTest() {
     const attemptedAnswersFetch = async () => {
       const docRef = doc(db, "attempted_results", attemptId);
       const docSnap = await getDoc(docRef);
-      console.log(docSnap.data());
       setAttemptData(docSnap.data());
       setLoading(false);
     };

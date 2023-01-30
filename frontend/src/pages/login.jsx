@@ -46,14 +46,26 @@ export default function Login() {
         // Signed in
         const user = userCredential.user;
 
-        if (user) {
-          localStorage.setItem("user", user.email);
-        }
-
         // Check if its a teacher
         if (role === "teacher") {
+          localStorage.setItem(
+            "user",
+            JSON.stringify({
+              email: user.email,
+              id: user.uid,
+              role: "teacher",
+            })
+          );
           navigate({ to: "/teacher-dashboard", required: true });
         } else {
+          localStorage.setItem(
+            "user",
+            JSON.stringify({
+              email: user.email,
+              id: user.uid,
+              role: "student",
+            })
+          );
           navigate({ to: "/", required: true });
         }
         // ...
@@ -68,7 +80,9 @@ export default function Login() {
   return (
     <div className="max-w-md mx-auto card card-bordered">
       <form className="card-body" onSubmit={handleSubmit(onSubmit)}>
-        <h2 className="mb-4 text-2xl card-title">Log in to your account</h2>
+        <h2 className="mb-4 text-2xl card-title">
+          {role !== "teacher" ? "Log in to your account" : "Teacher Login"}
+        </h2>
 
         <div className="form-control">
           <label className="label">
@@ -91,21 +105,14 @@ export default function Login() {
             {...register("password", { required: true })}
           />
         </div>
-
-        {/* <button
-          className={clsx("btn btn-primary mt-4"
-          , {
-            loading: loginMutation.isLoading,
-          })}
-        >
-          Sign in
-        </button> */}
-
         <button className={"btn-mainColor btn mt-4"}>Sign in</button>
 
         <div className="flex justify-end space-x-2">
           <span>Don't have an account?</span>
-          <Link to="/register" className="link link-primary">
+          <Link
+            to={role === "teacher" ? "/register/teacher" : "/register/student"}
+            className="link link-primary"
+          >
             Sign up
           </Link>
         </div>
