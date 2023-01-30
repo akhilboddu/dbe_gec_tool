@@ -41,7 +41,7 @@ const routes = [
           <CheckLogin>
             <Home />
           </CheckLogin>
-        )
+        ),
       },
       {
         path: "/user/",
@@ -101,7 +101,11 @@ const routes = [
       },
       {
         path: "/teacher-dashboard",
-        element: <TeacherDashboard />,
+        element: (
+          <CheckLogin>
+            <TeacherDashboard />
+          </CheckLogin>
+        ),
       },
       {
         path: "/dashboard/create-test",

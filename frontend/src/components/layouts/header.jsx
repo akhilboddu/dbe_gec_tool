@@ -62,11 +62,6 @@ export default function Header() {
         {/* start */}
         <div className="flex flex-wrap mr-auto">
           <Link
-            to={
-              currentPath.endsWith("teacher")
-                ? "/teacher-dashboard/teacher"
-                : "/"
-            }
             className="btn btn-ghost"
           >
             <img src={Logo} alt="logo" className="w-32 pt-0" />
