@@ -61,9 +61,7 @@ export default function Header() {
       <div className="container flex-wrap navbar">
         {/* start */}
         <div className="flex flex-wrap mr-auto">
-          <Link
-            className="btn btn-ghost"
-          >
+          <Link className="btn btn-ghost">
             <img src={Logo} alt="logo" className="w-32 pt-0" />
           </Link>
 
@@ -76,15 +74,21 @@ export default function Header() {
                 <HomeIcon className="w-5 h-5" />
                 Home
               </Link>
-              <Link
-                to={
-                  currentPath.endsWith("teacher") ? "/tests/teacher" : "/tests"
-                }
-                className="gap-1 btn btn-ghost"
-              >
-                <ShieldExclamationIcon className="w-5 h-5" />
-                Tests
-              </Link>
+              {user.role !== "teacher" ? (
+                <Link
+                  to={
+                    currentPath.endsWith("teacher")
+                      ? "/tests/teacher"
+                      : "/tests"
+                  }
+                  className="gap-1 btn btn-ghost"
+                >
+                  <ShieldExclamationIcon className="w-5 h-5" />
+                  Tests
+                </Link>
+              ) : (
+                ""
+              )}
               <Link
                 to={
                   user?.role === "teacher" ? `/grades/${user?.id}` : "/grades"
@@ -100,7 +104,7 @@ export default function Header() {
 
         <div className="ml-auto">
           {user?.email ? (
-            <div className="dropdown-end dropdown">
+            <div className="dropdown dropdown-end">
               <label tabIndex={0} className="btn btn-ghost">
                 {user?.email}
               </label>
