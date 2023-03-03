@@ -15,7 +15,7 @@ function Subject({ subjectName, fromGrades = false, onChange }) {
         //   },
         //   replace: false,
         // })
-        onChange(`${subjectName.toLowerCase().trim().replaceAll(" ", "-")}`)
+        onChange(`${subjectName.toLowerCase().trim()}`)
       }
       }
     >

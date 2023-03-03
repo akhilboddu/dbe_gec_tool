@@ -14,7 +14,7 @@ export default function CourseCard({ test, isTest }) {
   }
 
   return (
-    <div className="card card-bordered w-full bg-base-300 lg:aspect-2/1">
+    <div className="w-full card card-bordered bg-base-300 lg:aspect-2/1">
       <div className="card-body">
         <h3 className="card-title">{test.Title}</h3>
 
@@ -24,7 +24,7 @@ export default function CourseCard({ test, isTest }) {
           </p>
         </div>
 
-        <div className="card-actions justify-end">
+        <div className="justify-end card-actions">
           <div className="btn-mainColor btn">{test.duration}</div>
 
           <div onClick={handleBtnClick} className="btn">

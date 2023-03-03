@@ -1,6 +1,7 @@
 import React from "react";
-import { useForm } from "react-hook-form";
+import { useState } from "react";
 import QuestionAnswer from "./Question-answers";
+
 
 const TestQuestions = ({
   addAnswer,
@@ -13,48 +14,55 @@ const TestQuestions = ({
   setAnswerCorrect,
   setAnswerExplanation,
   answers,
+  answerIndex,
+  question
 }) => {
+  const [currentAnswer, setCurrentAnswer] = useState(0);
+
   return (
     <>
-    <div className="p-6 border rounded shadow">
+      <div className="p-6 border rounded shadow">
         <div className="col-span-6 sm:col-span-4">
           <h2 className="block text-lg font-medium text-gray-900">{`Question ${
             index + 1
           }`}</h2>
         </div>
 
-        <div class="col-span-6 sm:col-span-4 mt-4">
+        <div className="col-span-6 mt-4 sm:col-span-4">
           <label className="block font-medium text-gray-700 text-md">
             Text
           </label>
           <input
             type="text"
             name={index}
-            className="border block w-full mt-1 bg-gray-100 border-gray-300 rounded-md shadow-sm h-[36px] px-2  focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            disabled={questionIndex == index ? false : true}
+            className="mt-1 block h-[36px] w-full rounded-md border border-gray-300 bg-gray-50 px-2 shadow-sm  focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             {...register(`question-text-${index}`, { required: true })}
           />
         </div>
 
-        <div class="col-span-6 sm:col-span-4 mt-4">
+        <div className="col-span-6 mt-4 sm:col-span-4">
           <label className="block font-medium text-gray-700 text-md">
             Upload image
           </label>
           <input
             type="file"
+            disabled={questionIndex == index ? false : true}
             name={index}
-            className="h-[36px] px-2  block w-full mt-1 rounded-md  focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            className="mt-1 block  h-[36px] w-full rounded-md px-2  focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             {...register(`question-image-${index}`, { required: false })}
           />
         </div>
 
-        <div class="col-span-6 sm:col-span-4  mt-4">
+        <div className="col-span-6 mt-4 sm:col-span-4">
           <label className="block font-medium text-gray-700 text-md">
             Question explanation
           </label>
           <input
             type="text"
+            disabled={questionIndex == index ? false : true}
             name={index}
-            className="border h-[36px] px-2  block w-full mt-1 bg-gray-100 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            className="mt-1 block h-[36px]  w-full rounded-md border border-gray-300 bg-gray-50 px-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             {...register(`question-explanation-${index}`, { required: true })}
           />
         </div>
@@ -65,13 +73,14 @@ const TestQuestions = ({
           </h2>
         </div>
 
-        <div class="col-span-6 sm:col-span-4  mt-4 mb-6">
-          <label class="text-md block font-medium text-gray-700">
+        <div className="col-span-6 mt-4 mb-6 sm:col-span-4">
+          <label className="block font-medium text-gray-700 text-md">
             Type of Question
           </label>
           <select
             name={`question-type-${index}`}
-            className="p-2 bg-gray-100 border rounded"
+            disabled={questionIndex == index ? false : true}
+            className="p-2 border rounded bg-gray-50"
             onChange={(e) => setQuestionType(e.target.value)}
           >
             <option value={"mcq"}>Multiple Choice Question</option>
@@ -79,18 +88,28 @@ const TestQuestions = ({
           </select>
         </div>
 
-        {questionType == "mcq" &&
-          answers.map((answer, index) => (
+        {questionType == "mcq" && questionIndex == index &&
+          answers.map((answer, index2) => (
             <QuestionAnswer
-              key={index}
+              key={index2}
               addAnswer={addAnswer}
-              index={index}
+              index={index2}
               setAnswerText={setAnswerText}
               setAnswerCorrect={setAnswerCorrect}
               setAnswerExplanation={setAnswerExplanation}
+              currentAnswer={currentAnswer}
+              answerIndex={answerIndex}
+              questionIndex={questionIndex}
+              thisQuestionIndex={index}
             />
           ))}
-          </div>
+
+          {questionIndex !== index && 
+          question?.answers?.map(((ans, i) => (
+            <p key={i}>{"Option "+(i+1) +'-'} {ans.text}: {ans.isCorrect ? "(True)" : "(False)"}</p>
+          )))
+          }
+      </div>
     </>
   );
 };

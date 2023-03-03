@@ -106,6 +106,7 @@ export default function UserCourseTest() {
               attemptedResultId={attemptId}
               gradeId={gradeId}
               isMarking
+              totalMarks={testData?.totalMarks}
             />
           </div>
         </div>

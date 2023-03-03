@@ -39,6 +39,7 @@ export default function QuestionList({
   attemptedResultId,
   gradeId,
   isMarking,
+  totalMarks
 }) {
   const [selectedAnswers, setSelectedAnswers] = useState([]);
   const [correctAnswerIds, setCorrectAnswerIds] = useState();
@@ -213,7 +214,7 @@ export default function QuestionList({
         status: "evaluated",
         score: data.score,
         percentage:
-          Math.floor((data.score / questions.length) * 100 * 100) / 100,
+          Math.floor((data.score / totalMarks) * 100 * 100) / 100,
       });
       navigate({ to: `/grades/${auth.currentUser.uid}`, replace: true });
     } catch (e) {
@@ -259,7 +260,7 @@ export default function QuestionList({
         subject: subject,
         attemptId: attemptId,
         percentage:
-          Math.floor((finalScore / questions.length) * 100 * 100) / 100,
+          Math.floor((finalScore / totalMarks) * 100 * 100) / 100,
         status: textAnswersArr.length > 0 ? "evaluationPending" : "evaluated",
       });
       console.log("Document written with ID: ", docRef.id);
@@ -332,8 +333,8 @@ export default function QuestionList({
               {textAnswers.length > 0 ? "Provisional Result" : "Test result"}
             </h3>
             <p>
-              You scored <span className="font-bold">{score}</span> points out
-              of {questions.length}
+              You scored <span className="font-bold">{score}</span> marks out
+              of {totalMarks}
             </p>
             {textAnswers.length > 0 ? (
               textAnswers.length == 1 ? (

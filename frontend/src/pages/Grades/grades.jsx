@@ -10,6 +10,7 @@ import { useMatch } from "@tanstack/react-location";
 
 function grades() {
   const [result, setResult] = useState([]);
+  const [subjectList, setSubjectList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedSubject, setSelectedSubject] = useState("all");
 
@@ -27,6 +28,7 @@ function grades() {
         querySnapshot.forEach((doc) => {
           dataArray.push({ ...doc.data(), id: doc.id });
         });
+        generateSubList(dataArray);
         setResult(dataArray);
         setLoading(false);
       } catch (e) {
@@ -38,20 +40,33 @@ function grades() {
     const fetchByStudentId = async () => {
       try {
         const dataArray = [];
+        const user = JSON.parse(localStorage.getItem("user"));
         const q = query(
           collection(db, "grades"),
-          where("student", "==", auth.currentUser.uid)
+          where("student", "==", user.id)
         );
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
           dataArray.push({ ...doc.data(), id: doc.id });
         });
+        generateSubList(dataArray);
         setResult(dataArray);
         setLoading(false);
       } catch (e) {
         console.error("Error fetching document: ", e);
         setLoading(false);
       }
+    };
+
+    const generateSubList = (subjectData) => {
+      let subList = [{ name: "All" }];
+      console.log(subjectData, "subjectData");
+      subjectData.forEach((sub) => {
+        if (subList.findIndex((s) => s.name === sub.subject) == -1) {
+          subList.push({ name: sub.subject });
+        }
+      });
+      setSubjectList(subList);
     };
 
     if (teacherId) {
@@ -70,9 +85,7 @@ function grades() {
       return result;
     } else {
       const filteredData = result.filter(
-        (d) =>
-          d.subject.toUpperCase().includes(selectedSubject.toUpperCase()) ==
-          true
+        (d) => d.subject.toLowerCase() == selectedSubject.toLowerCase()
       );
       return filteredData;
     }
@@ -80,7 +93,11 @@ function grades() {
 
   return (
     <>
-      <SubjectsList fromGrades filterData={filterData} />
+      <SubjectsList
+        fromGrades
+        filterData={filterData}
+        subjectList={subjectList}
+      />
       <div className="my-5">
         <Info text="Grades can be synced with SA-SAMS or displayed in tabular format here." />
       </div>

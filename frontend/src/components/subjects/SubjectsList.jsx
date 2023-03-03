@@ -1,6 +1,6 @@
 import Subject from "./Subject";
 
-function SubjectsList({ fromGrades = false , filterData}) {
+function SubjectsList({ fromGrades = false , filterData, subjectList}) {
   const subjects = [
     { name: "All" },
     { name: "Mathematics" },
@@ -16,7 +16,7 @@ function SubjectsList({ fromGrades = false , filterData}) {
 
   return (
     <>
-      {subjects.map((subject, index) => (
+      {subjectList.map((subject, index) => (
         <Subject key={index} subjectName={subject.name} fromGrades={fromGrades} onChange={filterData} />
       ))}
     </>
