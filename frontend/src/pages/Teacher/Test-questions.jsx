@@ -5,13 +5,13 @@ import QuestionAnswer from "./Question-answers";
 
 const TestQuestions = ({
   addAnswer,
+  setAnswers,
   register,
   index,
   questionIndex,
   questionType,
   setQuestionType,
   setAnswerText,
-  setAnswerCorrect,
   setAnswerExplanation,
   answers,
   answerIndex,
@@ -93,9 +93,10 @@ const TestQuestions = ({
             <QuestionAnswer
               key={index2}
               addAnswer={addAnswer}
+              setAnswers={setAnswers}
+              answers={answers}
               index={index2}
               setAnswerText={setAnswerText}
-              setAnswerCorrect={setAnswerCorrect}
               setAnswerExplanation={setAnswerExplanation}
               currentAnswer={currentAnswer}
               answerIndex={answerIndex}

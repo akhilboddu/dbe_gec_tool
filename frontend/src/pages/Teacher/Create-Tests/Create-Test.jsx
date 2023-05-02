@@ -19,11 +19,14 @@ const CreateTest = () => {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [questionType, setQuestionType] = useState("mcq");
   const [answerText, setAnswerText] = useState();
-  const [answerCorrect, setAnswerCorrect] = useState(true);
   const [answerExplanation, setAnswerExplanation] = useState("");
   const [answerIndex, setAnswerIndex] = useState(0);
 
-  const [answers, setAnswers] = useState([{}]);
+  const [answers, setAnswers] = useState([{
+    answerId: `answer-${0}`,
+    text: '',
+    isCorrect: false,
+  }]);
   const [questions, setQuestions] = useState([{}]);
 
   const addAnswer = (e) => {
@@ -33,103 +36,141 @@ const CreateTest = () => {
       setAnswers((prev) => [
         ...prev,
         {
-          answerId: `answer-${answerIndex}`,
+          answerId: `answer-${answerIndex + 1}`,
           text: answerText,
-          isCorrect: answerCorrect,
+          isCorrect: false,
         },
       ]);
 
       setAnswerIndex((prev) => prev + 1);
-      setAnswerCorrect(true);
-
-      notify.show(`Answer ${answerIndex + 1} added`, "success", 2000);
     }
   };
 
+  const validateQuestion = () => {
+    let isValid = true
+    if (questionType == "mcq") {
+      let trueValueCounter = 0
+      // Checking empty answer if any, and coiunting true options 
+      answers.map((element, index) => {
+        if (!element.text) {
+          isValid = false
+          notify.show(`Answer can't be empty`, "error", 5000);
+        }
+        if (element.isCorrect) {
+          trueValueCounter++
+        }
+      })
+
+      // Validating only 1 true option should be in array  
+      if (trueValueCounter == 0) {
+        isValid = false
+        notify.show(`Need to select atleast 1 'TRUE' value`, "error", 5000);
+      } else if (trueValueCounter > 1) {
+        isValid = false
+        notify.show(`Need to select atmost 1 'TRUE' value`, "error", 5000);
+      }
+
+      // There should be atleast 2 options in MCQs  
+      if (answers.length < 2) {
+        isValid = false
+        notify.show(`Need to add Atleast 2 options (answers)`, "error", 5000);
+      }
+    }
+
+    return isValid
+  }
+
   const addQuestion = (data) => {
-    console.log("add data");
-    console.log(data);
-    const file = data["question-image-0"][0] ? data["question-image-0"][0] : "";
+    if (validateQuestion()) {
+      const file = data["question-image-0"][0] ? data["question-image-0"][0] : "";
 
-    // console.log(file.name);
-    const storage = getStorage();
-    const storageRef = ref(storage, `question-images/${file.name}`);
+      const storage = getStorage();
+      const storageRef = ref(storage, `question-images/${file.name}`);
 
-    // 'file' comes from the Blob or File API
-    uploadBytes(storageRef, file).then((snapshot) => {
-      // console.log("Uploaded a blob or file!");
+      // 'file' comes from the Blob or File API
+      uploadBytes(storageRef, file).then((snapshot) => {
 
-      getDownloadURL(storageRef).then((url) => {
-        // console.log("url downloaded: url," + url);
+        getDownloadURL(storageRef).then((url) => {
+          setQuestions((prev) => {
+            return [
+              ...prev,
+              {
+                index: questionIndex + 1,
+                explanation: data[`question-explanation-${questionIndex}`],
+                questionId: questionIndex + 1,
+                image: file == "" ? null : url,
+                text: data[`question-text-${questionIndex}`],
+                type: questionType,
+                answers: [...answers],
+              },
+            ];
+          });
+          const user = JSON.parse(localStorage.getItem("user"));
+          const instArray = test.instructions;
+          instArray[3] = `The duration of this test is ${data.duration} minutes.`;
+          setTest({
+            Title: data.title,
+            description: data.description,
+            duration: data.duration + " MIN",
+            teacherId: user.id,
+            totalMarks: data.totalMarks,
+            instructions: instArray,
+          });
 
-        answers.shift();
-        console.log("answers");
-        console.log(answers);
-
-        setQuestions((prev) => {
-          console.log("prev");
-          console.log(prev);
-          const d = [
-            ...prev,
-            {
-              index: questionIndex + 1,
-              explanation: data[`question-explanation-${questionIndex}`],
-              questionId: questionIndex + 1,
-              image: file == "" ? null : url,
-              text: data[`question-text-${questionIndex}`],
-              type: questionType,
-              answers: [...answers],
-            },
-          ];
-
-          console.log("d");
-          console.log(d);
-          return d;
+          setQuestionIndex((prev) => prev + 1);
+          setAnswerIndex(0);
+          setAnswers([{
+            answerId: `answer-${0}`,
+            text: '',
+            isCorrect: false,
+          }]);
+          setQuestionType("mcq");
+          notify.show(`Question ${questionIndex + 1} added`, "success", 5000);
         });
-        const user = JSON.parse(localStorage.getItem("user"));
-        const instArray = test.instructions;
-        instArray[3] = `The duration of this test is ${data.duration} minutes.`;
-        setTest({
-          Title: data.title,
-          description: data.description,
-          duration: data.duration + " MIN",
-          teacherId: user.id,
-          totalMarks: data.totalMarks,
-          instructions: instArray,
-        });
-        console.log(questions, "All ques");
-        console.log(questions, "This is the questions after its set");
-
-        setQuestionIndex((prev) => prev + 1);
-        setAnswerIndex(0);
-        setAnswers([{}]);
-        setQuestionType("mcq");
-        notify.show(`Question ${questionIndex + 1} added`, "success", 2000);
       });
-    });
+    }
+    else {
+      notify.show(`Answer can't be empty`, "error", 5000);
+    }
   };
 
-  const saveTest = async (e) => {
-    e.preventDefault();
-    console.log("Test being saved");
-    questions.shift();
-    test.questions = [...questions];
+  const validateForm = () => {
+    let isValid = true
+    /** 
+     * Here we have to check the length but as we are adding a blank object in array 
+     * so instead on one we are expecting minimum length of array will be 2
+     */
+    if (questions.length < 2) {
+      isValid = false
+      notify.show(`Atleast add a question`, "error", 5000);
+    }
 
-    setTest((prev) => ({ ...prev, questions: [...questions] }));
-    try {
-      const docRef = await addDoc(collection(db, "test"), test);
-      await updateDoc(docRef, {
-        testId: docRef.id,
-      });
-      notify.show(`Test Successfully Published`, "success", 2000);
-      navigate({ to: `/teacher-dashboard`, replace: true });
-    } catch (e) {
-      console.error("Error adding document: ", e);
-      notify.show(
-        "Error occured while publishing test. Please try again.",
-        "error",
-        2000
-      );
+    return isValid
+  }
+
+  const saveTest = async (e) => {
+
+    if (validateForm()) {
+      e.preventDefault();
+      questions.shift();
+      test.questions = [...questions];
+
+      setTest((prev) => ({ ...prev, questions: [...questions] }));
+      try {
+        const docRef = await addDoc(collection(db, "test"), test);
+        await updateDoc(docRef, {
+          testId: docRef.id,
+        });
+        notify.show(`Test Successfully Published`, "success", 5000);
+        navigate({ to: `/teacher-dashboard`, replace: true });
+      } catch (e) {
+        console.error("Error adding document: ", e);
+        notify.show(
+          "Error occured while publishing test. Please try again.",
+          "error",
+          5000
+        );
+      }
     }
   };
 
@@ -147,7 +188,6 @@ const CreateTest = () => {
   });
 
   useEffect(() => {
-    // console.log(test, "Test in useEffect")
   }, [test]);
 
   return (
@@ -240,6 +280,7 @@ const CreateTest = () => {
                     <TestQuestions
                       key={index}
                       answers={answers}
+                      setAnswers={setAnswers}
                       addAnswer={addAnswer}
                       register={register}
                       index={index}
@@ -247,7 +288,6 @@ const CreateTest = () => {
                       questionType={questionType}
                       setQuestionType={setQuestionType}
                       setAnswerText={setAnswerText}
-                      setAnswerCorrect={setAnswerCorrect}
                       setAnswerExplanation={setAnswerExplanation}
                       answerIndex={answerIndex}
                       question={questions[index + 1]}
