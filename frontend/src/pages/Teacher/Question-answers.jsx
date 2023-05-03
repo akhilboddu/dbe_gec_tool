@@ -16,7 +16,7 @@ const QuestionAnswer = ({
 
   return (
     <>
-      <div className="col-span-6 sm:col-span-4">
+      <div className="col-span-6">
         <label className="block font-medium text-gray-700 text-md">{`Answer ${index + 1
           } text`}</label>
         <input
@@ -41,7 +41,7 @@ const QuestionAnswer = ({
         />
       </div>
 
-      <div className="col-span-6 mt-4 sm:col-span-4">
+      <div className="col-span-6 mt-4">
         <label className="block font-medium text-gray-700 text-md">
           True/False
         </label>

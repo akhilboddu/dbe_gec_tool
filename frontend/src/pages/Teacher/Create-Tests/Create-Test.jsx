@@ -16,6 +16,7 @@ const CreateTest = () => {
   const { arrTest } = ctxQuestions;
   const navigate = useNavigate();
   const { register, handleSubmit } = useForm();
+  const [totalMarks, setTotalMarks] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [questionType, setQuestionType] = useState("mcq");
   const [answerText, setAnswerText] = useState();
@@ -76,27 +77,29 @@ const CreateTest = () => {
         notify.show(`Need to add Atleast 2 options (answers)`, "error", 5000);
       }
     }
-
+    
     return isValid
   }
-
+  
   const addQuestion = (data) => {
     if (validateQuestion()) {
       const file = data["question-image-0"][0] ? data["question-image-0"][0] : "";
-
+      
       const storage = getStorage();
       const storageRef = ref(storage, `question-images/${file.name}`);
 
       // 'file' comes from the Blob or File API
       uploadBytes(storageRef, file).then((snapshot) => {
-
+        
         getDownloadURL(storageRef).then((url) => {
+          setTotalMarks(totalMarks + Number(data[`question-marks-${questionIndex}`]))
           setQuestions((prev) => {
             return [
               ...prev,
               {
                 index: questionIndex + 1,
                 explanation: data[`question-explanation-${questionIndex}`],
+                questionMarks: data[`question-marks-${questionIndex}`],
                 questionId: questionIndex + 1,
                 image: file == "" ? null : url,
                 text: data[`question-text-${questionIndex}`],
@@ -114,7 +117,7 @@ const CreateTest = () => {
             duration: data.duration + " MIN",
             testType: data.testType,
             teacherId: user.id,
-            totalMarks: data.totalMarks,
+            totalMarks: totalMarks,
             instructions: instArray,
           });
 
@@ -154,6 +157,7 @@ const CreateTest = () => {
     if (validateForm()) {
       e.preventDefault();
       questions.shift();
+      test.totalMarks = totalMarks
       test.questions = [...questions];
 
       setTest((prev) => ({ ...prev, questions: [...questions] }));
@@ -193,8 +197,8 @@ const CreateTest = () => {
 
   return (
     <div className="mt-10 sm:mt-0">
-      <div className="md:grid md:grid-cols-2 md:gap-6">
-        <div className="md:col-span-1">
+      <div className="flex flex-col">
+        <div className="flex justify-between mb-6">
           <div className="px-4 sm:px-0">
             <h3 className="text-xl font-medium leading-6 text-gray-900">
               Create Test
@@ -202,6 +206,9 @@ const CreateTest = () => {
             <p className="mt-1 text-sm text-gray-600">
               This page allows you to create a test.
             </p>
+          </div>
+          <div className="mr-5">
+            Total Marks: { totalMarks }
           </div>
         </div>
         <div className="mt-5 md:col-span-2 md:mt-0">
@@ -259,7 +266,7 @@ const CreateTest = () => {
                   </div>
 
 
-                  <div className="col-span-6 sm:col-span-4">
+                  {/* <div className="col-span-6 sm:col-span-4">
                     <label
                       htmlFor="totalMarks"
                       className="block font-medium text-gray-700 text-md"
@@ -273,7 +280,7 @@ const CreateTest = () => {
                       className="mt-1 block h-[36px]  w-full rounded-md border border-gray-300 bg-gray-50 px-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                       {...register("totalMarks", { required: true })}
                     />
-                  </div>
+                  </div> */}
 
                   <div className="col-span-6 sm:col-span-4">
                     <label
