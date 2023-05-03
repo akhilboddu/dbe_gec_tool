@@ -20,7 +20,7 @@ const rankings = () => {
             key={index}
           >
             <div className="card-body">
-              <h3 className="card-title">{test.Title}</h3>
+              <h3 className="card-title">{test.title}</h3>
 
               <div className="lg:relative lg:flex-1">
                 <p className="lg:absolute lg:inset-0 lg:overflow-hidden">{}</p>

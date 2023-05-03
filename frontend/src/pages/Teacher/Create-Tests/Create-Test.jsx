@@ -104,7 +104,7 @@ const CreateTest = () => {
                 image: file == "" ? null : url,
                 text: data[`question-text-${questionIndex}`],
                 type: questionType,
-                answers: [...answers],
+                answers: questionType == "mcq" ? [...answers]: [],
               },
             ];
           });
@@ -112,7 +112,7 @@ const CreateTest = () => {
           const instArray = test.instructions;
           instArray[3] = `The duration of this test is ${data.duration} minutes.`;
           setTest({
-            Title: data.title,
+            title: data.title,
             description: data.description,
             duration: data.duration + " MIN",
             testType: data.testType,
@@ -180,7 +180,7 @@ const CreateTest = () => {
   };
 
   const [test, setTest] = useState({
-    Title: "",
+    title: "",
     duration: "",
     description: "",
     instructions: [
@@ -219,15 +219,15 @@ const CreateTest = () => {
 
                   <div className="col-span-6 sm:col-span-4">
                     <label
-                      htmlFor="Title"
+                      htmlFor="title"
                       className="block font-medium text-gray-700 text-md"
                     >
                       Test Title
                     </label>
                     <input
                       type="text"
-                      name="Title"
-                      id="Title"
+                      name="title"
+                      id="title"
                       className="mt-1 block h-[36px]  w-full rounded-md border border-gray-300 bg-gray-50 px-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                       {...register("title", { required: true })}
                     />

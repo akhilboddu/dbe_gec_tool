@@ -9,8 +9,16 @@ const TeacherDashboard = () => {
   const cards = [
     {
       title: "Test",
-      action: "Create",
-      url: "/dashboard/create-test/teacher",
+      actions: [
+        {
+          label: "Create",
+          url: "/dashboard/create-test/teacher",
+        },
+        {
+          label: "List",
+          url: "/dashboard/test-list/teacher",
+        }
+      ],
     },
     // {
     //   title: "assignments",
@@ -19,8 +27,12 @@ const TeacherDashboard = () => {
     // },
     {
       title: "Grades",
-      action: "View",
-      url: `/grades/${auth.currentUser?.uid}`,
+      actions: [
+        {
+          label: "View",
+          url: `/grades/${auth.currentUser?.uid}`,
+        },
+      ],
     },
   ];
 
@@ -43,13 +55,19 @@ const TeacherDashboard = () => {
                 <h3 className="card-title">{card.title}</h3>
                 <div className="lg:relative lg:flex-1">
                   <p className="lg:absolute lg:inset-0 lg:overflow-hidden">
-                    {}
+                    { }
                   </p>
                 </div>
                 <div className="justify-end card-actions">
-                  <Link to={card.url} className="border-none btn bg-mainColor">
-                    {card.action}
-                  </Link>
+                  {
+                    card.actions.map((action, actionIndex) => {
+                      return (
+                      <Link to={action.url} className="border-none btn bg-mainColor" key={actionIndex}>
+                        {action.label}
+                      </Link>
+                      )
+                    })
+                  }
                 </div>
               </div>
             </div>

@@ -87,7 +87,7 @@ const CreateAssessments = ()=>{
 
             setTest({
               testId : data.titleId,
-              Title :data.title,
+              title :data.title,
               description :data.description,
               duration :data.duration,
               teacherId :data.teacherId,
@@ -133,7 +133,7 @@ const CreateAssessments = ()=>{
 
     const [test,setTest]=useState({
         testId: "",
-        Title: "",
+        title: "",
         duration: "",
         description: "",
         instructions: [
@@ -165,18 +165,18 @@ useEffect(()=>{
                   <div className="grid grid-cols-6 gap-6">
 
                   <div className="col-span-6 sm:col-span-4">
-                      <label  htmlFor="Title-Id" className="block text-md font-medium text-gray-700">Assignment ID</label>
-                      <input type="text" name="Title-Id" id="Title-Id"  className="bg-gray-100 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" {...register("titleId", {required: true})}/>
+                      <label  htmlFor="title-Id" className="block text-md font-medium text-gray-700">Assignment ID</label>
+                      <input type="text" name="title-Id" id="title-Id"  className="bg-gray-100 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" {...register("titleId", {required: true})}/>
                   </div>
                     
                     <div className="col-span-6 sm:col-span-4">
-                      <label  htmlFor="Title" className="block text-md font-medium text-gray-700">Assignment Title</label>
-                      <input type="text" name="Title" id="Title"  className="bg-gray-100 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" {...register("title", {required: true})}/>
+                      <label  htmlFor="title" className="block text-md font-medium text-gray-700">Assignment Title</label>
+                      <input type="text" name="title" id="title"  className="bg-gray-100 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" {...register("title", {required: true})}/>
                     </div>
 
                     <div className="col-span-6 sm:col-span-4">
-                      <label  htmlFor="Title" className="block text-md font-medium text-gray-700">Teacher's ID</label>
-                      <input type="text" name="Title" id="Title"  className="bg-gray-100 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" {...register("teacherId", {required: true})}/>
+                      <label  htmlFor="title" className="block text-md font-medium text-gray-700">Teacher's ID</label>
+                      <input type="text" name="title" id="title"  className="bg-gray-100 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" {...register("teacherId", {required: true})}/>
                     </div>
 
                     <div className="col-span-6 sm:col-span-4">

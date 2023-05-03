@@ -16,7 +16,7 @@ export default function CourseCard({ test, isTest }) {
   return (
     <div className="w-full card card-bordered bg-base-300 lg:aspect-2/1">
       <div className="card-body">
-        <h3 className="card-title">{test.Title}</h3>
+        <h3 className="card-title">{test.title}</h3>
 
         <div className="lg:relative lg:flex-1">
           <p className="lg:absolute lg:inset-0 lg:overflow-hidden">

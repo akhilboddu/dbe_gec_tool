@@ -11,7 +11,7 @@ export const CourseContextProvider = (props) => {
   const arrTest = [
     {
       testId: "MathematicsGrade9",
-      Title: "Mathematics Grade 9 (2021)",
+      title: "Mathematics Grade 9 (2021)",
       duration: "90 min",
       description: "National Assessment, Read the Instruction Carefull",
       instructions: [
@@ -638,7 +638,7 @@ export const CourseContextProvider = (props) => {
     },
     {
       testId: "EnglishGrade9",
-      Title: "English Grade 9 (2021)",
+      title: "English Grade 9 (2021)",
       duration: "90 min",
       instructions: [
         "Read all the instructions and questions carefully.",

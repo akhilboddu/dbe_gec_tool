@@ -97,7 +97,7 @@ const TestQuestions = ({
           />
         </div>
 
-        {questionType == "mcq" &&
+        {questionType == "mcq" && questionIndex == index && 
           <div className="col-span-6 mt-4">
             <h2 className="block font-medium text-gray-700 text-md">
               Question answers:

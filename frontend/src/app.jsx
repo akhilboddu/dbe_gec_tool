@@ -14,7 +14,6 @@ import CourseLeaderboard from "/src/pages/course-leaderboard";
 import Home from "/src/pages/home";
 import Login from "/src/pages/login";
 import Register from "/src/pages/register";
-import UserCourseDetail from "/src/pages/user-course-detail";
 import UserCourseTest from "/src/pages/user-course-test";
 import UserInfo from "/src/pages/user-info";
 import UserLessonDetail from "/src/pages/user-lesson-detail";
@@ -25,6 +24,7 @@ import { CourseContextProvider } from "./context/courseContext";
 import Assignments from "./pages/Assignments/assignments";
 import Grades from "./pages/Grades/grades";
 import CreateTest from "./pages/Teacher/Create-Tests/Create-Test";
+import TestList from "./pages/Teacher/Tests/List/Test-List";
 import CreateAssessments from "./pages/Teacher/Create-Assessments/Create-Assessments";
 import Notifications from "react-notify-toast";
 
@@ -110,6 +110,10 @@ const routes = [
       {
         path: "/dashboard/create-test",
         element: <CreateTest />,
+      },
+      {
+        path: "/dashboard/test-list",
+        element: <TestList />,
       },
       {
         path: "/dashboard/create-assignments/teacher",

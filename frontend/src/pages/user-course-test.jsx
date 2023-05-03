@@ -1,16 +1,12 @@
 import { useMatch } from "@tanstack/react-location";
-import { useQuery } from "react-query";
 
 import QuestionList from "/src/components/question/question-list";
-import Error from "/src/components/shared/error";
 import Loading from "/src/components/shared/loading";
 
-import { QueryKeys } from "/src/constants/query-keys";
-import { getQuestionsByCourseApi } from "/src/helpers/fetchers";
 import { useContext, useState, useEffect } from "react";
 import CourseContext from "../context/courseContext";
 import { doc, getDoc } from "firebase/firestore";
-import { db, auth } from "../firebase";
+import { db } from "../firebase";
 
 export default function UserCourseTest() {
   // location
@@ -100,7 +96,7 @@ export default function UserCourseTest() {
 
             <QuestionList
               questions={testData.questions}
-              subject={testData.Title}
+              subject={testData.title}
               attemptData={attemptData}
               teacherId={teacherId}
               attemptedResultId={attemptId}
@@ -111,7 +107,7 @@ export default function UserCourseTest() {
           </div>
         </div>
       ) : (
-        <Loading/>
+        <Loading />
       )}
     </div>
   );
