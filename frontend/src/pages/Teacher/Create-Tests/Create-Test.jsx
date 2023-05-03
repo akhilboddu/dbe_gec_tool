@@ -112,6 +112,7 @@ const CreateTest = () => {
             Title: data.title,
             description: data.description,
             duration: data.duration + " MIN",
+            testType: data.testType,
             teacherId: user.id,
             totalMarks: data.totalMarks,
             instructions: instArray,
@@ -272,6 +273,24 @@ const CreateTest = () => {
                       className="mt-1 block h-[36px]  w-full rounded-md border border-gray-300 bg-gray-50 px-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                       {...register("totalMarks", { required: true })}
                     />
+                  </div>
+
+                  <div className="col-span-6 sm:col-span-4">
+                    <label
+                      htmlFor="testType"
+                      className="block font-medium text-gray-700 text-md"
+                    >
+                      Test Type
+                    </label>
+                    <select
+                      name="testType"
+                      id="testType"
+                      className="mt-1 block h-[36px]  w-full rounded-md border border-gray-300 bg-gray-50 px-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      {...register("testType", { required: true })}
+                    >
+                      <option value={"school-assessment"}>School Based Assessment</option>
+                      <option value={"end-term-assessment"}>End of Term Assessment</option>
+                    </select>
                   </div>
                 </div>
 
