@@ -236,13 +236,6 @@ export default function QuestionList({
         }/${current.getFullYear()}`;
 
       try {
-        console.log({
-          student: uid,
-          test: testId,
-          score: finalScore,
-          date: date,
-          answers: selectedAnswers,
-        });
         const docRef = await addDoc(collection(db, "attempted_results"), {
           student: uid,
           test: testId,
@@ -264,6 +257,7 @@ export default function QuestionList({
       }/${current.getFullYear()}`;
     try {
       const docRef = await addDoc(collection(db, "grades"), {
+        totalMarks: totalMarks,
         student: userId,
         test: testId,
         score: finalScore,

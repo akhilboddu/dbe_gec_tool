@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import { QueryKeys } from "/src/constants/query-keys";
 import { getCoursesApi } from "/src/helpers/fetchers";
@@ -26,11 +26,9 @@ function tests() {
         querySnapshot.forEach((doc) => {
           dataArray.push(doc.data());
         });
-        console.log("dataArray", dataArray);
 
         setTest(dataArray);
         setLoading(false);
-        console.log("test", test);
       } catch (e) {
         console.error("Nothing found ", e);
         setLoading(false);
@@ -45,7 +43,7 @@ function tests() {
       <h2 className="text-2xl font-bold lg:text-3xl">Tests</h2>
       {loading ? <Loading /> : <CourseCardList tests={test} />}
     </div>
-  ) : <Loading/>
+    ) : <Loading />
   )
-  }
+}
 export default tests;

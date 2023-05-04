@@ -185,25 +185,33 @@ export default function Question({
         return <Info text={"Pending for evaluation"} />;
       }
       if (prevSelected?.isCorrect) {
-        return <Success text={"This is the correct answer."} />;
+        return <Success text={explanation ? explanation : "This is the correct answer."} />;
       } else {
-        return <Error text={"Wrong Answer"} />;
+        return <Error text={explanation ? explanation : "Wrong Answer"} />;
       }
     }
   };
 
   return (
     <div className="space-y-4" id={`question${index}`}>
-      {question.questionHeading && (
+      {/* {question.questionHeading && (
         <h1 className="font-bold">{question.questionHeading}</h1>
       )}
 
-      {heading ? <h1 className="font-bold">{heading}</h1> : ""}
-      {image ? <img src={image} alt="someimage" /> : ""}
 
-      <p>
-        {index}. {question.text}
-      </p>
+
+      {heading ? <h1 className="font-bold">{heading}</h1> : ""}
+    */}
+      <div className="flex justify-between items-center">
+        <p>
+          {index}. {question.text}
+        </p>
+        <div className="font-bold">
+          Marks: {question.questionMarks}
+        </div>
+
+      </div>
+      {image ? <img src={image} alt="someimage" /> : ""}
       <div className="pl-4 space-y-2">
         {question.type == "text" ? renderTestInput(index) : renderMcq()}
       </div>
