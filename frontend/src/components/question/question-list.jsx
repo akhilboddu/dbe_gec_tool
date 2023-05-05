@@ -285,8 +285,8 @@ export default function QuestionList({
   const renderButton = () => {
     if (!attemptData) {
       return score ? (
-        <Link to={`/ranking/${testId}`}>
-          <button className="btn-mainColor btn">Ranking</button>
+        <Link to={`/grades`}>
+          <button className="btn-mainColor btn">See Grades</button>
         </Link>
       ) : (
         <button className="btn-mainColor btn">Submit</button>

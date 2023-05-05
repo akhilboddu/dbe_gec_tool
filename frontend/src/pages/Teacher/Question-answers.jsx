@@ -16,7 +16,7 @@ const QuestionAnswer = ({
 
   return (
     <>
-      <div className="col-span-6">
+      <div className="col-span-4">
         <label className="block font-medium text-gray-700 text-md">{`Answer ${index + 1
           } text`}</label>
         <input
@@ -41,14 +41,14 @@ const QuestionAnswer = ({
         />
       </div>
 
-      <div className="col-span-6 mt-4">
+      <div className="col-span-2 ">
         <label className="block font-medium text-gray-700 text-md">
           True/False
         </label>
         <select
           name={`answer-correct-${index}`}
           disabled={questionIndex == thisQuestionIndex ? false : true}
-          className="p-2 border rounded bg-gray-50"
+          className="p-2 border rounded bg-gray-50 w-full"
           onChange={(e) => {
             let tempArray = [...answers];
             tempArray = tempArray.map((element, arrayIndex) => {
@@ -66,20 +66,17 @@ const QuestionAnswer = ({
           <option value={true} selected={answers[index].isCorrect}>True</option>
           <option value={false} selected={!answers[index].isCorrect}>False</option>
         </select>
-
-        <br />
-        <br />
-        {answerIndex == index && questionIndex == thisQuestionIndex ? (
-          <button
-            className="block px-4 py-2 text-sm text-white rounded-md bg-mainColor"
-            onClick={addAnswer}
-          >
-            Add Answer
-          </button>
-        ) : (
-          ""
-        )}
       </div>
+      {answerIndex == index && questionIndex == thisQuestionIndex ? (
+        <button
+          className="block px-4 py-2 text-sm text-white rounded-md bg-mainColor"
+          onClick={addAnswer}
+        >
+          Add Answer
+        </button>
+      ) : (
+        ""
+      )}
     </>
   );
 };

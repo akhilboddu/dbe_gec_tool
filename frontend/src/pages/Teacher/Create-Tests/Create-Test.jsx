@@ -83,7 +83,7 @@ const CreateTest = () => {
   
   const addQuestion = (data) => {
     if (validateQuestion()) {
-      const file = data["question-image-0"][0] ? data["question-image-0"][0] : "";
+      const file = data[`question-image-${questionIndex}`][0] ? data[`question-image-${questionIndex}`][0] : "";
       
       const storage = getStorage();
       const storageRef = ref(storage, `question-images/${file.name}`);
