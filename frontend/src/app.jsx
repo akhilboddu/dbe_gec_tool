@@ -60,6 +60,14 @@ const routes = [
         ),
       },
       {
+        path: "/assignments",
+        element: (
+          <CheckLogin>
+            <Assignments />
+          </CheckLogin>
+        ),
+      },
+      {
         path: "/assignments/:teacher",
         element: <Assignments />,
       },

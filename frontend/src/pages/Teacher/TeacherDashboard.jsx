@@ -20,6 +20,19 @@ const TeacherDashboard = () => {
         }
       ],
     },
+    {
+      title: "Assignment",
+      actions: [
+        {
+          label: "Create",
+          url: "/dashboard/create-assignments/teacher",
+        },
+        // {
+        //   label: "List",
+        //   url: "/dashboard/test-list/teacher",
+        // }
+      ],
+    },
     // {
     //   title: "assignments",
     //   action: "Create",

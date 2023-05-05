@@ -1,37 +1,30 @@
-import { useContext, useState, useEffect } from "react";
-import SubjectsList from "/src/components/subjects/SubjectsList";
-import CourseCardList from "/src/components/course/course-card-list";
-import CourseContext from "/src/context/courseContext";
-import { AssignmentsData } from "/src/helpers/assignments";
+import { useState, useEffect } from "react";
 import { db } from "/src/firebase";
 import { collection, getDocs } from "firebase/firestore";
+import AssignmentCardList from "./components/Assignment-Card-List";
 
 function Assignments() {
+  const [assignments, setAssignment] = useState([]);
 
-  const [test, setTest] = useState([]);
+  const fetchAssignments = async () => {
 
-  const fetchAssignments = async()=>{
-
-    const querySnapshot =  await getDocs(collection(db, "assignments"));
-     querySnapshot.forEach((doc) => {
-      setTest((prev)=> [...prev,doc.data()])
-      console.log(doc.data())
+    const querySnapshot = await getDocs(collection(db, "assignments"));
+    querySnapshot.forEach((doc) => {
+      setAssignment((prev) => [...prev, doc.data()])
     });
-
-
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchAssignments()
-  },[])
+  }, [])
 
   return (
     <>
-      <SubjectsList />
+      {/* <SubjectsList /> */}
 
       <h2 className="text-2xl font-bold lg:text-3xl my-6">Assignments</h2>
       <div className="my-5">
-        <CourseCardList tests={test} isTest={false} />
+        <AssignmentCardList assignments={assignments} />
       </div>
     </>
   );
