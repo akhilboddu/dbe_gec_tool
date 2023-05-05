@@ -55,7 +55,15 @@ export default function Register() {
               Grade: Grade,
             }).then((data) => {
               console.log(data);
-              navigate({ to: "/dashboard" });
+              localStorage.setItem(
+                "user",
+                JSON.stringify({
+                  email: email,
+                  id: results.user.uid,
+                  role: "teacher",
+                })
+              );    
+              navigate({ to: "/teacher-dashboard" });
             });
           } catch (e) {
             console.log(e.message);
@@ -70,6 +78,17 @@ export default function Register() {
               school_name: school_name,
               emis_number: emis_number,
               Grade: Grade,
+            }).then((data) => {
+              console.log(data);
+              localStorage.setItem(
+                "user",
+                JSON.stringify({
+                  email: email,
+                  id: results.user.uid,
+                  role: "student",
+                })
+              );    
+              navigate({ to: "/" });
             });
             console.log("Document written with ID: ");
           } catch (e) {
@@ -77,9 +96,9 @@ export default function Register() {
           }
         }
       })
-      .then(() => {
-        navigate({ to: "/" });
-      });
+      // .then(() => {
+      //   navigate({ to: "/" });
+      // });
   };
 
   return (

@@ -177,7 +177,7 @@ export default function QuestionList({
         const selectedAnswer = selectedAnswers[index];
         if (selectedAnswer.type == "mcq" && selectedAnswer?.isCorrect === true) {
           correctAnswerIds.push(selectedAnswer)
-          tempScore = tempScore + selectedAnswer.questionMarks
+          tempScore = tempScore + Number(selectedAnswer.questionMarks)
         }
         else if (selectedAnswer.type == "text") {
           textAnswersArr.push(selectedAnswer)

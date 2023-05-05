@@ -32,7 +32,6 @@ export default function Header() {
     current: { pathname },
   } = useLocation();
   const user = JSON.parse(localStorage.getItem("user"));
-
   const logout = () => {
     signOut(auth)
       .then(() => {
@@ -61,7 +60,7 @@ export default function Header() {
       <div className="container flex-wrap navbar">
         {/* start */}
         <div className="flex flex-wrap mr-auto">
-          <Link className="btn btn-ghost">
+          <Link className="btn btn-ghost" to={user?.role === "teacher" ? "/teacher-dashboard" : "/"}>
             <img src={Logo} alt="logo" className="w-32 pt-0" />
           </Link>
 
@@ -85,6 +84,21 @@ export default function Header() {
                 >
                   <ShieldExclamationIcon className="w-5 h-5" />
                   Tests
+                </Link>
+              ) : (
+                ""
+              )}
+              {user.role !== "teacher" ? (
+                <Link
+                  to={
+                    currentPath.endsWith("teacher")
+                      ? "/assignments/teacher"
+                      : "/assignments"
+                  }
+                  className="gap-1 btn btn-ghost"
+                >
+                  <BookOpenIcon className="w-5 h-5" />
+                  Assignments
                 </Link>
               ) : (
                 ""
