@@ -8,6 +8,7 @@ export default function Question({
   index,
   disabled,
   answers,
+  questionMarks,
   image,
   handelSelectedAnswers,
   heading,
@@ -24,6 +25,7 @@ export default function Question({
     const finalAnswer = {
       question: index,
       type: "mcq",
+      questionMarks: questionMarks,
       ...answer,
     };
     handelSelectedAnswers(finalAnswer);
@@ -33,6 +35,7 @@ export default function Question({
     const finalAnswer = {
       question: index,
       type: "text",
+      questionMarks: questionMarks,
       answer: e.target.value,
     };
     handelSelectedAnswers(finalAnswer);
@@ -44,7 +47,7 @@ export default function Question({
   };
 
   const handleMarks = (e) => {
-    const finalAnswer = { ...prevSelected, marks: e.target.value };
+    const finalAnswer = { ...prevSelected, marks: e.target.value <= prevSelected.questionMarks ? e.target.value : prevSelected.questionMarks };
     handelSelectedAnswers(finalAnswer);
   };
 
@@ -173,41 +176,49 @@ export default function Question({
       (disabled === 0 && !resultCheck && question.type !== "text")
     ) {
       if (isCorrect) {
-        return <Success text={explanation? explanation : "This is the correct answer."} />;
+        return <Success text={explanation ? explanation : "This is the correct answer."} />;
       } else {
-        return <Error text={explanation? explanation : "Wrong Answer"} />;
+        return <Error text={explanation ? explanation : "Wrong Answer"} />;
       }
     } else if (resultCheck) {
       if (question.type == "text" && prevSelected?.isCorrect == undefined) {
         return <Info text={"Pending for evaluation"} />;
       }
       if (prevSelected?.isCorrect) {
-        return <Success text={"This is the correct answer."} />;
+        return <Success text={explanation ? explanation : "This is the correct answer."} />;
       } else {
-        return <Error text={"Wrong Answer"} />;
+        return <Error text={explanation ? explanation : "Wrong Answer"} />;
       }
     }
   };
 
   return (
     <div className="space-y-4" id={`question${index}`}>
-      {question.questionHeading && (
+      {/* {question.questionHeading && (
         <h1 className="font-bold">{question.questionHeading}</h1>
       )}
 
-      {heading ? <h1 className="font-bold">{heading}</h1> : ""}
-      {image ? <img src={image} alt="someimage" /> : ""}
 
-      <p>
-        {index}. {question.text}
-      </p>
+
+      {heading ? <h1 className="font-bold">{heading}</h1> : ""}
+    */}
+      <div className="flex justify-between items-center">
+        <p>
+          {index}. {question.text}
+        </p>
+        <div className="font-bold">
+          Marks: {question.questionMarks}
+        </div>
+
+      </div>
+      {image ? <img src={image} alt="someimage" /> : ""}
       <div className="pl-4 space-y-2">
         {question.type == "text" ? renderTestInput(index) : renderMcq()}
       </div>
-      {resultCheck && prevSelected.teacherNote ? (
+      {resultCheck && prevSelected?.teacherNote ? (
         <p>
           <span className="text-gray-400">Teacher's Note:</span>{" "}
-          {prevSelected.teacherNote}
+          {prevSelected?.teacherNote}
         </p>
       ) : (
         ""

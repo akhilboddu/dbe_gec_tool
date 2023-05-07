@@ -1,16 +1,12 @@
 import { useMatch } from "@tanstack/react-location";
-import { useQuery } from "react-query";
 
 import QuestionList from "/src/components/question/question-list";
-import Error from "/src/components/shared/error";
 import Loading from "/src/components/shared/loading";
 
-import { QueryKeys } from "/src/constants/query-keys";
-import { getQuestionsByCourseApi } from "/src/helpers/fetchers";
 import { useContext, useState, useEffect } from "react";
 import CourseContext from "../context/courseContext";
 import { doc, getDoc } from "firebase/firestore";
-import { db, auth } from "../firebase";
+import { db } from "../firebase";
 
 export default function UserCourseTest() {
   // location
@@ -81,13 +77,18 @@ export default function UserCourseTest() {
 
   return (
     <div>
-      {testData && !loading ? (
+      {!loading ? (testData ? (
         <div>
           <div className="fixed top-16 left-0 max-h-[92%] overflow-y-auto rounded-lg px-1 py-5 no-scrollbar">
             {numbersRow()}
           </div>
           <div className="space-y-4 lg:space-y-8">
-            <h2 className="text-2xl font-bold lg:text-3xl">Test</h2>
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold lg:text-3xl">{testData.title}</h2>
+              <h3 className="font-bold text-1xl lg:text-1xl">
+                Total Marks: {testData.totalMarks}
+              </h3>
+            </div>
             <h3 className="font-bold text-1xl lg:text-1xl">
               Instruction to the learner
             </h3>
@@ -100,7 +101,7 @@ export default function UserCourseTest() {
 
             <QuestionList
               questions={testData.questions}
-              subject={testData.Title}
+              subject={testData.title}
               attemptData={attemptData}
               teacherId={teacherId}
               attemptedResultId={attemptId}
@@ -111,8 +112,15 @@ export default function UserCourseTest() {
           </div>
         </div>
       ) : (
-        <Loading/>
-      )}
+        <div className="flex flex-col justify-center items-center h-[60vh]">
+          <h3 className="text-2xl lg:text-3xl">
+            Test not available. It might be deleted by the owner
+          </h3>
+        </div>
+      ))
+        : (
+          <Loading />
+        )}
     </div>
   );
 }

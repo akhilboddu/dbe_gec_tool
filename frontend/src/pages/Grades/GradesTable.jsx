@@ -62,7 +62,7 @@ function GradesTable({ result, teacherId }) {
               {/* test date */}
               <td>{testResult.date}</td>
               {/* score */}
-              <td>{testResult.score}</td>
+              <td>{testResult.totalMarks? `${testResult.score}/${testResult.totalMarks}` : testResult.score}</td>
               {/* Percentage */}
               <td>{testResult?.percentage ? `${testResult?.percentage}%` : ''} </td>
               {/* Status */}

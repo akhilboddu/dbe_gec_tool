@@ -1,212 +1,256 @@
-import React, { useEffect, useReducer, useContext} from "react";
+import React, { useEffect, useContext } from "react";
 import CourseContext from "/src/context/courseContext";
-import { doc, updateDoc, arrayUnion, arrayRemove, setDoc } from "firebase/firestore";
-import { getStorage, ref, uploadBytes, getDownloadURL} from "firebase/storage";
+import { addDoc, collection, updateDoc } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useState } from "react";
-import { render } from "react-dom";
-import { set, useForm } from "react-hook-form";
-import QuestionAnswer from "../Question-answers";
-import TestQuestions from "../Test-questions";
+import { useForm } from "react-hook-form";
+import AssignmentQuestions from "./components/Assignmnet-Questions";
 import { db } from "/src/firebase";
-import {notify} from "react-notify-toast"
+import { notify } from "react-notify-toast";
+import { useNavigate } from "@tanstack/react-location";
 
-const CreateAssessments = ()=>{
+const CreateAssignment = () => {
+  const navigate = useNavigate();
+  const { register, handleSubmit } = useForm();
+  const [totalMarks, setTotalMarks] = useState(0);
+  const [questionIndex, setQuestionIndex] = useState(0);
+  const [questionType, setQuestionType] = useState("mcq");
+  const [questions, setQuestions] = useState([{}]);
 
-     const ctxQuestions = useContext(CourseContext);
-    const {arrTest} = ctxQuestions;
+  const validateQuestion = () => {
+    let isValid = true
 
-    const { register, handleSubmit } = useForm();
-    const [questionIndex,setQuestionIndex] = useState(0)
-    const [questionType,setQuestionType] = useState("mcq")
-    const [answerText,setAnswerText] = useState()
-    const [answerCorrect,setAnswerCorrect] = useState(true)
-    const [answerExplanation,setAnswerExplanation] = useState("")
-    const [answerIndex,setAnswerIndex] = useState(0)
+    return isValid
+  }
 
-    const [answers,setAnswers] = useState([{}]);
-    const [questions, setQuestions] = useState([{}]);
-    
+  const addQuestion = (data) => {
+    data.deadline = new Date(data.deadline).toUTCString();
+    data.deadline = data.deadline.split(' ').slice(0, 4).join(' ');
+    if (validateQuestion()) {
+      const file = data["question-image-0"][0] ? data["question-image-0"][0] : "";
 
-    const addAnswer = (e)=>{
-      
-      e.preventDefault()
-
-      
-      setAnswers(prev=> [...prev,{
-         
-          answerId: `answer-${questionIndex}`,
-          text: answerText,
-          isCorrect: answerCorrect,
-        }])
-      
-      
-      setAnswerIndex((prev)=>prev+1);
-      setAnswerCorrect(true)
-
-      notify.show(`Answer ${answerIndex+1} added`, "success", 2000)
-
-    }
-
-
-
-
-    const addQuestion = (data)=>{
-      
-
-      const file = data["question-image-0"][0]? data["question-image-0"][0] : ""
-
-      console.log(file.name)
       const storage = getStorage();
       const storageRef = ref(storage, `question-images/${file.name}`);
 
-      
-
       // 'file' comes from the Blob or File API
       uploadBytes(storageRef, file).then((snapshot) => {
-        console.log('Uploaded a blob or file!');
 
-        getDownloadURL(storageRef).then((url)=>{
+        getDownloadURL(storageRef).then((url) => {
+          setTotalMarks(totalMarks + Number(data[`question-marks-${questionIndex}`]))
+          setQuestions((prev) => {
+            return [
+              ...prev,
+              {
+                index: questionIndex + 1,
+                explanation: data[`question-explanation-${questionIndex}`],
+                questionMarks: data[`question-marks-${questionIndex}`],
+                questionId: questionIndex + 1,
+                image: file == "" ? null : url,
+                text: data[`question-text-${questionIndex}`],
+                type: questionType,
+              },
+            ];
+          });
+          const user = JSON.parse(localStorage.getItem("user"));
+          const instArray = assignment.instructions;
+          instArray[2] = `The deadline for this assignment is ${data.deadline}.`;
+          setAssignment({
+            title: data.title,
+            description: data.description,
+            deadline: data.deadline,
+            assignmentType: data.assignmentType,
+            teacherId: user.id,
+            totalMarks: totalMarks,
+            instructions: instArray,
+          });
 
-          console.log("url downloaded: url," + url)
-
-            answers.shift()
-
-            
-            setQuestions(prev => [...prev,{
-
-              index: questionIndex +1,
-              explanation: data[`question-explanation-${questionIndex}`],
-              questionId: questionIndex + 1,
-              image: file==""? null: url,
-              text: data[`question-text-${questionIndex}`],
-              type: "mcq", //mcq
-              answers: [...answers],
-            }])
-
-            
-
-            setTest({
-              testId : data.titleId,
-              Title :data.title,
-              description :data.description,
-              duration :data.duration,
-              teacherId :data.teacherId,
-              instructions: test.instructions
-            })
-
-            console.log(questions, "This is the questions after its set")
-
-
-            setQuestionIndex(prev => prev + 1);
-            setAnswers([{}])
-            setQuestionType("mcq")
-
-            notify.show(`Question ${questionIndex+1} added`, "success",2000)
-
-
-        })
+          setQuestionIndex((prev) => prev + 1);
+          setQuestionType("mcq");
+          notify.show(`Question ${questionIndex + 1} added`, "success", 5000);
+        });
       });
+    }
+    else {
+      notify.show(`Error Message here`, "error", 5000);
+    }
+  };
 
+  const validateForm = () => {
+    let isValid = true
+    /** 
+     * Here we have to check the length but as we are adding a blank object in array 
+     * so instead on one we are expecting minimum length of array will be 2
+     */
+    if (questions.length < 2) {
+      isValid = false
+      notify.show(`Atleast add a question`, "error", 5000);
     }
 
+    return isValid
+  }
 
+  const saveAssignment = async (e) => {
 
-    const saveTest = async(e)=>{
+    if (validateForm()) {
+      e.preventDefault();
+      questions.shift();
+      assignment.totalMarks = totalMarks
+      assignment.questions = [...questions];
 
-      e.preventDefault()
-      
-      console.log("Test being saved")
-
-      questions.shift()
-      test.questions = [...questions]
-
-      setTest(prev => ({...prev,questions:[...questions]}));
-
-      setDoc(doc(db,'assignments',test.testId),test)
-
-
-     
-      notify.show(`Assignment Successfully Published`, "success", 2000)
-
+      setAssignment((prev) => ({ ...prev, questions: [...questions] }));
+      try {
+        const docRef = await addDoc(collection(db, "assignments"), assignment);
+        await updateDoc(docRef, {
+          assignmentId: docRef.id,
+        });
+        notify.show(`Assignment Successfully Published`, "success", 5000);
+        navigate({ to: `/teacher-dashboard`, replace: true });
+      } catch (e) {
+        console.error("Error adding document: ", e);
+        notify.show(
+          "Error occured while publishing assignment. Please try again.",
+          "error",
+          5000
+        );
+      }
     }
+  };
 
+  const [assignment, setAssignment] = useState({
+    title: "",
+    deadline: "",
+    description: "",
+    instructions: [
+      "Read all the instructions and questions carefully.",
+      "Answer all questions.",
+      "The deadline for this assignment is May 4, 2023.",
+    ],
+    questions: [],
+  });
 
-    const [test,setTest]=useState({
-        testId: "",
-        Title: "",
-        duration: "",
-        description: "",
-        instructions: [
-          "Read all the instructions and questions carefully.",
-          "Choose the letter of the correct answer.",
-          "Answer all questions.",
-          "The duration of this test is 90 minutes.",
-        ],
-        questions: [],
-});
+  useEffect(() => {
+  }, [assignment]);
 
-useEffect(()=>{
-  // console.log(test, "Test in useEffect")
-},[test])
-
-    return(
-        <div className="mt-10 sm:mt-0">
-        <div className="md:grid md:grid-cols-2 md:gap-6">
-          <div className="md:col-span-1">
-            <div className="px-4 sm:px-0">
-              <h3 className="text-xl font-medium leading-6 text-gray-900">Create Assignment</h3>
-              <p className="mt-1 text-sm text-gray-600">This page allows you to create an assignment.</p>
-            </div>
+  return (
+    <div className="mt-10 sm:mt-0">
+      <div className="flex flex-col">
+        <div className="flex justify-between mb-6">
+          <div className="px-4 sm:px-0">
+            <h3 className="text-xl font-medium leading-6 text-gray-900">
+              Create Assignment
+            </h3>
+            <p className="mt-1 text-sm text-gray-600">
+              This page allows you to create a Assignment.
+            </p>
           </div>
-          <div className="mt-5 md:col-span-2 md:mt-0">
-            <form action="#" onSubmit={handleSubmit(addQuestion)}>
-              <div className="overflow-hidden shadow sm:rounded-md">
-                <div className="bg-white px-4 py-5 sm:p-6">
-                  <div className="grid grid-cols-6 gap-6">
-
-                  <div className="col-span-6 sm:col-span-4">
-                      <label  htmlFor="Title-Id" className="block text-md font-medium text-gray-700">Assignment ID</label>
-                      <input type="text" name="Title-Id" id="Title-Id"  className="bg-gray-100 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" {...register("titleId", {required: true})}/>
-                  </div>
-                    
-                    <div className="col-span-6 sm:col-span-4">
-                      <label  htmlFor="Title" className="block text-md font-medium text-gray-700">Assignment Title</label>
-                      <input type="text" name="Title" id="Title"  className="bg-gray-100 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" {...register("title", {required: true})}/>
-                    </div>
-
-                    <div className="col-span-6 sm:col-span-4">
-                      <label  htmlFor="Title" className="block text-md font-medium text-gray-700">Teacher's ID</label>
-                      <input type="text" name="Title" id="Title"  className="bg-gray-100 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" {...register("teacherId", {required: true})}/>
-                    </div>
-
-                    <div className="col-span-6 sm:col-span-4">
-                      <label htmlFor="description" className="block text-md font-medium text-gray-700">Description</label>
-                      <input type="text" name="description" id="description" className="bg-gray-100 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" {...register("description", {required: true})}/>
-                    </div>
-
-                    <div className="col-span-6 sm:col-span-4">
-                      <label htmlFor="duration" className="block text-md font-medium text-gray-700">Duration</label>
-                      <input type="text" name="duration" id="duration" className="bg-gray-100 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" {...register("duration", {required: true})}/>
-                    </div>
-
-                    {questions.map((question,index)=>(
-                        <TestQuestions answers={answers} addAnswer={addAnswer} register={register} index={index} questionIndex={questionIndex} questionType={questionType} setQuestionType={setQuestionType}  setAnswerText={setAnswerText} setAnswerCorrect={setAnswerCorrect} setAnswerExplanation={setAnswerExplanation}/>
-                    ))}
-
-                  
-                  </div>
-                </div>
-
-                <div class="bg-gray-50 px-4 py-3 text-right sm:px-6">
-                <button type="submit" class="block bg-mainColor text-white text-sm rounded-md py-2 px-4">Save Question</button>
-                  <button onClick={saveTest} class="inline-flex justify-center rounded-md border border-transparent btn-mainColor py-2 px-4 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Publish</button>
-                </div>
-              </div>
-            </form>
+          <div className="mr-5">
+            Total Marks: {totalMarks}
           </div>
         </div>
-      </div>
-    )
-}
+        <div className="mt-5 md:col-span-2 md:mt-0">
+          <form action="#" onSubmit={handleSubmit(addQuestion)}>
+            <div className="overflow-hidden shadow sm:rounded-md">
+              <div className="px-4 py-5 bg-white sm:p-6">
+                <div className="grid grid-cols-6 gap-6">
 
-export default CreateAssessments
+                  <div className="col-span-6 sm:col-span-4">
+                    <label
+                      htmlFor="title"
+                      className="block font-medium text-gray-700 text-md"
+                    >
+                      Assignment Title
+                    </label>
+                    <input
+                      type="text"
+                      name="title"
+                      id="title"
+                      className="mt-1 block h-[36px]  w-full rounded-md border border-gray-300 bg-gray-50 px-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      {...register("title", { required: true })}
+                    />
+                  </div>
+
+                  <div className="col-span-6 sm:col-span-4">
+                    <label
+                      htmlFor="description"
+                      className="block font-medium text-gray-700 text-md"
+                    >
+                      Assignment Description
+                    </label>
+                    <input
+                      type="text"
+                      name="description"
+                      id="description"
+                      className="mt-1 block h-[36px]  w-full rounded-md border border-gray-300 bg-gray-50 px-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      {...register("description", { required: true })}
+                    />
+                  </div>
+
+                  <div className="col-span-6 sm:col-span-4">
+                    <label
+                      htmlFor="deadline"
+                      className="block font-medium text-gray-700 text-md"
+                    >
+                      Deadline
+                    </label>
+                    <input
+                      type="date"
+                      name="deadline"
+                      id="deadline"
+                      className="mt-1 block h-[36px]  w-full rounded-md border border-gray-300 bg-gray-50 px-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      {...register("deadline", { required: true })}
+                    />
+                  </div>
+
+                  <div className="col-span-6 sm:col-span-4">
+                    <label
+                      htmlFor="assignmentType"
+                      className="block font-medium text-gray-700 text-md"
+                    >
+                      Assignment Type
+                    </label>
+                    <select
+                      name="assignmentType"
+                      id="assignmentType"
+                      className="mt-1 block h-[36px]  w-full rounded-md border border-gray-300 bg-gray-50 px-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      {...register("assignmentType", { required: true })}
+                    >
+                      <option value={"school-assessment"}>School Based Assessment</option>
+                      <option value={"end-term-assessment"}>End of Term Assessment</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid gap-6 mt-10">
+                  {questions.map((question, index) => (
+                    <AssignmentQuestions
+                      register={register}
+                      index={index}
+                      questionIndex={questionIndex}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="px-4 py-3 text-right bg-gray-50 sm:px-6">
+                <button
+                  type="submit"
+                  className="block px-4 py-2 text-sm text-white rounded-md bg-mainColor"
+                >
+                  Save Question
+                </button>
+                <button
+                  onClick={saveAssignment}
+                  className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md shadow-sm btn-mainColor focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                >
+                  Publish
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default CreateAssignment;

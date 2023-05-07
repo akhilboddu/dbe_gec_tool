@@ -69,8 +69,8 @@ export default function QuestionList({
         let data = prev;
         const i = data.findIndex((o) => o.question === answer.question);
         if (i !== -1) {
-          if (answer.teacherNote) {
-            data[i].teacherNote = answer.teacherNote;
+          if (answer?.teacherNote) {
+            data[i].teacherNote = answer?.teacherNote;
           }
           if (answer.isCorrect !== undefined) {
             data[i].isCorrect = answer.isCorrect;
@@ -169,21 +169,27 @@ export default function QuestionList({
 
   const onSubmit = () => {
     if (!teacherId) {
-      const correctAnswerIds = selectedAnswers.filter(
-        (answer) => answer.type == "mcq" && answer?.isCorrect === true
-      );
-      setCorrectAnswerIds(correctAnswerIds);
-      const textAnswersArr = selectedAnswers.filter(
-        (answer) => answer.type == "text"
-      );
+      const correctAnswerIds = [];
+      const textAnswersArr = [];
+      let tempScore = 0;
 
+      for (let index = 0; index < selectedAnswers.length; index++) {
+        const selectedAnswer = selectedAnswers[index];
+        if (selectedAnswer.type == "mcq" && selectedAnswer?.isCorrect === true) {
+          correctAnswerIds.push(selectedAnswer)
+          tempScore = tempScore + Number(selectedAnswer.questionMarks)
+        }
+        else if (selectedAnswer.type == "text") {
+          textAnswersArr.push(selectedAnswer)
+        }
+      }
+      setCorrectAnswerIds(correctAnswerIds);
       setTextAnswers(textAnswersArr);
-      const score = correctAnswerIds.length;
-      setScore(score);
+      setScore(tempScore);
       openModal();
 
-      handleRanking(score);
-      saveTestScore(score, textAnswersArr);
+      handleRanking(tempScore);
+      saveTestScore(tempScore, textAnswersArr);
     } else {
       let newCorrectAnswers = 0;
       teacherNotes.forEach((element) => {
@@ -226,9 +232,8 @@ export default function QuestionList({
     fetchUserData().then(async () => {
       const { uid } = userData;
       const current = new Date();
-      const date = `${current.getDate()}/${
-        current.getMonth() + 1
-      }/${current.getFullYear()}`;
+      const date = `${current.getDate()}/${current.getMonth() + 1
+        }/${current.getFullYear()}`;
 
       try {
         const docRef = await addDoc(collection(db, "attempted_results"), {
@@ -248,11 +253,11 @@ export default function QuestionList({
 
   const saveGrades = async (finalScore, attemptId, userId, textAnswersArr) => {
     const current = new Date();
-    const date = `${current.getDate()}/${
-      current.getMonth() + 1
-    }/${current.getFullYear()}`;
+    const date = `${current.getDate()}/${current.getMonth() + 1
+      }/${current.getFullYear()}`;
     try {
       const docRef = await addDoc(collection(db, "grades"), {
+        totalMarks: totalMarks,
         student: userId,
         test: testId,
         score: finalScore,
@@ -280,8 +285,8 @@ export default function QuestionList({
   const renderButton = () => {
     if (!attemptData) {
       return score ? (
-        <Link to={`/ranking/${testId}`}>
-          <button className="btn-mainColor btn">Ranking</button>
+        <Link to={`/grades`}>
+          <button className="btn-mainColor btn">See Grades</button>
         </Link>
       ) : (
         <button className="btn-mainColor btn">Submit</button>
@@ -313,6 +318,7 @@ export default function QuestionList({
             image={question.image}
             heading={question.heading}
             answers={question.answers}
+            questionMarks={question.questionMarks}
             explanation={question.explanation}
             disabled={score}
             handelSelectedAnswers={handelSelectedAnswers}
