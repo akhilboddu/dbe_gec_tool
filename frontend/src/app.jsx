@@ -15,6 +15,7 @@ import Home from "/src/pages/home";
 import Login from "/src/pages/login";
 import Register from "/src/pages/register";
 import UserCourseTest from "/src/pages/user-course-test";
+import UserCourseAssignment from "/src/pages/user-course-assignment";
 import UserInfo from "/src/pages/user-info";
 import UserLessonDetail from "/src/pages/user-lesson-detail";
 import UserQuestionDetail from "/src/pages/user-question-detail";
@@ -160,6 +161,10 @@ const routes = [
             ),
           },
         ],
+      },
+      {
+        path: "detail-assignment/:assignmentId",
+        element: <UserCourseAssignment />,
       },
       {
         path: "/:testId",

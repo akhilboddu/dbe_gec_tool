@@ -14,7 +14,7 @@ const CreateAssignment = () => {
   const { register, handleSubmit } = useForm();
   const [totalMarks, setTotalMarks] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);
-  const [questionType, setQuestionType] = useState("mcq");
+  const [questionType, setQuestionType] = useState("text");
   const [questions, setQuestions] = useState([{}]);
 
   const validateQuestion = () => {
@@ -65,7 +65,7 @@ const CreateAssignment = () => {
           });
 
           setQuestionIndex((prev) => prev + 1);
-          setQuestionType("mcq");
+          setQuestionType("text");
           notify.show(`Question ${questionIndex + 1} added`, "success", 5000);
         });
       });
@@ -99,6 +99,7 @@ const CreateAssignment = () => {
 
       setAssignment((prev) => ({ ...prev, questions: [...questions] }));
       try {
+        console.log(assignment);
         const docRef = await addDoc(collection(db, "assignments"), assignment);
         await updateDoc(docRef, {
           assignmentId: docRef.id,

@@ -8,7 +8,7 @@ function GradesTable({ result, teacherId }) {
     if (tResult.status === "evaluated") {
       return (
         <Link
-          to={`/result/${tResult.test}/${tResult.attemptId}`}
+          to={`/result/${tResult.test ? tResult.test: tResult.assignment}/${tResult.attemptId}`}
           className="btn-mainColor btn"
         >
           View
@@ -18,7 +18,7 @@ function GradesTable({ result, teacherId }) {
       if (!teacherId) {
         return (
           <Link
-            to={`/result/${tResult.test}/${tResult.attemptId}`}
+            to={`/result/${tResult.test ? tResult.test: tResult.assignment}/${tResult.attemptId}`}
             className="btn-mainColor btn"
           >
             View
@@ -27,7 +27,7 @@ function GradesTable({ result, teacherId }) {
       } else {
         return (
           <Link
-            to={`/result/${tResult.test}/${tResult.attemptId}/${tResult.id}/${teacherId}`}
+            to={`/result/${tResult.test ? tResult.test: tResult.assignment }/${tResult.attemptId}/${tResult.id}/${teacherId}`}
             className="btn"
           >
             Evaluate
@@ -42,7 +42,7 @@ function GradesTable({ result, teacherId }) {
       <table className="table w-full table-zebra">
         <thead>
           <tr>
-            <th style={{zIndex: 0 }} />
+            <th style={{ zIndex: 0 }} />
             <th>Subject</th>
             <th>Date</th>
             <th>Mark</th>
@@ -56,13 +56,13 @@ function GradesTable({ result, teacherId }) {
           {result?.map((testResult, index) => (
             <tr key={index}>
               {/* index */}
-              <th style={{zIndex: 0 }}>{index + 1}</th>
+              <th style={{ zIndex: 0 }}>{index + 1}</th>
               {/* Subject */}
               <td>{testResult.subject}</td>
               {/* test date */}
               <td>{testResult.date}</td>
               {/* score */}
-              <td>{testResult.totalMarks? `${testResult.score}/${testResult.totalMarks}` : testResult.score}</td>
+              <td>{testResult.totalMarks ? `${testResult.score}/${testResult.totalMarks}` : testResult.score}</td>
               {/* Percentage */}
               <td>{testResult?.percentage ? `${testResult?.percentage}%` : ''} </td>
               {/* Status */}

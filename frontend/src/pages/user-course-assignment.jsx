@@ -1,48 +1,32 @@
 import { useMatch } from "@tanstack/react-location";
 
-import QuestionList from "/src/components/question/question-list";
+import QuestionList from "/src/components/assignment-question/question-list";
 import Loading from "/src/components/shared/loading";
 
-import { useContext, useState, useEffect } from "react";
-import CourseContext from "../context/courseContext";
+import { useState, useEffect } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
-export default function UserCourseTest() {
+export default function UserCourseAssignment() {
+  console.log(1);
   // location
   const {
-    params: { testId, attemptId, gradeId, teacherId },
+    params: { assignmentId, attemptId, gradeId, teacherId },
   } = useMatch();
   const {
     params: p1,
   } = useMatch();
 
-  const ctxQuestions = useContext(CourseContext);
-  const { arrTest } = ctxQuestions;
-
-  const testIndex = arrTest.findIndex((object) => {
-    return object.testId === testId;
-  });
-
   const [attemptData, setAttemptData] = useState();
-  const [testData, setTestData] = useState();
+  const [assignmentData, setAssignmentData] = useState();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const testFetch = async () => {
+    const assignmentFetch = async () => {
       setLoading(true);
-      const docRef = doc(db, "test", testId);
+      const docRef = doc(db, "assignments", assignmentId);
       const docSnap = await getDoc(docRef);
-      console.log(docSnap.data());
-      if(docSnap.data()){
-        setTestData(docSnap.data());
-      }
-      else{
-        const docRef = doc(db, "assignments", testId);
-        const docSnap = await getDoc(docRef);  
-        console.log(docSnap.data());
-        setTestData(docSnap.data());
-      }
+      setAssignmentData(docSnap.data());
       if (attemptId) {
         attemptedAnswersFetch();
       }
@@ -56,8 +40,8 @@ export default function UserCourseTest() {
       setLoading(false);
     };
 
-    if (testId) {
-      testFetch();
+    if (assignmentId) {
+      assignmentFetch();
     }
 
   }, []);
@@ -70,7 +54,7 @@ export default function UserCourseTest() {
   };
 
   const numbersRow = () => {
-    const linksArray = testData.questions.map((que, index) => {
+    const linksArray = assignmentData.questions.map((que, index) => {
       return (
         <p
           className="flex items-center justify-center w-10 h-10 m-2 text-white bg-orange-500 rounded-full hover:cursor-pointer hover:shadow-lg"
@@ -86,44 +70,44 @@ export default function UserCourseTest() {
 
   return (
     <div>
-      {!loading ? (testData ? (
+      {!loading ? (assignmentData ? (
         <div>
           <div className="fixed top-16 left-0 max-h-[92%] overflow-y-auto rounded-lg px-1 py-5 no-scrollbar">
             {numbersRow()}
           </div>
           <div className="space-y-4 lg:space-y-8">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold lg:text-3xl">{testData.title}</h2>
+              <h2 className="text-2xl font-bold lg:text-3xl">{assignmentData.title}</h2>
               <h3 className="font-bold text-1xl lg:text-1xl">
-                Total Marks: {testData.totalMarks}
+                Total Marks: {assignmentData.totalMarks}
               </h3>
             </div>
             <h3 className="font-bold text-1xl lg:text-1xl">
               Instruction to the learner
             </h3>
 
-            {testData.instructions.map((instruction, index) => (
+            {assignmentData.instructions.map((instruction, index) => (
               <li key={index} style={{ margin: 0 }}>
                 {instruction}
               </li>
             ))}
 
             <QuestionList
-              questions={testData.questions}
-              subject={testData.title}
+              questions={assignmentData.questions}
+              subject={assignmentData.title}
               attemptData={attemptData}
               teacherId={teacherId}
               attemptedResultId={attemptId}
               gradeId={gradeId}
               isMarking
-              totalMarks={testData?.totalMarks}
+              totalMarks={assignmentData?.totalMarks}
             />
           </div>
         </div>
       ) : (
         <div className="flex flex-col justify-center items-center h-[60vh]">
           <h3 className="text-2xl lg:text-3xl">
-            Test not available. It might be deleted by the owner
+            Assignment not available. It might be deleted by the owner
           </h3>
         </div>
       ))
