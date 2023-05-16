@@ -26,8 +26,8 @@ import Assignments from "./pages/Assignments/assignments";
 import Grades from "./pages/Grades/grades";
 import CreateTest from "./pages/Teacher/Create-Tests/Create-Test";
 import TestList from "./pages/Teacher/Tests/List/Test-List";
+import AssignmentList from "./pages/Teacher/Create-Assessments/Assignment-List";
 import CreateAssessments from "./pages/Teacher/Create-Assessments/Create-Assessments";
-import Notifications from "react-notify-toast";
 
 const queryClient = new QueryClient();
 const location = new ReactLocation();
@@ -119,6 +119,10 @@ const routes = [
       {
         path: "/dashboard/create-test",
         element: <CreateTest />,
+      }, 
+      {
+        path: "/dashboard/assignment-list",
+        element: <AssignmentList />,
       },
       {
         path: "/dashboard/test-list",

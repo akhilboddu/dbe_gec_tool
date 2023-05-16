@@ -1,5 +1,4 @@
-import React, { useEffect, useContext } from "react";
-import CourseContext from "/src/context/courseContext";
+import React, { useEffect } from "react";
 import { addDoc, collection, updateDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useState } from "react";
@@ -14,11 +13,65 @@ const CreateAssignment = () => {
   const { register, handleSubmit } = useForm();
   const [totalMarks, setTotalMarks] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);
-  const [questionType, setQuestionType] = useState("text");
+  const [questionType, setQuestionType] = useState("mcq");
+  const [answerText, setAnswerText] = useState();
+  const [answerExplanation, setAnswerExplanation] = useState("");
+  const [answerIndex, setAnswerIndex] = useState(0);
+
+  const [answers, setAnswers] = useState([{
+    answerId: `answer-${0}`,
+    text: '',
+    isCorrect: false,
+  }]);
   const [questions, setQuestions] = useState([{}]);
+
+  const addAnswer = (e) => {
+    e.preventDefault();
+
+    if (questionType == "mcq") {
+      setAnswers((prev) => [
+        ...prev,
+        {
+          answerId: `answer-${answerIndex + 1}`,
+          text: answerText,
+          isCorrect: false,
+        },
+      ]);
+
+      setAnswerIndex((prev) => prev + 1);
+    }
+  };
 
   const validateQuestion = () => {
     let isValid = true
+    if (questionType == "mcq") {
+      let trueValueCounter = 0
+      // Checking empty answer if any, and coiunting true options 
+      answers.map((element, index) => {
+        if (!element.text) {
+          isValid = false
+          notify.show(`Answer can't be empty`, "error", 5000);
+        }
+        if (element.isCorrect) {
+          trueValueCounter++
+        }
+      })
+
+      // Validating only 1 true option should be in array  
+      if (trueValueCounter == 0) {
+        isValid = false
+        notify.show(`Need to select atleast 1 'TRUE' value`, "error", 5000);
+      } else if (trueValueCounter > 1) {
+        isValid = false
+        notify.show(`Need to select atmost 1 'TRUE' value`, "error", 5000);
+      }
+
+      // There should be atleast 2 options in MCQs  
+      if (answers.length < 2) {
+        isValid = false
+        notify.show(`Need to add Atleast 2 options (answers)`, "error", 5000);
+      }
+    }
 
     return isValid
   }
@@ -48,6 +101,7 @@ const CreateAssignment = () => {
                 image: file == "" ? null : url,
                 text: data[`question-text-${questionIndex}`],
                 type: questionType,
+                answers: questionType == "mcq" ? [...answers] : [],
               },
             ];
           });
@@ -99,7 +153,6 @@ const CreateAssignment = () => {
 
       setAssignment((prev) => ({ ...prev, questions: [...questions] }));
       try {
-        console.log(assignment);
         const docRef = await addDoc(collection(db, "assignments"), assignment);
         await updateDoc(docRef, {
           assignmentId: docRef.id,
@@ -224,9 +277,19 @@ const CreateAssignment = () => {
                 <div className="grid gap-6 mt-10">
                   {questions.map((question, index) => (
                     <AssignmentQuestions
+                      key={index}
+                      answers={answers}
+                      setAnswers={setAnswers}
+                      addAnswer={addAnswer}
                       register={register}
                       index={index}
                       questionIndex={questionIndex}
+                      questionType={questionType}
+                      setQuestionType={setQuestionType}
+                      setAnswerText={setAnswerText}
+                      setAnswerExplanation={setAnswerExplanation}
+                      answerIndex={answerIndex}
+                      question={questions[index + 1]}
                     />
                   ))}
                 </div>

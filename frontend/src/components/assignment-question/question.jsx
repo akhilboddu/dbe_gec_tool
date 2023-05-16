@@ -7,6 +7,7 @@ export default function Question({
   question,
   index,
   disabled,
+  answers,
   questionMarks,
   image,
   handelSelectedAnswers,
@@ -15,7 +16,19 @@ export default function Question({
   explanation,
   teacher,
 }) {
+  const [isCorrect, setIsCorrect] = useState();
   const [teacherRadioButton, setTeacherRadioButton] = useState();
+
+  const checkCorrectAnswer = (answer) => {
+    setIsCorrect(answer.isCorrect);
+    const finalAnswer = {
+      question: index,
+      type: "mcq",
+      questionMarks: questionMarks,
+      ...answer,
+    };
+    handelSelectedAnswers(finalAnswer);
+  };
 
   const handleInputChange = (e) => {
     const finalAnswer = {
@@ -35,6 +48,38 @@ export default function Question({
   const handleMarks = (e) => {
     const finalAnswer = { ...prevSelected, marks: e.target.value <= prevSelected.questionMarks ? e.target.value : prevSelected.questionMarks };
     handelSelectedAnswers(finalAnswer);
+  };
+
+  const isChecked = (answer) => {
+    if (resultCheck) {
+      return answer.answerId == prevSelected?.answerId && resultCheck;
+    }
+    return;
+  };
+  const renderMcq = () => {
+    if (answers) {
+      return answers.map((answer, index) => (
+        <div key={index} className="flex items-center gap-2 ">
+          <input
+            key={answer.index}
+            type="radio"
+            className={`radio radio-sm`}
+            value={answer.answerId}
+            name={question.questionId}
+            checked={isChecked(answer)}
+            disabled={resultCheck}
+            onChange={() => checkCorrectAnswer(answer)}
+          />
+          <label htmlFor={answer.answerId}>
+            {answer.image ? (
+              <img src={answer.image} alt={answer.index} />
+            ) : (
+              answer.text
+            )}
+          </label>
+        </div>
+      ));
+    }
   };
 
   const renderAssignmentInput = (index) => {
@@ -121,11 +166,20 @@ export default function Question({
   };
 
   const renderMessage = () => {
-    if (disabled && !resultCheck) {
+    if (disabled && !resultCheck && question.type === "text") {
       return <Info text={"Pending for evaluation"} />;
     }
 
-    if (resultCheck) {
+    if (
+      disabled ||
+      (disabled === 0 && !resultCheck && question.type !== "text")
+    ) {
+      if (isCorrect) {
+        return <Success text={explanation ? explanation : "This is the correct answer."} />;
+      } else {
+        return <Error text={explanation ? explanation : "Wrong Answer"} />;
+      }
+    } else if (resultCheck) {
       if (question.type == "text" && prevSelected?.isCorrect == undefined) {
         return <Info text={"Pending for evaluation"} />;
       }
@@ -150,7 +204,7 @@ export default function Question({
       </div>
       {image ? <img src={image} alt="someimage" /> : ""}
       <div className="pl-4 space-y-2">
-        {renderAssignmentInput(index)}
+        {question.type == "mcq" ? renderMcq() : renderAssignmentInput(index)}
       </div>
       {resultCheck && prevSelected?.teacherNote ? (
         <p>

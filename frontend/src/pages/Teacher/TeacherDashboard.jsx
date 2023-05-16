@@ -27,10 +27,10 @@ const TeacherDashboard = () => {
           label: "Create",
           url: "/dashboard/create-assignments/teacher",
         },
-        // {
-        //   label: "List",
-        //   url: "/dashboard/test-list/teacher",
-        // }
+        {
+          label: "List",
+          url: "/dashboard/assignment-list/teacher",
+        }
       ],
     },
     // {

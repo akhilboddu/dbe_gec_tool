@@ -174,13 +174,13 @@ export default function QuestionList({
 
       for (let index = 0; index < selectedAnswers.length; index++) {
         const selectedAnswer = selectedAnswers[index];
-        // if (selectedAnswer.type == "mcq" && selectedAnswer?.isCorrect === true) {
-        //   correctAnswerIds.push(selectedAnswer)
-        //   tempScore = tempScore + Number(selectedAnswer.questionMarks)
-        // }
-        // else if (selectedAnswer.type == "text") {
+        if (selectedAnswer.type == "mcq" && selectedAnswer?.isCorrect === true) {
+          correctAnswerIds.push(selectedAnswer)
+          tempScore = tempScore + Number(selectedAnswer.questionMarks)
+        }
+        else if (selectedAnswer.type == "text") {
           textAnswersArr.push(selectedAnswer)
-        // }
+        }
       }
       setCorrectAnswerIds(correctAnswerIds);
       setTextAnswers(textAnswersArr);

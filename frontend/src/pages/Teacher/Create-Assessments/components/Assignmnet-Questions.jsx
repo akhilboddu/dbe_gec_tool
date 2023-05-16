@@ -1,12 +1,23 @@
 import React from "react";
 import { useState } from "react";
+import QuestionAnswer from "../../Question-answers";
 
 
 const AssignmentQuestions = ({
+  addAnswer,
+  setAnswers,
   register,
   index,
   questionIndex,
+  questionType,
+  setQuestionType,
+  setAnswerText,
+  setAnswerExplanation,
+  answers,
+  answerIndex,
+  question
 }) => {
+  const [currentAnswer, setCurrentAnswer] = useState(0);
   const [questionMarks, setQuestionMarks] = useState(1);
 
   return (
@@ -60,6 +71,21 @@ const AssignmentQuestions = ({
 
         <div className="col-span-2 mt-4">
           <label className="block font-medium text-gray-700 text-md">
+            Type of Question
+          </label>
+          <select
+            name={`question-type-${index}`}
+            disabled={questionIndex == index ? false : true}
+            className="p-2 w-full border rounded bg-gray-50"
+            onChange={(e) => setQuestionType(e.target.value)}
+          >
+            <option value={"mcq"}>Multiple Choice Question</option>
+            <option value={"text"}>Text</option>
+          </select>
+        </div>
+
+        <div className="col-span-2 mt-4">
+          <label className="block font-medium text-gray-700 text-md">
             Upload image
           </label>
           <input
@@ -70,6 +96,38 @@ const AssignmentQuestions = ({
             {...register(`question-image-${index}`, { required: false })}
           />
         </div>
+
+        {questionType == "mcq" && questionIndex == index && 
+          <div className="col-span-6 mt-4">
+            <h2 className="block font-medium text-gray-700 text-md">
+              Question answers:
+            </h2>
+          </div>
+        }
+
+        {questionType == "mcq" && questionIndex == index &&
+          answers.map((answer, index2) => (
+            <QuestionAnswer
+              key={index2}
+              addAnswer={addAnswer}
+              setAnswers={setAnswers}
+              answers={answers}
+              index={index2}
+              setAnswerText={setAnswerText}
+              setAnswerExplanation={setAnswerExplanation}
+              currentAnswer={currentAnswer}
+              answerIndex={answerIndex}
+              questionIndex={questionIndex}
+              thisQuestionIndex={index}
+            />
+          ))
+        }
+
+        {questionIndex !== index &&
+          question?.answers?.map(((ans, i) => (
+            <p key={i}>{"Option " + (i + 1) + '-'} {ans.text}: {ans.isCorrect ? "(True)" : "(False)"}</p>
+          )))
+        }
       </div>
     </>
   );

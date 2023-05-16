@@ -1,6 +1,6 @@
 import { useMatch } from "@tanstack/react-location";
 
-import QuestionList from "/src/components/assignment-question/question-list";
+import QuestionList from "../components/assignment-question/question-list";
 import Loading from "/src/components/shared/loading";
 
 import { useState, useEffect } from "react";
@@ -8,7 +8,6 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
 export default function UserCourseAssignment() {
-  console.log(1);
   // location
   const {
     params: { assignmentId, attemptId, gradeId, teacherId },
