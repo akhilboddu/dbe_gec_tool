@@ -3,15 +3,17 @@ import { db } from "/src/firebase";
 import { collection, query, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { useState } from "react";
 import Loading from "/src/components/shared/loading";
+import { useNavigate } from "@tanstack/react-location";
 
 function TestList() {
+  const navigate = useNavigate();
   const [results, setResult] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchAllData();
   }, []);
-  
+
   const fetchAllData = async () => {
     try {
       const dataArray = [];
@@ -32,6 +34,10 @@ function TestList() {
     await deleteDoc(doc(db, "test", id));
     fetchAllData();
   };
+  console.log("results ::", results);
+  const updateTest = async (testId) => {
+    navigate({ to: `/dashboard/update-test/teacher/${testId}` })
+  }
 
   return (
     <>
@@ -61,14 +67,22 @@ function TestList() {
                   <td className="text-center">{result.duration}</td>
                   {/* Total Marks */}
                   <td className="text-center">{result.totalMarks}</td>
-                  <td className="text-end">{
+                  <td className="text-end">{<div className="flex justify-evenly">
+                    <button
+                      className="btn bg-green-600"
+                      onClick={() => updateTest(result.testId)}
+                    >
+                      Edit
+                    </button>
                     <button
                       className="btn bg-red-600"
                       onClick={() => deleteTest(result.testId)}
                     >
                       Delete
                     </button>
+                  </div>
                   }
+
                   </td>
                 </tr>
               ))}

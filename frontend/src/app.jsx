@@ -118,7 +118,11 @@ const routes = [
       },
       {
         path: "/dashboard/create-test",
-        element: <CreateTest />,
+        element: <CreateTest action={"create"} />,
+      }, 
+      {
+        path: "/dashboard/update-test/teacher/:testId",
+        element: <CreateTest action={"update"} />,
       }, 
       {
         path: "/dashboard/assignment-list",
@@ -132,7 +136,15 @@ const routes = [
         path: "/dashboard/create-assignments/teacher",
         element: (
           <CheckLogin>
-            <CreateAssessments />
+            <CreateAssessments action={"create"} />
+          </CheckLogin>
+        ),
+      },
+      {
+        path: "/dashboard/update-assignments/teacher/:assignmentId",
+        element: (
+          <CheckLogin>
+            <CreateAssessments action={"update"}/>
           </CheckLogin>
         ),
       },

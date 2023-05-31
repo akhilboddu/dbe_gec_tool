@@ -18,9 +18,8 @@ export default function Question({
 }) {
   const [isCorrect, setIsCorrect] = useState();
   const [teacherRadioButton, setTeacherRadioButton] = useState();
-
   const checkCorrectAnswer = (answer) => {
-    setIsCorrect(answer.isCorrect);
+    setIsCorrect(answer.answer);
     const finalAnswer = {
       question: index,
       type: "mcq",
@@ -52,7 +51,7 @@ export default function Question({
 
   const isChecked = (answer) => {
     if (resultCheck) {
-      return answer.answerId == prevSelected?.answerId && resultCheck;
+      return answer.answerText == prevSelected?.answerText && resultCheck;
     }
     return;
   };
@@ -70,11 +69,11 @@ export default function Question({
             disabled={resultCheck}
             onChange={() => checkCorrectAnswer(answer)}
           />
-          <label htmlFor={answer.answerId}>
+          <label htmlFor={answer.answerText}>
             {answer.image ? (
               <img src={answer.image} alt={answer.index} />
             ) : (
-              answer.text
+              answer.answerText
             )}
           </label>
         </div>
@@ -174,16 +173,16 @@ export default function Question({
       disabled ||
       (disabled === 0 && !resultCheck && question.type !== "text")
     ) {
-      if (isCorrect) {
+      if (isCorrect == "true") {
         return <Success text={explanation ? explanation : "This is the correct answer."} />;
       } else {
         return <Error text={explanation ? explanation : "Wrong Answer"} />;
       }
     } else if (resultCheck) {
-      if (question.type == "text" && prevSelected?.isCorrect == undefined) {
+      if (question.questionType == "text" && prevSelected?.answer == undefined) {
         return <Info text={"Pending for evaluation"} />;
       }
-      if (prevSelected?.isCorrect) {
+      if (prevSelected?.answer == "true") {
         return <Success text={explanation ? explanation : "This is the correct answer."} />;
       } else {
         return <Error text={explanation ? explanation : "Wrong Answer"} />;
@@ -195,7 +194,7 @@ export default function Question({
     <div className="space-y-4" id={`question${index}`}>
       <div className="flex justify-between items-center">
         <p>
-          {index}. {question.text}
+          {index}. {question.questionText}
         </p>
         <div className="font-bold">
           Marks: {question.questionMarks}
@@ -204,7 +203,7 @@ export default function Question({
       </div>
       {image ? <img src={image} alt="someimage" /> : ""}
       <div className="pl-4 space-y-2">
-        {question.type == "mcq" ? renderMcq() : renderAssignmentInput(index)}
+        {question.questionType == "mcq" ? renderMcq() : renderAssignmentInput(index)}
       </div>
       {resultCheck && prevSelected?.teacherNote ? (
         <p>

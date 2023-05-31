@@ -3,15 +3,17 @@ import { db } from "/src/firebase";
 import { collection, query, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { useState } from "react";
 import Loading from "/src/components/shared/loading";
+import { useNavigate } from "@tanstack/react-location";
+
 
 function AssignmentList() {
   const [results, setResult] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const navigate = useNavigate();
   useEffect(() => {
     fetchAllData();
   }, []);
-  
+
   const fetchAllData = async () => {
     try {
       const dataArray = [];
@@ -32,6 +34,10 @@ function AssignmentList() {
     await deleteDoc(doc(db, "assignments", id));
     fetchAllData();
   };
+  console.log("results ::", results);
+  const updateAssignment = async (assignmentId) => {
+    navigate({ to: `/dashboard/update-assignments/teacher/${assignmentId}` })
+  }
 
   return (
     <>
@@ -61,15 +67,24 @@ function AssignmentList() {
                   <td className="text-center">{result.deadline}</td>
                   {/* Total Marks */}
                   <td className="text-center">{result.totalMarks}</td>
-                  <td className="text-end">{
+                  <td className="text-end">{<div className="flex justify-evenly">
+                  <button
+                      className="btn bg-green-600"
+                      onClick={() => updateAssignment(result.assignmentId)}
+                    >
+                      Edit
+                    </button>
                     <button
                       className="btn bg-red-600"
                       onClick={() => deleteAssignment(result.assignmentId)}
                     >
                       Delete
                     </button>
+                  </div>
                   }
+
                   </td>
+
                 </tr>
               ))}
             </tbody>

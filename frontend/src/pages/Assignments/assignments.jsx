@@ -12,6 +12,7 @@ function Assignments() {
     querySnapshot.forEach((doc) => {
       setAssignment((prev) => [...prev, doc.data()])
     });
+    console.log("querySnapshot :: ", querySnapshot);
   }
 
   useEffect(() => {
@@ -20,7 +21,7 @@ function Assignments() {
 
   return (
     <>
-      {/* <SubjectsList /> */}
+      {console.log("assignments :: ", assignments)}
 
       <h2 className="text-2xl font-bold lg:text-3xl my-6">Assignments</h2>
       <div className="my-5">
