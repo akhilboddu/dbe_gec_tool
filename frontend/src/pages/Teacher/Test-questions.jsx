@@ -4,7 +4,7 @@ import QuestionAnswer from "./Question-answers";
 
 
 const TestQuestions = ({
-   question,
+  question,
   questionIndex,
   handleDeleteQuestion,
   handleEditQuestion,
@@ -133,6 +133,7 @@ const TestQuestions = ({
                   handleEditAnswer={handleEditAnswer}
                   handleDeleteAnswer={handleDeleteAnswer}
                   onChange={onChange}
+                  answerLength= {question.answers.length}
                 />
               )
             })}

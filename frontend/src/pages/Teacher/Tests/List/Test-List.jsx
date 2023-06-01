@@ -67,9 +67,9 @@ function TestList() {
                   <td className="text-center">{result.duration}</td>
                   {/* Total Marks */}
                   <td className="text-center">{result.totalMarks}</td>
-                  <td className="text-end">{<div className="flex justify-evenly">
+                  <td className="text-end">{<div className="flex justify-end">
                     <button
-                      className="btn bg-green-600"
+                      className="btn bg-green-600 mr-5"
                       onClick={() => updateTest(result.testId)}
                     >
                       Edit

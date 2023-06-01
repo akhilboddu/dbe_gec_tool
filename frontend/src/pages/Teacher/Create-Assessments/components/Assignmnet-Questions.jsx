@@ -133,6 +133,7 @@ const AssignmentQuestions = ({
                   handleEditAnswer={handleEditAnswer}
                   handleDeleteAnswer={handleDeleteAnswer}
                   onChange={onChange}
+                  answerLength= {question.answers.length}
                 />
               )
             })}

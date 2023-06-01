@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { doc, addDoc, collection, updateDoc, getDoc, setDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useState } from "react";
@@ -11,38 +11,6 @@ import moment from 'moment';
 const CreateAssignment = ({ action }) => {
 
   const { params: { assignmentId } } = useMatch();
-  useEffect(() => {
-    if (assignmentId && action == 'update') {
-      assignmentFetch();
-    }
-  }, [assignmentId])
-
-  useEffect(() => {
-    if (assignmentObject.questions.length == 0) {
-      const tempQuestions = assignmentObject.questions;
-      tempQuestions.push({
-        questionText: '',
-        questionMarks: 1,
-        explanation: '',
-        questionType: 'mcq',
-        image: null,
-        isSaved: false,
-        answers: [{
-          answerText: '',
-          answer: false,
-          isSaved: false,
-  
-        }]
-      });
-  
-      setAssignmentObject(prevAssignment => {
-        return { ...prevAssignment, questions: tempQuestions }
-      })
-    }
-  })
-
-
-
   const navigate = useNavigate();
   const [totalMarks, setTotalMarks] = useState(0);
   const [isEditQuestion, setIsEditQuestion] = useState(false);
@@ -70,17 +38,62 @@ const CreateAssignment = ({ action }) => {
     }],
   })
 
+  useEffect(() => {
+    if (assignmentId && action == 'update') {
+      assignmentFetch();
+    }
+  }, [assignmentId])
+
+  useEffect(() => {
+    if (assignmentObject.questions.length == 0) {
+      const tempQuestions = assignmentObject.questions;
+      tempQuestions.push({
+        questionText: '',
+        questionMarks: 1,
+        explanation: '',
+        questionType: 'mcq',
+        image: null,
+        isSaved: false,
+        answers: [{
+          answerText: '',
+          answer: false,
+          isSaved: false,
+
+        }]
+      });
+
+      setAssignmentObject(prevAssignment => {
+        return { ...prevAssignment, questions: tempQuestions }
+      })
+    }
+  })
+
   const assignmentFetch = async () => {
     setLoading(true);
     const docRef = doc(db, "assignments", assignmentId);
     const docSnap = await getDoc(docRef);
     let editAssignment = docSnap.data();
+    editAssignment.questions.forEach((element) => {
+      element.isSaved = true
+    })
+    editAssignment.questions.push({
+      questionText: '',
+      questionMarks: 1,
+      explanation: '',
+      questionType: 'mcq',
+      image: null,
+      isSaved: false,
+      answers: [{
+        answerText: '',
+        answer: false,
+        isSaved: false,
+      }]
+    });
 
-    let updatedDeadline = moment(new Date(editAssignment.deadline).toISOString().split('T')[0]).format("YYYY-MM-DD");// update according to date input
-    editAssignment = { ...editAssignment, deadline: updatedDeadline }
     setAssignmentObject(editAssignment);
     setLoading(false);
   };
+
   const onChange = (event, qIndex, aIndex) => {
     const { name, value } = event.target;
     if (!isNaN(qIndex) && !isNaN(aIndex)) {
@@ -189,10 +202,8 @@ const CreateAssignment = ({ action }) => {
       }
     } else {
       isValid = false;
-      notify.show(`Enter complete Question Details`, "error", 5000);
+      notify.show(`Enter complete question details`, "error", 5000);
     }
-
-
 
     return isValid
   }
@@ -202,10 +213,10 @@ const CreateAssignment = ({ action }) => {
     let deadline = new Date(assignmentObject.deadline).toUTCString().split(' ').slice(0, 4).join(' ');
     let assignmentMarks = 0;
 
-    assignmentObject.questions.map((question, questionIndex) => {
-      assignmentMarks = assignmentMarks + parseInt(question.questionMarks);
-      setTotalMarks(assignmentMarks);
-    })
+    // assignmentObject.questions.map((question, questionIndex) => {
+    //   assignmentMarks = assignmentMarks + parseInt(question.questionMarks);
+    //   setTotalMarks(assignmentMarks);
+    // })
 
     let tempQuestions = assignmentObject.questions.map((question, indexQ) => {
       if (indexQ == (assignmentObject.questions.length - 1)) {
@@ -286,7 +297,7 @@ const CreateAssignment = ({ action }) => {
       }
     } else {
       isValid = false;
-      notify.show(`Enter complete Question Details`, "error", 5000);
+      notify.show(`Enter complete question details`, "error", 5000);
     }
 
     return isValid
@@ -301,10 +312,14 @@ const CreateAssignment = ({ action }) => {
        * Here we have to check the length but as we are adding a blank object in array 
        * so instead on one we are expecting minimum length of array will be 2
        */
-      if (questions.length < 2) {
+      if ((action === 'update' && !questions.length) || questions.length < 2) {
         isValid = false
-        notify.show(`Add 1 Question At Least`, "error", 5000);
+        notify.show(`Add 1 question at least`, "error", 5000);
       }
+      else if (questions.at(-1).questionText) {
+        isValid = validateQuestion()
+      }
+
     } else {
       isValid = false
       notify.show(`Enter complete assignment details`, "error", 5000);
@@ -325,7 +340,7 @@ const CreateAssignment = ({ action }) => {
       try {
         if (action == 'update') {
           const editDoc = doc(db, "assignments", assignmentId);
-          await setDoc(editDoc,assignmentObject)
+          await setDoc(editDoc, assignmentObject)
           notify.show(`Assignment Successfully Updated`, "success", 5000);
           navigate({ to: `/teacher-dashboard`, replace: true });
         } else {
@@ -360,6 +375,19 @@ const CreateAssignment = ({ action }) => {
       return { ...prevAssignment, questions: tempAssignment, totalMarks: updatedMarks }
     })
   }
+
+  const updateMarks = () => {
+    let updatedMarks = 0
+    assignmentObject.questions.forEach(element => {
+      if (element.questionText) {
+        updatedMarks += Number(element.questionMarks);
+      }
+    });
+    setTotalMarks(updatedMarks);
+    assignmentObject.totalMarks = updatedMarks
+  };
+
+
 
   const handleEditQuestion = (qIndex) => {
 
@@ -463,10 +491,11 @@ const CreateAssignment = ({ action }) => {
       notify.show(`Cannot save empty answer`, "error", 5000);
     }
 
-
-
-
   }
+
+  useMemo(() => {
+    updateMarks();
+  }, [assignmentObject])
 
   return (
     <div className="mt-10 sm:mt-0">
@@ -481,7 +510,7 @@ const CreateAssignment = ({ action }) => {
             </p>
           </div>
           <div className="mr-5">
-            Total Marks: {assignmentObject.totalMarks}
+            Total Marks: {totalMarks}
           </div>
         </div>
         <div className="mt-5 md:col-span-2 md:mt-0">
