@@ -5,12 +5,14 @@ function GradesTable({ result, teacherId }) {
   console.log("table", result);
 
   const renderButton = (tResult) => {
+
     if (tResult.status === "evaluated") {
       return (
         <Link
           to={`/result/${tResult.test ? tResult.test: tResult.assignment}/${tResult.attemptId}`}
           className="btn-mainColor btn"
         >
+          {console.log("tResult :: evaluated ::", tResult.assignment)}
           View
         </Link>
       );
@@ -21,6 +23,7 @@ function GradesTable({ result, teacherId }) {
             to={`/result/${tResult.test ? tResult.test: tResult.assignment}/${tResult.attemptId}`}
             className="btn-mainColor btn"
           >
+            {console.log("tResult :: !teacherId ::", tResult.assignment)}
             View
           </Link>
         );
@@ -30,6 +33,7 @@ function GradesTable({ result, teacherId }) {
             to={`/result/${tResult.test ? tResult.test: tResult.assignment }/${tResult.attemptId}/${tResult.id}/${teacherId}`}
             className="btn"
           >
+            {console.log("tResult :: ELSE ::", tResult.assignment)}
             Evaluate
           </Link>
         );

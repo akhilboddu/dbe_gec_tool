@@ -4,29 +4,51 @@ import QuestionAnswer from "./Question-answers";
 
 
 const TestQuestions = ({
-  addAnswer,
-  setAnswers,
-  register,
-  index,
+  question,
   questionIndex,
-  questionType,
-  setQuestionType,
-  setAnswerText,
-  setAnswerExplanation,
-  answers,
-  answerIndex,
-  question
+  handleDeleteQuestion,
+  handleEditQuestion,
+  handleSaveQuestion,
+  onChange,
+  onChangeImage,
+  handleSaveAnswer,
+  handleEditAnswer,
+  handleDeleteAnswer,
+  addAnswer,
+  isEditQuestion,
 }) => {
-  const [currentAnswer, setCurrentAnswer] = useState(0);
-  const [questionMarks, setQuestionMarks] = useState(1);
-
   return (
     <>
       <div className="grid grid-cols-6 gap-6 p-6 border rounded shadow">
-        <div className="col-span-6">
-          <h2 className="block text-lg font-medium text-gray-900">{`Question ${index + 1
-            }`}</h2>
+        <div className="col-span-5">
+          <h2 className="block text-lg font-medium text-gray-900">{`Question ${questionIndex + 1}`}</h2>
         </div>
+        {
+          question.isSaved ? <div className="flex justify-between col-span-1">
+            <button
+              onClick={() => { handleDeleteQuestion(questionIndex) }}
+              className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md shadow-sm bg-red-600"
+            >
+              Delete
+            </button>
+            <button
+              onClick={() => { handleEditQuestion(questionIndex) }}
+              className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md shadow-sm bg-green-600"
+            >
+              Edit
+            </button>
+          </div> : <></>
+        }
+        {
+          isEditQuestion ? <div className="flex justify-end col-span-1">
+            <button
+              onClick={() => { handleSaveQuestion(questionIndex) }}
+              className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md shadow-sm btn-mainColor"
+            >
+              Save
+            </button> </div> : <></>
+        }
+
 
         <div className="col-span-4 mt-4 xs:col-span-6">
           <label className="block font-medium text-gray-700 text-md">
@@ -34,10 +56,11 @@ const TestQuestions = ({
           </label>
           <input
             type="text"
-            name={index}
-            disabled={questionIndex == index ? false : true}
+            name="questionText"
+            disabled={question.isSaved}
             className="mt-1 block h-[36px] w-full rounded-md border border-gray-300 bg-gray-50 px-2 shadow-sm  focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            {...register(`question-text-${index}`, { required: true })}
+            value={question.questionText}
+            onChange={(event) => onChange(event, questionIndex)}
           />
         </div>
 
@@ -47,12 +70,11 @@ const TestQuestions = ({
           </label>
           <input
             type="number"
-            value={questionMarks}
-            disabled={questionIndex == index ? false : true}
-            name={index}
+            disabled={question.isSaved}
+            name="questionMarks"
             className="mt-1 block h-[36px]  w-full rounded-md border border-gray-300 bg-gray-50 px-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            {...register(`question-marks-${index}`, { required: true })}
-            onChange={event => setQuestionMarks(event.target.value)}
+            value={question.questionMarks}
+            onChange={(event) => onChange(event, questionIndex)}
           />
         </div>
 
@@ -62,10 +84,11 @@ const TestQuestions = ({
           </label>
           <input
             type="text"
-            disabled={questionIndex == index ? false : true}
-            name={index}
+            disabled={question.isSaved}
+            name="explanation"
             className="mt-1 block h-[36px]  w-full rounded-md border border-gray-300 bg-gray-50 px-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            {...register(`question-explanation-${index}`, { required: true })}
+            value={question.explanation}
+            onChange={(event) => onChange(event, questionIndex)}
           />
         </div>
 
@@ -74,60 +97,59 @@ const TestQuestions = ({
             Type of Question
           </label>
           <select
-            name={`question-type-${index}`}
-            disabled={questionIndex == index ? false : true}
+            name="questionType"
+            disabled={question.isSaved}
             className="p-2 w-full border rounded bg-gray-50"
-            onChange={(e) => setQuestionType(e.target.value)}
+            value={question.questionType}
+            onChange={(event) => onChange(event, questionIndex)}
           >
             <option value={"mcq"}>Multiple Choice Question</option>
             <option value={"text"}>Text</option>
           </select>
         </div>
-
-        <div className="col-span-2 mt-4">
+        <div className="flex flex-col col-span-2 mt-4">
           <label className="block font-medium text-gray-700 text-md">
             Upload image
           </label>
           <input
             type="file"
-            disabled={questionIndex == index ? false : true}
-            name={index}
+            disabled={question.isSaved}
+            name="image"
             className="mt-1 block cursor-pointer h-[36px] w-full rounded-md px-2  focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            {...register(`question-image-${index}`, { required: false })}
+            onChange={(event) => onChangeImage(event.target.files[0], questionIndex)}
           />
         </div>
+        {question.questionType == "mcq" &&
+          <>
+            <h2 className="block font-medium text-gray-700 text-md"></h2>
+            {question.answers.length > 0 && question.answers.map((answer, answerIndex) => {
+              return (
+                <QuestionAnswer
+                  answer={answer}
+                  question={question}
+                  answerIndex={answerIndex}
+                  questionIndex={questionIndex}
+                  handleSaveAnswer={handleSaveAnswer}
+                  handleEditAnswer={handleEditAnswer}
+                  handleDeleteAnswer={handleDeleteAnswer}
+                  onChange={onChange}
+                  answerLength= {question.answers.length}
+                />
+              )
+            })}
+          </>
 
-        {questionType == "mcq" && questionIndex == index && 
-          <div className="col-span-6 mt-4">
-            <h2 className="block font-medium text-gray-700 text-md">
-              Question answers:
-            </h2>
+        }
+        {question.questionType == "mcq" && !question.isSaved ? (
+          <div className="col-span-6">
+            <button
+              className="block px-4 py-2 text-sm text-white rounded-md bg-mainColor"
+              onClick={() => { addAnswer(questionIndex) }}
+            >
+              Add Answer
+            </button>
           </div>
-        }
-
-        {questionType == "mcq" && questionIndex == index &&
-          answers.map((answer, index2) => (
-            <QuestionAnswer
-              key={index2}
-              addAnswer={addAnswer}
-              setAnswers={setAnswers}
-              answers={answers}
-              index={index2}
-              setAnswerText={setAnswerText}
-              setAnswerExplanation={setAnswerExplanation}
-              currentAnswer={currentAnswer}
-              answerIndex={answerIndex}
-              questionIndex={questionIndex}
-              thisQuestionIndex={index}
-            />
-          ))
-        }
-
-        {questionIndex !== index &&
-          question?.answers?.map(((ans, i) => (
-            <p key={i}>{"Option " + (i + 1) + '-'} {ans.text}: {ans.isCorrect ? "(True)" : "(False)"}</p>
-          )))
-        }
+        ) : <></>}
       </div>
     </>
   );

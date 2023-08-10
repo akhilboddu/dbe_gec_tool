@@ -6,17 +6,15 @@ import {
 } from "@tanstack/react-location";
 import clsx from "clsx";
 import { isEmpty } from "lodash-es";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "react-query";
-
 import Question from "/src/components/question/question";
 import Error from "/src/components/shared/error";
 import Info from "/src/components/shared/info";
 import { QueryKeys } from "/src/constants/query-keys";
 import { auth, db } from "/src/firebase";
 import { postTestResultsInCourseApi } from "/src/helpers/fetchers";
-import CourseContext from "/src/context/courseContext";
 
 import {
   arrayRemove,
@@ -29,7 +27,6 @@ import {
   collection,
 } from "firebase/firestore";
 
-const NUM_QUESTIONS_EACH_TEST = 10;
 
 export default function QuestionList({
   questions,
@@ -72,8 +69,8 @@ export default function QuestionList({
           if (answer?.teacherNote) {
             data[i].teacherNote = answer?.teacherNote;
           }
-          if (answer.isCorrect !== undefined) {
-            data[i].isCorrect = answer.isCorrect;
+          if (answer.answer !== undefined) {
+            data[i].answer = answer.answer;
           }
           if (answer.marks) {
             data[i].marks = answer.marks;
@@ -175,11 +172,13 @@ export default function QuestionList({
 
       for (let index = 0; index < selectedAnswers.length; index++) {
         const selectedAnswer = selectedAnswers[index];
-        if (selectedAnswer.type == "mcq" && selectedAnswer?.isCorrect === true) {
+        console.log("selectedAnswer:: :: ", selectedAnswer);
+        if (selectedAnswer.questionType == "mcq" && selectedAnswer?.answer === "true") {
+          
           correctAnswerIds.push(selectedAnswer)
           tempScore = tempScore + Number(selectedAnswer.questionMarks)
         }
-        else if (selectedAnswer.type == "text") {
+        else if (selectedAnswer.questionType == "text") {
           textAnswersArr.push(selectedAnswer)
         }
       }
@@ -193,7 +192,7 @@ export default function QuestionList({
     } else {
       let newCorrectAnswers = 0;
       teacherNotes.forEach((element) => {
-        if (element.isCorrect) {
+        if (element.answer == "true") {
           newCorrectAnswers = Number(newCorrectAnswers) + Number(element.marks);
         }
         attemptData.answers = attemptData.answers.map((a) => {
@@ -275,7 +274,7 @@ export default function QuestionList({
   };
 
   const getAttemptedAnswer = (index) => {
-    const found = attemptData?.answers.find((o) => o.question === index);
+    const found = attemptData?.answers.find((o) => o.question === index+1);
     return found;
   };
 
@@ -313,7 +312,7 @@ export default function QuestionList({
           <Question
             question={question}
             key={index}
-            index={question.index}
+            index={index+1}
             register={register}
             image={question.image}
             heading={question.heading}
@@ -323,7 +322,7 @@ export default function QuestionList({
             disabled={score}
             handelSelectedAnswers={handelSelectedAnswers}
             resultCheck={attemptData ? true : false}
-            prevSelected={getAttemptedAnswer(question.index)}
+            prevSelected={getAttemptedAnswer(index)}
             teacher={teacherId}
           />
         ))}

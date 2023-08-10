@@ -1,6 +1,6 @@
 import { useMatch } from "@tanstack/react-location";
 
-import QuestionList from "/src/components/assignment-question/question-list";
+import QuestionList from "../components/assignment-question/question-list";
 import Loading from "/src/components/shared/loading";
 
 import { useState, useEffect } from "react";
@@ -8,11 +8,8 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
 export default function UserCourseAssignment() {
-  console.log(1);
   // location
-  const {
-    params: { assignmentId, attemptId, gradeId, teacherId },
-  } = useMatch();
+  const { params: { assignmentId, attemptId, gradeId, teacherId } } = useMatch();
   const {
     params: p1,
   } = useMatch();
@@ -26,6 +23,7 @@ export default function UserCourseAssignment() {
       setLoading(true);
       const docRef = doc(db, "assignments", assignmentId);
       const docSnap = await getDoc(docRef);
+      console.log("docSnap : ", docSnap.data());
       setAssignmentData(docSnap.data());
       if (attemptId) {
         attemptedAnswersFetch();
@@ -91,7 +89,6 @@ export default function UserCourseAssignment() {
                 {instruction}
               </li>
             ))}
-
             <QuestionList
               questions={assignmentData.questions}
               subject={assignmentData.title}

@@ -33,14 +33,12 @@ export default function UserCourseTest() {
       setLoading(true);
       const docRef = doc(db, "test", testId);
       const docSnap = await getDoc(docRef);
-      console.log(docSnap.data());
       if(docSnap.data()){
         setTestData(docSnap.data());
       }
       else{
         const docRef = doc(db, "assignments", testId);
         const docSnap = await getDoc(docRef);  
-        console.log(docSnap.data());
         setTestData(docSnap.data());
       }
       if (attemptId) {
@@ -83,7 +81,6 @@ export default function UserCourseTest() {
     });
     return linksArray;
   };
-
   return (
     <div>
       {!loading ? (testData ? (

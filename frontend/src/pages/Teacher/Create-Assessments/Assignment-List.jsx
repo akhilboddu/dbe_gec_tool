@@ -5,11 +5,11 @@ import { useState } from "react";
 import Loading from "/src/components/shared/loading";
 import { useNavigate } from "@tanstack/react-location";
 
-function TestList() {
-  const navigate = useNavigate();
+
+function AssignmentList() {
   const [results, setResult] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const navigate = useNavigate();
   useEffect(() => {
     fetchAllData();
   }, []);
@@ -17,7 +17,7 @@ function TestList() {
   const fetchAllData = async () => {
     try {
       const dataArray = [];
-      const qry = query(collection(db, "test"));
+      const qry = query(collection(db, "assignments"));
       const querySnapshot = await getDocs(qry);
       querySnapshot.forEach((doc) => {
         dataArray.push({ ...doc.data(), id: doc.id });
@@ -30,13 +30,13 @@ function TestList() {
     }
   };
 
-  const deleteTest = async (id) => {
-    await deleteDoc(doc(db, "test", id));
+  const deleteAssignment = async (id) => {
+    await deleteDoc(doc(db, "assignments", id));
     fetchAllData();
   };
   console.log("results ::", results);
-  const updateTest = async (testId) => {
-    navigate({ to: `/dashboard/update-test/teacher/${testId}` })
+  const updateAssignment = async (assignmentId) => {
+    navigate({ to: `/dashboard/update-assignments/teacher/${assignmentId}` })
   }
 
   return (
@@ -50,7 +50,7 @@ function TestList() {
               <tr>
                 <th className="text-center">Sr. No</th>
                 <th className="text-center">Title</th>
-                <th className="text-center">Duration</th>
+                <th className="text-center">Deadline</th>
                 <th className="text-center">Total Marks</th>
                 <th className="text-center">Action</th>
               </tr>
@@ -63,20 +63,20 @@ function TestList() {
                   <th className="text-center" style={{ zIndex: 0 }}>{index + 1}</th>
                   {/* Title */}
                   <td className="text-center">{result.title}</td>
-                  {/* Duration */}
-                  <td className="text-center">{result.duration}</td>
+                  {/* Deadline */}
+                  <td className="text-center">{result.deadline}</td>
                   {/* Total Marks */}
                   <td className="text-center">{result.totalMarks}</td>
                   <td className="text-end">{<div className="flex justify-end">
-                    <button
+                  <button
                       className="btn bg-green-600 mr-5"
-                      onClick={() => updateTest(result.testId)}
+                      onClick={() => updateAssignment(result.assignmentId)}
                     >
                       Edit
                     </button>
                     <button
                       className="btn bg-red-600"
-                      onClick={() => deleteTest(result.testId)}
+                      onClick={() => deleteAssignment(result.assignmentId)}
                     >
                       Delete
                     </button>
@@ -84,6 +84,7 @@ function TestList() {
                   }
 
                   </td>
+
                 </tr>
               ))}
             </tbody>
@@ -94,4 +95,4 @@ function TestList() {
   );
 }
 
-export default TestList;
+export default AssignmentList;

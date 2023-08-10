@@ -1,199 +1,523 @@
-import React, { useEffect, useReducer, useContext } from "react";
-import CourseContext from "/src/context/courseContext";
-import { addDoc, collection, updateDoc } from "firebase/firestore";
+import React, { useMemo } from "react";
+import { doc, addDoc, collection, updateDoc, getDoc, setDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { useState } from "react";
-import { render } from "react-dom";
-import { set, useForm } from "react-hook-form";
-import QuestionAnswer from "../Question-answers";
-import TestQuestions from "../Test-questions";
+import { useState, useEffect } from "react";
 import { db } from "/src/firebase";
 import { notify } from "react-notify-toast";
-import { useNavigate } from "@tanstack/react-location";
+import { useNavigate, useMatch } from "@tanstack/react-location";
+import TestQuestions from "../Test-questions";
 
-const CreateTest = () => {
-  const ctxQuestions = useContext(CourseContext);
-  const { arrTest } = ctxQuestions;
+const CreateTest = ({ action }) => {
+
+  const { params: { testId } } = useMatch();
   const navigate = useNavigate();
-  const { register, handleSubmit } = useForm();
   const [totalMarks, setTotalMarks] = useState(0);
-  const [questionIndex, setQuestionIndex] = useState(0);
-  const [questionType, setQuestionType] = useState("mcq");
-  const [answerText, setAnswerText] = useState();
-  const [answerExplanation, setAnswerExplanation] = useState("");
-  const [answerIndex, setAnswerIndex] = useState(0);
+  const [isEditQuestion, setIsEditQuestion] = useState(false);
+  const [isEditAnswer, setIsEditAnswer] = useState(false);
+  const [testObject, setTestObject] = useState({
+    title: '',
+    description: '',
+    duration: 0,
+    testType: 'school-assessment',
+    totalMarks: 0,
+    instructions: null,
+    questions: [{
+      questionText: '',
+      questionMarks: 1,
+      explanation: '',
+      questionType: 'mcq',
+      image: null,
+      isSaved: false,
+      answers: [{
+        answerText: '',
+        answer: false,
+        isSaved: false,
+      }]
+    }],
+  })
 
-  const [answers, setAnswers] = useState([{
-    answerId: `answer-${0}`,
-    text: '',
-    isCorrect: false,
-  }]);
-  const [questions, setQuestions] = useState([{}]);
-
-  const addAnswer = (e) => {
-    e.preventDefault();
-
-    if (questionType == "mcq") {
-      setAnswers((prev) => [
-        ...prev,
-        {
-          answerId: `answer-${answerIndex + 1}`,
-          text: answerText,
-          isCorrect: false,
-        },
-      ]);
-
-      setAnswerIndex((prev) => prev + 1);
+  useEffect(() => {
+    if (testId && action == 'update') {
+      testFetch();
     }
+  }, [testId])
+
+  useEffect(() => {
+    if (testObject.questions.length == 0) {
+      const tempQuestions = testObject.questions;
+      tempQuestions.push({
+        questionText: '',
+        questionMarks: 1,
+        explanation: '',
+        questionType: 'mcq',
+        image: null,
+        isSaved: false,
+        answers: [{
+          answerText: '',
+          answer: false,
+          isSaved: false,
+        }]
+      });
+
+      setTestObject(prevTest => {
+        return { ...prevTest, questions: tempQuestions }
+      })
+    }
+
+
+  }, [])
+
+  const testFetch = async () => {
+    const docRef = doc(db, "test", testId);
+    const docSnap = await getDoc(docRef);
+    let editTest = docSnap.data();
+    editTest.questions.forEach((element) => {
+      element.isSaved = true
+    })
+    editTest.questions.push({
+      questionText: '',
+      questionMarks: 1,
+      explanation: '',
+      questionType: 'mcq',
+      image: null,
+      isSaved: false,
+      answers: [{
+        answerText: '',
+        answer: false,
+        isSaved: false,
+      }]
+    });
+    setTestObject(editTest);
   };
+
+  const onChange = (event, qIndex, aIndex) => {
+    const { name, value } = event.target;
+    if (!isNaN(qIndex) && !isNaN(aIndex)) {
+      const tempAns = testObject.questions[qIndex].answers.map((answer, answerIndex) => {
+        if (answerIndex == aIndex) {
+          return { ...answer, [name]: value }
+        }
+        return answer
+      });
+      const tempQuestions = testObject.questions.map((question, questionIndex) => {
+        if (questionIndex == qIndex) {
+          return { ...question, answers: tempAns }
+        }
+        return question;
+      });
+      setTestObject(prevTest => {
+        return { ...prevTest, questions: tempQuestions }
+      })
+    }
+
+    else if (!isNaN(qIndex)) {
+      const tempQuestions = testObject.questions.map((question, questionIndex) => {
+        if (questionIndex == qIndex) {
+          return { ...question, [name]: value }
+        }
+        return question;
+      });
+      setTestObject(prevTest => {
+        return { ...prevTest, questions: tempQuestions }
+      })
+    }
+    else {
+      setTestObject(prevTest => {
+        return { ...prevTest, [name]: value }
+      })
+    }
+  }
+  const onChangeImage = (file, qIndex) => {
+    const storage = getStorage();
+    const storageRef = ref(storage, `question-images/${file.name}`);
+
+    // 'file' comes from the Blob or File API
+    uploadBytes(storageRef, file).then((snapshot) => {
+      getDownloadURL(storageRef).then((url) => {
+        const tempQuestions = testObject.questions.map((question, index) => {
+          if (index == qIndex) {
+            return { ...question, image: url }
+          }
+          return question;
+        });
+        setTestObject(prevTest => {
+          return { ...prevTest, questions: tempQuestions }
+        })
+      })
+    })
+
+  }
+
+  const addAnswer = (qIndex) => {
+
+    const tempAns = testObject.questions[qIndex].answers;
+    tempAns.push({
+      answerText: '',
+      answer: false,
+      isSaved: false,
+    })
+    const tempQuestions = testObject.questions.map((question, questionIndex) => {
+      if (questionIndex == qIndex) {
+        return { ...question, answers: tempAns }
+      }
+      return question;
+    });
+    setTestObject(prevTest => {
+      return { ...prevTest, questions: tempQuestions }
+    })
+  }
+
 
   const validateQuestion = () => {
     let isValid = true
-    if (questionType == "mcq") {
-      let trueValueCounter = 0
-      // Checking empty answer if any, and coiunting true options 
-      answers.map((element, index) => {
-        if (!element.text) {
+    let length = testObject?.questions.length;
+
+    const { explanation, questionText } = testObject.questions[length - 1];
+    if (explanation !== '' && questionText !== '') {
+      if (testObject.questions[length - 1].questionType === 'mcq') {
+        let trueValueCounter = 0
+        testObject.questions[length - 1].answers.map((answer, index) => {
+          if (!answer.answerText) {
+            isValid = false
+            notify.show(`Answer can't be empty`, "error", 5000);
+          }
+          if (answer.answer) {
+            trueValueCounter++
+          }
+          if (testObject.questions[length - 1].answers.length < 2) {
+            isValid = false
+            notify.show(`Need to add At least 2 options (answers)`, "error", 5000);
+          }
+        })
+        if (trueValueCounter == 0) {
           isValid = false
-          notify.show(`Answer can't be empty`, "error", 5000);
+          notify.show(`Need to select at least 1 'TRUE' value`, "error", 5000);
+        } else if (trueValueCounter > 1) {
+          isValid = false
+          notify.show(`Need to select at most 1 'TRUE' value`, "error", 5000);
         }
-        if (element.isCorrect) {
-          trueValueCounter++
-        }
-      })
-
-      // Validating only 1 true option should be in array  
-      if (trueValueCounter == 0) {
-        isValid = false
-        notify.show(`Need to select atleast 1 'TRUE' value`, "error", 5000);
-      } else if (trueValueCounter > 1) {
-        isValid = false
-        notify.show(`Need to select atmost 1 'TRUE' value`, "error", 5000);
       }
-
-      // There should be atleast 2 options in MCQs  
-      if (answers.length < 2) {
-        isValid = false
-        notify.show(`Need to add Atleast 2 options (answers)`, "error", 5000);
-      }
+    } else {
+      isValid = false;
+      notify.show(`Enter complete question details`, "error", 5000);
     }
-    
     return isValid
   }
-  
-  const addQuestion = (data) => {
+
+  const saveQuestion = () => {
+
+    let testMarks = 0;
+
+    // testObject.questions.map((question, index) => {
+    //   testMarks = testMarks + parseInt(question.questionMarks);
+    //   setTotalMarks(testMarks);
+    // })
+
+    let tempQuestions = testObject.questions.map((question, indexQ) => {
+      if (indexQ == (testObject.questions.length - 1)) {
+        let tempAnswers = question.answers.map((answer, indexA) => {
+          if (indexA == (question.answers.length - 1)) {
+            return { ...answer, isSaved: true }
+          }
+          return answer;
+        })
+        return { ...question, answers: tempAnswers }
+      }
+      return question;
+    })
+
+    setTestObject(prevTest => {
+      return {
+        ...prevTest, totalMarks: testMarks, questions: tempQuestions, instructions: [
+          "Read all the instructions and questions carefully.",
+          "Choose the letter of the correct answer.",
+          "Answer all questions.",
+          `The duration for this test is ${prevTest.duration}`
+        ]
+      }
+    })
+
     if (validateQuestion()) {
-      const file = data[`question-image-${questionIndex}`][0] ? data[`question-image-${questionIndex}`][0] : "";
-      
-      const storage = getStorage();
-      const storageRef = ref(storage, `question-images/${file.name}`);
-
-      // 'file' comes from the Blob or File API
-      uploadBytes(storageRef, file).then((snapshot) => {
-        
-        getDownloadURL(storageRef).then((url) => {
-          setTotalMarks(totalMarks + Number(data[`question-marks-${questionIndex}`]))
-          setQuestions((prev) => {
-            return [
-              ...prev,
-              {
-                index: questionIndex + 1,
-                explanation: data[`question-explanation-${questionIndex}`],
-                questionMarks: data[`question-marks-${questionIndex}`],
-                questionId: questionIndex + 1,
-                image: file == "" ? null : url,
-                text: data[`question-text-${questionIndex}`],
-                type: questionType,
-                answers: questionType == "mcq" ? [...answers]: [],
-              },
-            ];
-          });
-          const user = JSON.parse(localStorage.getItem("user"));
-          const instArray = test.instructions;
-          instArray[3] = `The duration of this test is ${data.duration} minutes.`;
-          setTest({
-            title: data.title,
-            description: data.description,
-            duration: data.duration + " MIN",
-            testType: data.testType,
-            teacherId: user.id,
-            totalMarks: totalMarks,
-            instructions: instArray,
-          });
-
-          setQuestionIndex((prev) => prev + 1);
-          setAnswerIndex(0);
-          setAnswers([{
-            answerId: `answer-${0}`,
-            text: '',
-            isCorrect: false,
-          }]);
-          setQuestionType("mcq");
-          notify.show(`Question ${questionIndex + 1} added`, "success", 5000);
-        });
+      const tempQuestions = testObject.questions.map((question, questionIndex) => {
+        return { ...question, isSaved: true };
       });
+      tempQuestions.push({
+        questionText: '',
+        questionMarks: 1,
+        explanation: '',
+        questionType: 'mcq',
+        image: null,
+        isSaved: false,
+        answers: [{
+          answerText: '',
+          answer: false,
+          isSaved: false,
+
+        }]
+      });
+
+      setTestObject(prevTest => {
+        return { ...prevTest, questions: tempQuestions }
+      })
     }
-    else {
-      notify.show(`Answer can't be empty`, "error", 5000);
+  }
+
+  const validateSaveQuestion = (qIndex) => {
+    let isValid = true
+    let trueValueCounter = 0
+    const { explanation, questionText } = testObject.questions[qIndex];
+    if (explanation !== '' && questionText !== '') {
+      if (testObject.questions[qIndex].questionType === 'mcq') {
+
+        testObject.questions[qIndex].answers.map((answer, index) => {
+          if (!answer.answerText) {
+            isValid = false
+            notify.show(`Answer can't be empty`, "error", 5000);
+          }
+          if (answer.answer == "true") {
+            trueValueCounter++
+          }
+
+          if (testObject.questions[qIndex].answers.length < 2) {
+            isValid = false
+            notify.show(`Need to add At least 2 options (answers)`, "error", 5000);
+          }
+        })
+        if (trueValueCounter == 0) {
+          isValid = false
+          notify.show(`Need to select at least 1 'TRUE' value`, "error", 5000);
+        } else if (trueValueCounter > 1) {
+          isValid = false
+          notify.show(`Need to select at most 1 'TRUE' value`, "error", 5000);
+        } else {
+          isValid = true;
+        }
+      }
+    } else {
+      isValid = false;
+      notify.show(`Enter complete question details`, "error", 5000);
     }
-  };
+
+    return isValid
+  }
 
   const validateForm = () => {
+
     let isValid = true
-    /** 
-     * Here we have to check the length but as we are adding a blank object in array 
-     * so instead on one we are expecting minimum length of array will be 2
-     */
-    if (questions.length < 2) {
+    const { duration, description, questions, title } = testObject;
+    if (title !== '' && description !== '' && duration != '') {
+      /** 
+       * Here we have to check the length but as we are adding a blank object in array 
+       * so instead on one we are expecting minimum length of array will be 2
+       */
+      if ((action === 'update' && !questions.length) || questions.length < 2) {
+        isValid = false
+        notify.show(`Add 1 Question At Least`, "error", 5000);
+      }
+      else if (questions.at(-1).questionText) {
+        isValid = validateQuestion()
+      }
+    } else {
       isValid = false
-      notify.show(`Atleast add a question`, "error", 5000);
+      notify.show(`Enter complete test details`, "error", 5000);
     }
+
 
     return isValid
   }
 
-  const saveTest = async (e) => {
+  const publishTest = async () => {
 
+    const length = testObject.questions.length;
     if (validateForm()) {
-      e.preventDefault();
-      questions.shift();
-      test.totalMarks = totalMarks
-      test.questions = [...questions];
-
-      setTest((prev) => ({ ...prev, questions: [...questions] }));
-      try {
-        const docRef = await addDoc(collection(db, "test"), test);
-        await updateDoc(docRef, {
-          testId: docRef.id,
+      if (testObject?.questions[length - 1]?.questionText == '') {
+        let tempQuestions = testObject.questions;
+        tempQuestions.splice(-1)
+        setTestObject(prevTest => {
+          return { ...prevTest, questions: tempQuestions }
         });
-        notify.show(`Test Successfully Published`, "success", 5000);
-        navigate({ to: `/teacher-dashboard`, replace: true });
+      }
+      try {
+        if (action == 'update') {
+          const editDoc = doc(db, "test", testId);
+          await setDoc(editDoc, testObject)
+          notify.show(`Test Successfully Updated`, "success", 5000);
+          navigate({ to: `/teacher-dashboard`, replace: true });
+        } else {
+          const docRef = await addDoc(collection(db, "test"), testObject);
+          await updateDoc(docRef, {
+            testId: docRef.id,
+          });
+          notify.show(`test Successfully Published`, "success", 5000);
+          setTotalMarks(0)
+          navigate({ to: `/teacher-dashboard`, replace: true });
+        }
+
       } catch (e) {
         console.error("Error adding document: ", e);
         notify.show(
-          "Error occured while publishing test. Please try again.",
+          "Error occurred while publishing test. Please try again.",
           "error",
           5000
         );
+        setTotalMarks(0)
       }
     }
+
+    // let tempQuestions = testObject.questions;
+    // if (validateForm()) {
+    //   tempQuestions.splice(-1)
+    //   setTestObject(prevTest => {
+    //     return { ...prevTest, questions: tempQuestions }
+    //   });
+    //   try {
+    //     const docRef = await addDoc(collection(db, "test"), testObject);
+    //     await updateDoc(docRef, {
+    //       testId: docRef.id,
+    //     });
+    //     notify.show(`Test Successfully Published`, "success", 5000);
+    //     setTotalMarks(0)
+    //     navigate({ to: `/teacher-dashboard`, replace: true });
+    //   } catch (e) {
+    //     console.error("Error adding document: ", e);
+    //     notify.show(
+    //       "Error occured while publishing test. Please try again.",
+    //       "error",
+    //       5000
+    //     );
+    //     setTotalMarks(0)
+    //   }
+    // }
   };
 
-  const [test, setTest] = useState({
-    title: "",
-    duration: "",
-    description: "",
-    instructions: [
-      "Read all the instructions and questions carefully.",
-      "Choose the letter of the correct answer.",
-      "Answer all questions.",
-      "The duration of this test is 90 minutes.",
-    ],
-    questions: [],
-  });
+  const handleDeleteQuestion = (qIndex) => {
+    let tempTest = testObject.questions.filter((o, index) => index !== qIndex);
 
-  useEffect(() => {
-  }, [test]);
+    setTestObject(prevTest => {
+      return { ...prevTest, questions: tempTest }
+    })
+  }
+
+  const updateMarks = () => {
+    let updatedMarks = 0
+    testObject.questions.forEach(element => {
+      if (element.questionText) {
+        updatedMarks += Number(element.questionMarks);
+      }
+    });
+    setTotalMarks(updatedMarks);
+    testObject.totalMarks = updatedMarks
+  };
+
+  const handleEditQuestion = (qIndex) => {
+
+    let tempTest = testObject.questions.map((question, index) => {
+      if (index == qIndex) {
+        let tempAns = question.answers.map((answer, answerIndex) => {
+          return { ...answer, isSaved: false }
+        });
+        return { ...question, isSaved: false, answers: tempAns }
+      }
+      return question;
+    });
+    setTestObject(prevTest => {
+      return { ...prevTest, questions: tempTest }
+    })
+    setIsEditQuestion(true);
+  }
+  const handleSaveQuestion = (qIndex) => {
+    if (validateSaveQuestion(qIndex)) {
+
+      let tempAns = testObject.questions[qIndex].answers.map((answer, answerIndex) => {
+        return { ...answer, isSaved: true }
+      });
+      let tempQuestions = testObject.questions.map((question, questionIndex) => {
+        if (questionIndex == qIndex) {
+          return { ...question, isSaved: true, answers: tempAns };
+        }
+        return question;
+      });
+      setTestObject(prevTest => {
+        return { ...prevTest, questions: tempQuestions }
+      })
+      setIsEditQuestion(false);
+    }
+  }
+
+  const handleSaveAnswer = (questionIndex, answerIndex) => {
+
+    if (testObject.questions[questionIndex].answers[answerIndex].answerText !== '') {
+      let tempQuestion = testObject.questions.map((question, index) => {
+        if (index == questionIndex) {
+          let tempAnswer = question.answers.map((answer, index) => {
+            if (index == answerIndex) {
+              return { ...answer, isSaved: true }
+            }
+            return answer;
+          })
+          return { ...question, answers: tempAnswer }
+        }
+        return question;
+      });
+
+      setTestObject(prevTest => {
+        return { ...prevTest, questions: tempQuestion }
+      })
+
+      setIsEditAnswer(false);
+    } else {
+      notify.show(`Cannot save empty answer`, "error", 5000);
+    }
+
+  }
+
+  const handleDeleteAnswer = (questionIndex, answerIndex) => {
+
+    let tempAnswers = testObject.questions[questionIndex].answers.filter(((o, index) => index !== answerIndex))
+
+    let tempQuestions = testObject.questions.map((question, index) => {
+      if (index == questionIndex) {
+        return { ...question, answers: tempAnswers }
+      }
+      return question;
+    })
+
+    setTestObject(prevTest => {
+      return { ...prevTest, questions: tempQuestions }
+    })
+  }
+
+  const handleEditAnswer = (questionIndex, answerIndex) => {
+    setIsEditAnswer(true);
+
+    let tempQuestion = testObject.questions.map((question, index) => {
+      if (index == questionIndex) {
+        let tempAnswer = question.answers.map((answer, index) => {
+          if (index == answerIndex) {
+            return { ...answer, isSaved: false }
+          };
+          return answer;
+        })
+        return { ...question, answers: tempAnswer }
+      }
+      return question;
+    });
+
+    if (testObject.questions[questionIndex].answers[answerIndex].answerText !== '') {
+      setTestObject(prevTest => {
+        return { ...prevTest, questions: tempQuestion }
+      })
+    } else {
+      notify.show(`Cannot save empty answer`, "error", 5000);
+    }
+
+  }
+
+  useMemo(() => {
+    updateMarks();
+  }, [testObject])
+
+
 
   return (
     <div className="mt-10 sm:mt-0">
@@ -204,15 +528,15 @@ const CreateTest = () => {
               Create Test
             </h3>
             <p className="mt-1 text-sm text-gray-600">
-              This page allows you to create a test.
+              This page allows you to create a Test.
             </p>
           </div>
           <div className="mr-5">
-            Total Marks: { totalMarks }
+            Total Marks: {totalMarks}
           </div>
         </div>
         <div className="mt-5 md:col-span-2 md:mt-0">
-          <form action="#" onSubmit={handleSubmit(addQuestion)}>
+          <form onSubmit={(event) => event.preventDefault()}>
             <div className="overflow-hidden shadow sm:rounded-md">
               <div className="px-4 py-5 bg-white sm:p-6">
                 <div className="grid grid-cols-6 gap-6">
@@ -229,7 +553,8 @@ const CreateTest = () => {
                       name="title"
                       id="title"
                       className="mt-1 block h-[36px]  w-full rounded-md border border-gray-300 bg-gray-50 px-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                      {...register("title", { required: true })}
+                      value={testObject?.title}
+                      onChange={onChange}
                     />
                   </div>
 
@@ -238,17 +563,17 @@ const CreateTest = () => {
                       htmlFor="description"
                       className="block font-medium text-gray-700 text-md"
                     >
-                      Description
+                      Test Description
                     </label>
                     <input
                       type="text"
                       name="description"
                       id="description"
+                      value={testObject?.description}
+                      onChange={onChange}
                       className="mt-1 block h-[36px]  w-full rounded-md border border-gray-300 bg-gray-50 px-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                      {...register("description", { required: true })}
                     />
                   </div>
-
                   <div className="col-span-6 sm:col-span-4">
                     <label
                       htmlFor="duration"
@@ -261,27 +586,10 @@ const CreateTest = () => {
                       name="duration"
                       id="duration"
                       className="mt-1 block h-[36px]  w-full rounded-md border border-gray-300 bg-gray-50 px-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                      {...register("duration", { required: true })}
+                      value={testObject?.duration}
+                      onChange={onChange}
                     />
                   </div>
-
-
-                  {/* <div className="col-span-6 sm:col-span-4">
-                    <label
-                      htmlFor="totalMarks"
-                      className="block font-medium text-gray-700 text-md"
-                    >
-                      Total marks
-                    </label>
-                    <input
-                      type="number"
-                      name="totalMarks"
-                      id="totalMarks"
-                      className="mt-1 block h-[36px]  w-full rounded-md border border-gray-300 bg-gray-50 px-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                      {...register("totalMarks", { required: true })}
-                    />
-                  </div> */}
-
                   <div className="col-span-6 sm:col-span-4">
                     <label
                       htmlFor="testType"
@@ -293,48 +601,64 @@ const CreateTest = () => {
                       name="testType"
                       id="testType"
                       className="mt-1 block h-[36px]  w-full rounded-md border border-gray-300 bg-gray-50 px-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                      {...register("testType", { required: true })}
+                      value={testObject?.testType}
+                      onChange={onChange}
                     >
                       <option value={"school-assessment"}>School Based Assessment</option>
                       <option value={"end-term-assessment"}>End of Term Assessment</option>
                     </select>
                   </div>
                 </div>
-
                 <div className="grid gap-6 mt-10">
-                  {questions.map((question, index) => (
-                    <TestQuestions
-                      key={index}
-                      answers={answers}
-                      setAnswers={setAnswers}
-                      addAnswer={addAnswer}
-                      register={register}
-                      index={index}
-                      questionIndex={questionIndex}
-                      questionType={questionType}
-                      setQuestionType={setQuestionType}
-                      setAnswerText={setAnswerText}
-                      setAnswerExplanation={setAnswerExplanation}
-                      answerIndex={answerIndex}
-                      question={questions[index + 1]}
-                    />
-                  ))}
+                  {
+                    testObject.questions.length > 0 && testObject.questions.map((question, questionIndex) => {
+                      return (
+                        <TestQuestions
+                          question={question}
+                          questionIndex={questionIndex}
+                          handleDeleteQuestion={handleDeleteQuestion}
+                          handleEditQuestion={handleEditQuestion}
+                          handleSaveQuestion={handleSaveQuestion}
+                          onChange={onChange}
+                          onChangeImage={onChangeImage}
+                          handleSaveAnswer={handleSaveAnswer}
+                          handleEditAnswer={handleEditAnswer}
+                          handleDeleteAnswer={handleDeleteAnswer}
+                          addAnswer={addAnswer}
+                          isEditQuestion={isEditQuestion}
+                        />
+                      )
+                    })
+                  }
                 </div>
+
               </div>
 
-              <div className="px-4 py-3 text-right bg-gray-50 sm:px-6">
-                <button
-                  type="submit"
-                  className="block px-4 py-2 text-sm text-white rounded-md bg-mainColor"
-                >
-                  Save Question
-                </button>
-                <button
-                  onClick={saveTest}
-                  className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md shadow-sm btn-mainColor focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                >
-                  Publish
-                </button>
+              <div className="grid grid-cols-6 gap-6 px-4 py-3 text-right bg-gray-50 sm:px-6">
+                <div className="flex justify-start col-span-6 sm:col-span-3 ">
+                  <button
+                    onClick={saveQuestion}
+                    className="block px-4 py-2 text-sm text-white rounded-md bg-mainColor"
+                  >
+                    Save Question
+                  </button>
+                </div>
+                <div className="flex justify-end col-span-6 sm:col-span-3 ">
+                  {
+                    action == 'update' ? <button
+                      onClick={publishTest}
+                      className="px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md shadow-sm btn-mainColor focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    >
+                      Save
+                    </button> : <button
+                      onClick={publishTest}
+                      className="px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md shadow-sm btn-mainColor focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    >
+                      Publish
+                    </button>
+                  }
+                </div>
+
               </div>
             </div>
           </form>

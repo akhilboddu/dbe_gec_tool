@@ -1,6 +1,6 @@
 import React from "react";
 
-const QuestionAnswer = ({
+const AssignmentQuestionAnswers = ({
   questionIndex,
   answer,
   question,
@@ -66,4 +66,4 @@ const QuestionAnswer = ({
   );
 };
 
-export default QuestionAnswer;
+export default AssignmentQuestionAnswers;
