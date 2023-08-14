@@ -362,7 +362,7 @@ export default function QuestionList({
                 to={
                   currentPath.endsWith(`teacher`)
                     ? `/ranking/${testId}/teacher`
-                    : `/ranking/${testId}`
+                    : `/grades`
                 }
               >
                 <button className="btn-mainColor btn">Ranking Page</button>
