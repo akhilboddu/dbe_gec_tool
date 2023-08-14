@@ -63,7 +63,7 @@ export default function Register() {
                 role: "teacher",
               })
             );
-            navigate({ to: "/teacher-dashboard" });
+            navigate({ to: "/teacher/dashboard" });
           });
         } catch (e) {
           console.log(e.message);

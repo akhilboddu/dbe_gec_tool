@@ -36,7 +36,7 @@ function TestList() {
   };
   console.log("results ::", results);
   const updateTest = async (testId) => {
-    navigate({ to: `/dashboard/update-test/teacher/${testId}` })
+    navigate({ to: `/teacher/update-test/${testId}` })
   }
 
   return (

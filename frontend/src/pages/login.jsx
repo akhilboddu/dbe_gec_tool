@@ -56,7 +56,7 @@ export default function Login() {
               role: "teacher",
             })
           );
-          navigate({ to: "/teacher-dashboard", required: true });
+          navigate({ to: "/teacher/dashboard", required: true });
         } else {
           localStorage.setItem(
             "user",

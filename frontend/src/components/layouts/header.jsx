@@ -60,14 +60,14 @@ export default function Header() {
       <div className="container flex-wrap navbar">
         {/* start */}
         <div className="flex flex-wrap mr-auto">
-          <Link className="btn btn-ghost" to={user?.role === "teacher" ? "/teacher-dashboard" : "/"}>
+          <Link className="btn btn-ghost" to={user?.role === "teacher" ? "/teacher/dashboard" : "/"}>
             <img src={Logo} alt="logo" className="w-32 pt-0" />
           </Link>
 
           {user?.email ? (
             <>
               <Link
-                to={user?.role === "teacher" ? "/teacher-dashboard" : "/"}
+                to={user?.role === "teacher" ? "/teacher/dashboard" : "/"}
                 className="gap-1 btn btn-ghost"
               >
                 <HomeIcon className="w-5 h-5" />
@@ -92,7 +92,7 @@ export default function Header() {
                 <Link
                   to={
                     currentPath.endsWith("teacher")
-                      ? "/assignments/teacher"
+                      ? "/teacher/assignments"
                       : "/assignments"
                   }
                   className="gap-1 btn btn-ghost"
@@ -105,7 +105,7 @@ export default function Header() {
               )}
               <Link
                 to={
-                  user?.role === "teacher" ? `/grades/${user?.id}` : "/grades"
+                  user?.role === "teacher" ? `/teacher/grades/${user?.id}` : "/grades"
                 }
                 className="gap-1 btn btn-ghost"
               >

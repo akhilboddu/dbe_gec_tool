@@ -28,6 +28,7 @@ import CreateTest from "./pages/Teacher/Create-Tests/Create-Test";
 import TestList from "./pages/Teacher/Tests/List/Test-List";
 import AssignmentList from "./pages/Teacher/Create-Assessments/Assignment-List";
 import CreateAssessments from "./pages/Teacher/Create-Assessments/Create-Assessments";
+import TeacherLayout from "./components/layouts/teacher-layout";
 
 const queryClient = new QueryClient();
 const location = new ReactLocation();
@@ -81,14 +82,6 @@ const routes = [
         ),
       },
       {
-        path: "/grades/:teacherId",
-        element: (
-          <CheckLogin>
-            <Grades />
-          </CheckLogin>
-        ),
-      },
-      {
         path: "/ranking",
         element: <Rankings />,
       },
@@ -109,7 +102,7 @@ const routes = [
         ),
       },
       {
-        path: "/teacher-dashboard",
+        path: "/teacher/dashboard",
         element: (
           <CheckLogin>
             <TeacherDashboard />
@@ -117,23 +110,23 @@ const routes = [
         ),
       },
       {
-        path: "/dashboard/create-test",
-        element: <CreateTest action={"create"} />,
-      }, 
-      {
-        path: "/dashboard/update-test/teacher/:testId",
-        element: <CreateTest action={"update"} />,
-      }, 
-      {
-        path: "/dashboard/assignment-list",
-        element: <AssignmentList />,
-      },
-      {
-        path: "/dashboard/test-list",
+        path: "/teacher/test-list",
         element: <TestList />,
       },
       {
-        path: "/dashboard/create-assignments/teacher",
+        path: "/teacher/create-test",
+        element: <CreateTest action={"create"} />,
+      },
+      {
+        path: "/teacher/update-test/:testId",
+        element: <CreateTest action={"update"} />,
+      },
+      {
+        path: "/teacher/assignment-list",
+        element: <AssignmentList />,
+      },
+      {
+        path: "/teacher/create-assignments",
         element: (
           <CheckLogin>
             <CreateAssessments action={"create"} />
@@ -141,10 +134,18 @@ const routes = [
         ),
       },
       {
-        path: "/dashboard/update-assignments/teacher/:assignmentId",
+        path: "/teacher/update-assignments/:assignmentId",
         element: (
           <CheckLogin>
-            <CreateAssessments action={"update"}/>
+            <CreateAssessments action={"update"} />
+          </CheckLogin>
+        ),
+      },
+      {
+        path: "/teacher/grades/:teacherId",
+        element: (
+          <CheckLogin>
+            <Grades />
           </CheckLogin>
         ),
       },

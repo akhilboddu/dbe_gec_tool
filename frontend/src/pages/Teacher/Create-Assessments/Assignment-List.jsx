@@ -36,7 +36,7 @@ function AssignmentList() {
   };
   console.log("results ::", results);
   const updateAssignment = async (assignmentId) => {
-    navigate({ to: `/dashboard/update-assignments/teacher/${assignmentId}` })
+    navigate({ to: `/teacher/update-assignments/${assignmentId}` })
   }
 
   return (

@@ -12,11 +12,11 @@ const TeacherDashboard = () => {
       actions: [
         {
           label: "Create",
-          url: "/dashboard/create-test/teacher",
+          url: "/teacher/create-test",
         },
         {
           label: "List",
-          url: "/dashboard/test-list/teacher",
+          url: "/teacher/test-list",
         }
       ],
     },
@@ -25,25 +25,25 @@ const TeacherDashboard = () => {
       actions: [
         {
           label: "Create",
-          url: "/dashboard/create-assignments/teacher",
+          url: "/teacher/create-assignments",
         },
         {
           label: "List",
-          url: "/dashboard/assignment-list/teacher",
+          url: "/teacher/assignment-list",
         }
       ],
     },
     // {
     //   title: "assignments",
     //   action: "Create",
-    //   url: "/dashboard/create-assignments/teacher",
+    //   url: "/teacher/create-assignments/teacher",
     // },
     {
       title: "Grades",
       actions: [
         {
           label: "View",
-          url: `/grades/${auth.currentUser?.uid}`,
+          url: `/teacher/grades/${auth.currentUser?.uid}`,
         },
       ],
     },
