@@ -2,7 +2,6 @@ import React from "react";
 import { useState } from "react";
 import QuestionAnswer from "./Question-answers";
 
-
 const TestQuestions = ({
   question,
   questionIndex,
@@ -10,48 +9,73 @@ const TestQuestions = ({
   handleEditQuestion,
   handleSaveQuestion,
   onChange,
+  thumbnail,
   onChangeImage,
   handleSaveAnswer,
   handleEditAnswer,
   handleDeleteAnswer,
   addAnswer,
-  isEditQuestion,
+  isEditQuestion1,
 }) => {
+  const [isEditQuestion, setIsEditQuestion] = useState(false);
+
+  const onEdit = (questionIndex) => {
+    handleEditQuestion(questionIndex);
+    setIsEditQuestion(true);
+  };
+
+  const onSave = (questionIndex) => {
+    handleSaveQuestion(questionIndex);
+    setIsEditQuestion(false);
+  };
+
   return (
     <>
-      <div className="grid grid-cols-6 gap-6 p-6 border rounded shadow">
+      <div className="grid grid-cols-6 gap-6 rounded border p-6 shadow">
         <div className="col-span-5">
-          <h2 className="block text-lg font-medium text-gray-900">{`Question ${questionIndex + 1}`}</h2>
+          <h2 className="block text-lg font-medium text-gray-900">{`Question ${
+            questionIndex + 1
+          }`}</h2>
         </div>
-        {
-          question.isSaved ? <div className="flex justify-between col-span-1">
+        {question.isSaved ? (
+          <div className="col-span-1 flex justify-between">
             <button
-              onClick={() => { handleDeleteQuestion(questionIndex) }}
-              className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md shadow-sm bg-red-600"
+              onClick={() => {
+                handleDeleteQuestion(questionIndex);
+              }}
+              className="inline-flex justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm"
             >
               Delete
             </button>
             <button
-              onClick={() => { handleEditQuestion(questionIndex) }}
-              className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md shadow-sm bg-green-600"
+              onClick={() => {
+                onEdit(questionIndex);
+              }}
+              className="inline-flex justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm"
             >
               Edit
             </button>
-          </div> : <></>
-        }
-        {
-          isEditQuestion ? <div className="flex justify-end col-span-1">
+          </div>
+        ) : (
+          <></>
+        )}
+        {isEditQuestion ? (
+          <div className="col-span-1 flex justify-end">
             <button
-              onClick={() => { handleSaveQuestion(questionIndex) }}
-              className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md shadow-sm btn-mainColor"
+              onClick={() => {
+                onSave(questionIndex);
+              }}
+              className="btn-mainColor inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm"
             >
               Save
-            </button> </div> : <></>
-        }
+            </button>{" "}
+          </div>
+        ) : (
+          <></>
+        )}
 
-
-        <div className="col-span-4 mt-4 xs:col-span-6">
-          <label className="block font-medium text-gray-700 text-md">
+        <div className="xs:col-span-6 col-span-4 mt-4">
+          <label className="text-md block font-medium text-gray-700">
             Text
           </label>
           <input
@@ -64,8 +88,8 @@ const TestQuestions = ({
           />
         </div>
 
-        <div className="col-span-2 mt-4 xs:col-span-6">
-          <label className="block font-medium text-gray-700 text-md">
+        <div className="xs:col-span-6 col-span-2 mt-4">
+          <label className="text-md block font-medium text-gray-700">
             Question Marks
           </label>
           <input
@@ -79,7 +103,7 @@ const TestQuestions = ({
         </div>
 
         <div className="col-span-4 mt-4">
-          <label className="block font-medium text-gray-700 text-md">
+          <label className="text-md block font-medium text-gray-700">
             Question explanation
           </label>
           <input
@@ -93,13 +117,13 @@ const TestQuestions = ({
         </div>
 
         <div className="col-span-2 mt-4">
-          <label className="block font-medium text-gray-700 text-md">
+          <label className="text-md block font-medium text-gray-700">
             Type of Question
           </label>
           <select
             name="questionType"
             disabled={question.isSaved}
-            className="p-2 w-full border rounded bg-gray-50"
+            className="w-full rounded border bg-gray-50 p-2"
             value={question.questionType}
             onChange={(event) => onChange(event, questionIndex)}
           >
@@ -107,49 +131,66 @@ const TestQuestions = ({
             <option value={"text"}>Text</option>
           </select>
         </div>
-        <div className="flex flex-col col-span-2 mt-4">
-          <label className="block font-medium text-gray-700 text-md">
-            Upload image
-          </label>
-          <input
-            type="file"
-            disabled={question.isSaved}
-            name="image"
-            className="mt-1 block cursor-pointer h-[36px] w-full rounded-md px-2  focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            onChange={(event) => onChangeImage(event.target.files[0], questionIndex)}
-          />
+        <div className="col-span-6 mt-4 flex flex-col">
+          {question?.image && (
+            <img
+              className="h-[200px] w-[300px]"
+              src={question.image ?? "/placeholder.png"}
+              alt="Course image"
+            />
+          )}
+          {isEditQuestion && (
+            <div>
+              <label className="text-md block font-medium text-gray-700">
+                {question?.image ? "Replace" : "Upload"} image
+              </label>
+              <input
+                type="file"
+                disabled={question.isSaved}
+                name="image"
+                className="mt-1 block h-[36px] w-full cursor-pointer rounded-md px-2  focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                onChange={(event) =>
+                  onChangeImage(event.target.files[0], questionIndex)
+                }
+              />
+            </div>
+          )}
         </div>
-        {question.questionType == "mcq" &&
+        {question.questionType == "mcq" && (
           <>
-            <h2 className="block font-medium text-gray-700 text-md"></h2>
-            {question.answers.length > 0 && question.answers.map((answer, answerIndex) => {
-              return (
-                <QuestionAnswer
-                  answer={answer}
-                  question={question}
-                  answerIndex={answerIndex}
-                  questionIndex={questionIndex}
-                  handleSaveAnswer={handleSaveAnswer}
-                  handleEditAnswer={handleEditAnswer}
-                  handleDeleteAnswer={handleDeleteAnswer}
-                  onChange={onChange}
-                  answerLength= {question.answers.length}
-                />
-              )
-            })}
+            <h2 className="text-md block font-medium text-gray-700"></h2>
+            {question.answers.length > 0 &&
+              question.answers.map((answer, answerIndex) => {
+                return (
+                  <QuestionAnswer
+                    answer={answer}
+                    question={question}
+                    answerIndex={answerIndex}
+                    questionIndex={questionIndex}
+                    handleSaveAnswer={handleSaveAnswer}
+                    handleEditAnswer={handleEditAnswer}
+                    handleDeleteAnswer={handleDeleteAnswer}
+                    onChange={onChange}
+                    answerLength={question.answers.length}
+                  />
+                );
+              })}
           </>
-
-        }
+        )}
         {question.questionType == "mcq" && !question.isSaved ? (
           <div className="col-span-6">
             <button
-              className="block px-4 py-2 text-sm text-white rounded-md bg-mainColor"
-              onClick={() => { addAnswer(questionIndex) }}
+              className="block rounded-md bg-mainColor px-4 py-2 text-sm text-white"
+              onClick={() => {
+                addAnswer(questionIndex);
+              }}
             >
               Add Answer
             </button>
           </div>
-        ) : <></>}
+        ) : (
+          <></>
+        )}
       </div>
     </>
   );

@@ -423,7 +423,6 @@ const CreateTest = ({ action }) => {
     setTestObject(prevTest => {
       return { ...prevTest, questions: tempTest }
     })
-    setIsEditQuestion(true);
   }
   const handleSaveQuestion = (qIndex) => {
     if (validateSaveQuestion(qIndex)) {
@@ -440,7 +439,6 @@ const CreateTest = ({ action }) => {
       setTestObject(prevTest => {
         return { ...prevTest, questions: tempQuestions }
       })
-      setIsEditQuestion(false);
     }
   }
 

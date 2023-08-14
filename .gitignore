@@ -11,3 +11,4 @@
 .backend
 .constants
 .stores
+*node_modules
