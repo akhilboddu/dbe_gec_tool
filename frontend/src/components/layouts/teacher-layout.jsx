@@ -1,26 +1,14 @@
 import { Outlet } from "@tanstack/react-location";
 
-import Footer from "/src/components/layouts/footer";
-import Header from "/src/components/layouts/header";
-import Notifications,{notify} from 'react-notify-toast';
-import { useEffect } from "react";
-
+import NoAccess from "../no-access";
+import { auth } from "/src/firebase";
 
 export default function TeacherLayout() {
+  const currentUser = auth.currentUser;
+  const userLocal = JSON.parse(localStorage.getItem("user"));
 
-
-  return (
-    
-    <>
-    {/* <div className="flex flex-col min-h-screen">
-      <Header />
-      <div className="container flex-1 py-4 mt-16 lg:py-8">
-      <Notifications />
-        <Outlet />
-      </div>
-      <Footer />
-    </div> */}
-    <Outlet />
-    </>
-  );
+  if (userLocal?.role?.toLowerCase() !== "teacher") {
+    return <NoAccess />;
+  }
+  return <Outlet />;
 }

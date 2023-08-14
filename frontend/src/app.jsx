@@ -111,6 +111,10 @@ const routes = [
         ),
         children: [
           {
+            path: "/",
+            element: <TeacherDashboard />,
+          },
+          {
             path: "/dashboard",
             element: <TeacherDashboard />,
           },
