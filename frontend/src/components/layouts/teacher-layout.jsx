@@ -6,7 +6,7 @@ import Notifications,{notify} from 'react-notify-toast';
 import { useEffect } from "react";
 
 
-export default function TeacherLayout({children}) {
+export default function TeacherLayout() {
 
 
   return (
@@ -20,8 +20,7 @@ export default function TeacherLayout({children}) {
       </div>
       <Footer />
     </div> */}
-    {/* <Outlet /> */}
-    {children}
+    <Outlet />
     </>
   );
 }

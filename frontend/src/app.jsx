@@ -101,80 +101,68 @@ const routes = [
           </CheckLogout>
         ),
       },
+
       {
-        path: "/teacher/dashboard",
+        path: "teacher",
         element: (
           <CheckLogin>
-            <TeacherDashboard />
+            <TeacherLayout />
           </CheckLogin>
         ),
-      },
-      {
-        path: "/teacher/test-list",
-        element: <TestList />,
-      },
-      {
-        path: "/teacher/create-test",
-        element: <CreateTest action={"create"} />,
-      },
-      {
-        path: "/teacher/update-test/:testId",
-        element: <CreateTest action={"update"} />,
-      },
-      {
-        path: "/teacher/assignment-list",
-        element: <AssignmentList />,
-      },
-      {
-        path: "/teacher/create-assignments",
-        element: (
-          <CheckLogin>
-            <CreateAssessments action={"create"} />
-          </CheckLogin>
-        ),
-      },
-      {
-        path: "/teacher/update-assignments/:assignmentId",
-        element: (
-          <CheckLogin>
-            <CreateAssessments action={"update"} />
-          </CheckLogin>
-        ),
-      },
-      {
-        path: "/teacher/grades/:teacherId",
-        element: (
-          <CheckLogin>
-            <Grades />
-          </CheckLogin>
-        ),
-      },
-      {
-        path: "/teacher/result/:testId/:attemptId/:gradeId/:teacherId",
         children: [
           {
-            path: "/",
-            element: (
-              <CheckLogin>
-                <UserCourseTest />
-              </CheckLogin>
-            ),
+            path: "/dashboard",
+            element: <TeacherDashboard />,
+          },
+          {
+            path: "/test-list",
+            element: <TestList />,
+          },
+          {
+            path: "/create-test",
+            element: <CreateTest action={"create"} />,
+          },
+          {
+            path: "/update-test/:testId",
+            element: <CreateTest action={"update"} />,
+          },
+          {
+            path: "/assignment-list",
+            element: <AssignmentList />,
+          },
+          {
+            path: "/create-assignments",
+            element: <CreateAssessments action={"create"} />,
+          },
+          {
+            path: "/update-assignments/:assignmentId",
+            element: <CreateAssessments action={"update"} />,
+          },
+          {
+            path: "/grades/:teacherId",
+            element: <Grades />,
+          },
+          {
+            path: "/result/:testId/:attemptId/:gradeId/:teacherId",
+            children: [
+              {
+                path: "/",
+                element: <UserCourseTest />,
+              },
+            ],
+          },
+          {
+            path: "/result/:testId/:attemptId",
+            children: [
+              {
+                path: "/",
+                element: <UserCourseTest />,
+              },
+            ],
           },
         ],
       },
-      {
-        path: "/teacher/result/:testId/:attemptId",
-        children: [
-          {
-            path: "/",
-            element: (
-              <CheckLogin>
-                <UserCourseTest />
-              </CheckLogin>
-            ),
-          },
-        ],
-      },
+
       {
         path: "/ranking/:testId",
         element: <CourseLeaderboard />,
