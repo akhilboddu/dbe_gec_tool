@@ -5,6 +5,7 @@ import { auth } from "/src/firebase";
 
 const TeacherDashboard = () => {
 
+  console.log("userId: ",auth.currentUser?.uid)
 
   const cards = [
     {

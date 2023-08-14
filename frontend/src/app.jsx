@@ -150,34 +150,34 @@ const routes = [
         ),
       },
       {
+        path: "/teacher/result/:testId/:attemptId/:gradeId/:teacherId",
+        children: [
+          {
+            path: "/",
+            element: (
+              <CheckLogin>
+                <UserCourseTest />
+              </CheckLogin>
+            ),
+          },
+        ],
+      },
+      {
+        path: "/teacher/result/:testId/:attemptId",
+        children: [
+          {
+            path: "/",
+            element: (
+              <CheckLogin>
+                <UserCourseTest />
+              </CheckLogin>
+            ),
+          },
+        ],
+      },
+      {
         path: "/ranking/:testId",
         element: <CourseLeaderboard />,
-      },
-      {
-        path: "/result/:testId/:attemptId/:gradeId/:teacherId",
-        children: [
-          {
-            path: "/",
-            element: (
-              <CheckLogin>
-                <UserCourseTest />
-              </CheckLogin>
-            ),
-          },
-        ],
-      },
-      {
-        path: "/result/:testId/:attemptId",
-        children: [
-          {
-            path: "/",
-            element: (
-              <CheckLogin>
-                <UserCourseTest />
-              </CheckLogin>
-            ),
-          },
-        ],
       },
       {
         path: "detail-assignment/:assignmentId",

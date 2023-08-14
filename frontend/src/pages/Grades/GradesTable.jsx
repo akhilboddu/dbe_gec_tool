@@ -9,7 +9,7 @@ function GradesTable({ result, teacherId }) {
     if (tResult.status === "evaluated") {
       return (
         <Link
-          to={`/result/${tResult.test ? tResult.test: tResult.assignment}/${tResult.attemptId}`}
+          to={`/teacher/result/${tResult.test ? tResult.test: tResult.assignment}/${tResult.attemptId}`}
           className="btn-mainColor btn"
         >
           {console.log("tResult :: evaluated ::", tResult.assignment)}
@@ -20,7 +20,7 @@ function GradesTable({ result, teacherId }) {
       if (!teacherId) {
         return (
           <Link
-            to={`/result/${tResult.test ? tResult.test: tResult.assignment}/${tResult.attemptId}`}
+            to={`/teacher/result/${tResult.test ? tResult.test: tResult.assignment}/${tResult.attemptId}`}
             className="btn-mainColor btn"
           >
             {console.log("tResult :: !teacherId ::", tResult.assignment)}
@@ -30,7 +30,7 @@ function GradesTable({ result, teacherId }) {
       } else {
         return (
           <Link
-            to={`/result/${tResult.test ? tResult.test: tResult.assignment }/${tResult.attemptId}/${tResult.id}/${teacherId}`}
+            to={`/teacher/result/${tResult.test ? tResult.test: tResult.assignment }/${tResult.attemptId}/${tResult.id}/${teacherId}`}
             className="btn"
           >
             {console.log("tResult :: ELSE ::", tResult.assignment)}
