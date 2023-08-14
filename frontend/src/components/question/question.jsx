@@ -15,7 +15,7 @@ export default function Question({
   resultCheck,
   prevSelected,
   explanation,
-  evaluatedNote,
+  evaluatedResult,
   teacher,
 }) {
   const [isCorrect, setIsCorrect] = useState();
@@ -184,15 +184,16 @@ export default function Question({
       disabled ||
       (disabled === 0 && !resultCheck && question.questionType !== "text")
     ) {
-      if (isCorrect) {
+      //To-Do: Currently disabled for future evaluation
+     /*  if (isCorrect) {
         return (
           <Success
-            text={explanation ? explanation : "This is the correct answer."}
+            text="Your answer is correct."
           />
         );
       } else {
-        return <Error text={explanation ? explanation : "Wrong Answer"} />;
-      }
+        return <Error text="Your answer is incorrect.1" />;
+      } */
     } else if (resultCheck) {
       if (
         question.questionType == "text" &&
@@ -200,15 +201,15 @@ export default function Question({
       ) {
         return <Info text={"Pending for evaluation"} />;
       }
-
-      if (prevSelected?.answer) {
+      
+      if (evaluatedResult?.isCorrect) {
         return (
           <Success
-            text={explanation ? explanation : "This is the correct answer."}
+            text="Your answer is correct."
           />
         );
       } else {
-        return <Error text={explanation ? explanation : "Wrong Answer"} />;
+        return <Error text="Your answer is incorrect." />;
       }
     }
   };
@@ -241,7 +242,7 @@ export default function Question({
       ) : (
         ""
       )}
-      {/* {evaluatedNote && <div className="py-4">{renderMessage()}</div>} */}
+      {evaluatedResult?.teacherNote && <div className="py-4">{renderMessage()}</div>}
 
       {teacher && question.questionType == "text"
         ? renderTeacherInputs()

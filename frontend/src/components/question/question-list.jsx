@@ -320,7 +320,7 @@ export default function QuestionList({
             questionMarks={question.questionMarks}
             explanation={question.explanation}
             disabled={score}
-            evaluatedNote={attemptData?.answers[index]?.teacherNote}
+            evaluatedResult={attemptData?.answers[index]}
             handelSelectedAnswers={handelSelectedAnswers}
             resultCheck={attemptData ? true : false}
             prevSelected={getAttemptedAnswer(index)}
