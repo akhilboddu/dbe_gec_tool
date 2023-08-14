@@ -15,6 +15,7 @@ import {
 } from "firebase/firestore";
 import "../index.css";
 import Error from "../components/shared/error";
+import schoolsData from "../assets/schools_data.json";
 
 export default function Register() {
   // router
@@ -38,73 +39,72 @@ export default function Register() {
       Grade,
     } = data;
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((results) => {
-        console.log(results.user.uid);
+    createUserWithEmailAndPassword(auth, email, password).then((results) => {
+      console.log(results.user.uid);
 
-        // Check if its a teacher
-        if (role === "teacher") {
-          try {
-            setDoc(doc(db, "teachers", results.user.uid), {
-              uid: results.user.uid,
-              email: email,
-              full_name: full_name,
-              class_name: class_name,
-              school_name: school_name,
-              emis_number: emis_number,
-              Grade: Grade,
-            }).then((data) => {
-              console.log(data);
-              localStorage.setItem(
-                "user",
-                JSON.stringify({
-                  email: email,
-                  id: results.user.uid,
-                  role: "teacher",
-                })
-              );    
-              navigate({ to: "/teacher-dashboard" });
-            });
-          } catch (e) {
-            console.log(e.message);
-          }
-        } else {
-          try {
-            setDoc(doc(db, "users", results.user.uid), {
-              uid: results.user.uid,
-              email: email,
-              full_name: full_name,
-              class_name: class_name,
-              school_name: school_name,
-              emis_number: emis_number,
-              Grade: Grade,
-            }).then((data) => {
-              console.log(data);
-              localStorage.setItem(
-                "user",
-                JSON.stringify({
-                  email: email,
-                  id: results.user.uid,
-                  role: "student",
-                })
-              );    
-              navigate({ to: "/" });
-            });
-            console.log("Document written with ID: ");
-          } catch (e) {
-            console.error("Error adding document: ", e);
-          }
+      // Check if its a teacher
+      if (role === "teacher") {
+        try {
+          setDoc(doc(db, "teachers", results.user.uid), {
+            uid: results.user.uid,
+            email: email,
+            full_name: full_name,
+            class_name: class_name,
+            school_name: school_name,
+            emis_number: emis_number,
+            Grade: Grade,
+          }).then((data) => {
+            console.log(data);
+            localStorage.setItem(
+              "user",
+              JSON.stringify({
+                email: email,
+                id: results.user.uid,
+                role: "teacher",
+              })
+            );
+            navigate({ to: "/teacher-dashboard" });
+          });
+        } catch (e) {
+          console.log(e.message);
         }
-      })
-      // .then(() => {
-      //   navigate({ to: "/" });
-      // });
+      } else {
+        try {
+          setDoc(doc(db, "users", results.user.uid), {
+            uid: results.user.uid,
+            email: email,
+            full_name: full_name,
+            class_name: class_name,
+            school_name: school_name,
+            emis_number: emis_number,
+            Grade: Grade,
+          }).then((data) => {
+            console.log(data);
+            localStorage.setItem(
+              "user",
+              JSON.stringify({
+                email: email,
+                id: results.user.uid,
+                role: "student",
+              })
+            );
+            navigate({ to: "/" });
+          });
+          console.log("Document written with ID: ");
+        } catch (e) {
+          console.error("Error adding document: ", e);
+        }
+      }
+    });
+    // .then(() => {
+    //   navigate({ to: "/" });
+    // });
   };
 
   return (
-    <div className="max-w-md mx-auto card card-bordered">
+    <div className="card card-bordered mx-auto max-w-md">
       <form className="card-body" onSubmit={handleSubmit(onSubmit)}>
-        <h2 className="mb-4 text-2xl card-title">Create your account</h2>
+        <h2 className="card-title mb-4 text-2xl">Create your account</h2>
 
         {/* Form control for Email */}
         <div className="form-control">
@@ -147,11 +147,15 @@ export default function Register() {
           <label className="label">
             <span className="label-text">School Name</span>
           </label>
-          <input
-            type="text"
-            className="input input-bordered"
+          <select
             {...register("school_name", { required: true })}
-          />
+            className="input w-full rounded border input-bordered bg-gray-50 p-2"
+            placeholder="Select school"
+          >
+            {schoolsData.map((item, index) => (
+              <option value={item.school_name}>{item.school_name}</option>
+            ))}
+          </select>
         </div>
         {/* Form control for Grade */}
         <div className="form-control">
@@ -193,7 +197,10 @@ export default function Register() {
 
         <div className="flex justify-end space-x-2">
           <span>Have an account?</span>
-          <Link to={role === "teacher" ? "/login/teacher" : "/login/student"} className="link link-primary">
+          <Link
+            to={role === "teacher" ? "/login/teacher" : "/login/student"}
+            className="link link-primary"
+          >
             Sign in
           </Link>
         </div>

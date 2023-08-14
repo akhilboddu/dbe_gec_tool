@@ -1,0 +1,72 @@
+[
+    {
+        "school_name": "Redhill High School",
+        "location": "Cape Town",
+        "district": "Cape Town Central",
+        "student_count": 1200,
+        "principal": "Jane Smith"
+    },
+    {
+        "school_name": "Wynberg Boys' High School",
+        "location": "Cape Town",
+        "district": "Cape Town South",
+        "student_count": 1500,
+        "principal": "Michael Johnson"
+    },
+    {
+        "school_name": "Somerset College",
+        "location": "Somerset West",
+        "district": "Helderberg",
+        "student_count": 900,
+        "principal": "David Williams"
+    },
+    {
+        "school_name": "Bishops Diocesan College",
+        "location": "Cape Town",
+        "district": "Cape Town Southern Suburbs",
+        "student_count": 1100,
+        "principal": "Karen Brown"
+    },
+    {
+        "school_name": "Paul Roos Gymnasium",
+        "location": "Stellenbosch",
+        "district": "Stellenbosch",
+        "student_count": 1300,
+        "principal": "John Anderson"
+    },
+    {
+        "school_name": "Rustenburg Girls' High School",
+        "location": "Cape Town",
+        "district": "Cape Town Southern Suburbs",
+        "student_count": 1000,
+        "principal": "Sarah Wilson"
+    },
+    {
+        "school_name": "Milnerton High School",
+        "location": "Milnerton",
+        "district": "Cape West Coast",
+        "student_count": 800,
+        "principal": "Robert Clark"
+    },
+    {
+        "school_name": "Herschel Girls' School",
+        "location": "Cape Town",
+        "district": "Cape Town Southern Suburbs",
+        "student_count": 950,
+        "principal": "Emily Davis"
+    },
+    {
+        "school_name": "Fish Hoek High School",
+        "location": "Fish Hoek",
+        "district": "Cape Peninsula",
+        "student_count": 850,
+        "principal": "Mark Martinez"
+    },
+    {
+        "school_name": "Westcliff High School",
+        "location": "Hermanus",
+        "district": "Overberg",
+        "student_count": 700,
+        "principal": "Lisa Adams"
+    }
+]
