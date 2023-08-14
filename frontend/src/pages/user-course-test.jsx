@@ -81,6 +81,9 @@ export default function UserCourseTest() {
     });
     return linksArray;
   };
+
+  console.log("attemptData: ",attemptData)
+  console.log("testData: ",testData)
   return (
     <div>
       {!loading ? (testData ? (

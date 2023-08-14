@@ -15,6 +15,7 @@ export default function Question({
   resultCheck,
   prevSelected,
   explanation,
+  evaluatedNote,
   teacher,
 }) {
   const [isCorrect, setIsCorrect] = useState();
@@ -47,7 +48,13 @@ export default function Question({
   };
 
   const handleMarks = (e) => {
-    const finalAnswer = { ...prevSelected, marks: e.target.value <= prevSelected.questionMarks ? e.target.value : prevSelected.questionMarks };
+    const finalAnswer = {
+      ...prevSelected,
+      marks:
+        e.target.value <= prevSelected.questionMarks
+          ? e.target.value
+          : prevSelected.questionMarks,
+    };
     handelSelectedAnswers(finalAnswer);
   };
 
@@ -130,7 +137,7 @@ export default function Question({
     return (
       <div>
         <p className="mb-2">Above answer is:</p>
-        <div className="flex items-center gap-2 mb-3">
+        <div className="mb-3 flex items-center gap-2">
           <input
             key={"yes-" + question.index}
             type="radio"
@@ -151,7 +158,7 @@ export default function Question({
           <label htmlFor={"teacher-" + question.index}>Incorrect</label>
         </div>
 
-        <div className="pl-4 space-y-2">
+        <div className="space-y-2 pl-4">
           <p>Marks</p>
           <input
             className="input input-bordered"
@@ -178,16 +185,28 @@ export default function Question({
       (disabled === 0 && !resultCheck && question.questionType !== "text")
     ) {
       if (isCorrect) {
-        return <Success text={explanation ? explanation : "This is the correct answer."} />;
+        return (
+          <Success
+            text={explanation ? explanation : "This is the correct answer."}
+          />
+        );
       } else {
         return <Error text={explanation ? explanation : "Wrong Answer"} />;
       }
     } else if (resultCheck) {
-      if (question.questionType == "text" && prevSelected?.answer == undefined) {
+      if (
+        question.questionType == "text" &&
+        prevSelected?.answer == undefined
+      ) {
         return <Info text={"Pending for evaluation"} />;
       }
+
       if (prevSelected?.answer) {
-        return <Success text={explanation ? explanation : "This is the correct answer."} />;
+        return (
+          <Success
+            text={explanation ? explanation : "This is the correct answer."}
+          />
+        );
       } else {
         return <Error text={explanation ? explanation : "Wrong Answer"} />;
       }
@@ -204,17 +223,14 @@ export default function Question({
 
       {heading ? <h1 className="font-bold">{heading}</h1> : ""}
     */}
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <p>
           {index}. {question.questionText}
         </p>
-        <div className="font-bold">
-          Marks: {question.questionMarks}
-        </div>
-
+        <div className="font-bold">Marks: {question.questionMarks}</div>
       </div>
       {image ? <img src={image} alt="someimage" /> : ""}
-      <div className="pl-4 space-y-2">
+      <div className="space-y-2 pl-4">
         {question.questionType == "mcq" ? renderMcq() : renderTestInput(index)}
       </div>
       {resultCheck && prevSelected?.teacherNote ? (
@@ -225,8 +241,11 @@ export default function Question({
       ) : (
         ""
       )}
-      <div className="py-4">{renderMessage()}</div>
-      {teacher && question.questionType == "text" ? renderTeacherInputs() : null}
+      {/* {evaluatedNote && <div className="py-4">{renderMessage()}</div>} */}
+
+      {teacher && question.questionType == "text"
+        ? renderTeacherInputs()
+        : null}
     </div>
   );
 }

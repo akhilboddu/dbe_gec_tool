@@ -320,12 +320,15 @@ export default function QuestionList({
             questionMarks={question.questionMarks}
             explanation={question.explanation}
             disabled={score}
+            evaluatedNote={attemptData?.answers[index]?.teacherNote}
             handelSelectedAnswers={handelSelectedAnswers}
             resultCheck={attemptData ? true : false}
             prevSelected={getAttemptedAnswer(index)}
             teacher={teacherId}
           />
         ))}
+
+       
 
         {renderButton()}
       </form>
