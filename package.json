@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "firebase-admin": "^11.10.1",
     "react-notify-toast": "^0.5.1"
   }
 }

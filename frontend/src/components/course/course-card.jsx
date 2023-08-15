@@ -8,7 +8,7 @@ export default function CourseCard({ test, isTest }) {
   const navigate = useNavigate();
 
   const handleBtnClick = () => {
-    navigate({ to: currentPath.endsWith("teacher") ? `/${test.testId}/teacher` : `/${test.testId}`, replace: true })
+    navigate({ to: currentPath.endsWith("teacher") ? `/teacher/${test.testId}` : `/student/${test.testId}`, replace: true })
 
   }
 

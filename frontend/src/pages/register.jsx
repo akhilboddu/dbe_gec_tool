@@ -13,6 +13,7 @@ import {
   doc,
   startAfter,
 } from "firebase/firestore";
+//import * as admin from 'firebase-admin'
 import "../index.css";
 import Error from "../components/shared/error";
 import schoolsData from "../assets/schools_data.json";
@@ -39,12 +40,15 @@ export default function Register() {
       Grade,
     } = data;
 
-    createUserWithEmailAndPassword(auth, email, password).then((results) => {
+    createUserWithEmailAndPassword(auth, email, password).then(async(results) => {
       console.log(results.user.uid);
 
       // Check if its a teacher
       if (role === "teacher") {
         try {
+          /* var _ = await admin.auth().setCustomUserClaims(results.user.uid, {
+            role: "teacher",
+          }) */
           setDoc(doc(db, "teachers", results.user.uid), {
             uid: results.user.uid,
             email: email,
@@ -53,6 +57,7 @@ export default function Register() {
             school_name: school_name,
             emis_number: emis_number,
             Grade: Grade,
+            role: "teacher"
           }).then((data) => {
             console.log(data);
             localStorage.setItem(
@@ -70,6 +75,9 @@ export default function Register() {
         }
       } else {
         try {
+           /* var _ = await admin.auth().setCustomUserClaims(results.user.uid, {
+            role: "student",
+          }) */
           setDoc(doc(db, "users", results.user.uid), {
             uid: results.user.uid,
             email: email,
@@ -77,7 +85,8 @@ export default function Register() {
             class_name: class_name,
             school_name: school_name,
             emis_number: emis_number,
-            Grade: Grade,
+            grade: Grade,
+            role: "student"
           }).then((data) => {
             console.log(data);
             localStorage.setItem(

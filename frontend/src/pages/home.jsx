@@ -46,7 +46,7 @@ export default function Home() {
                 </div>
 
                 <div className="justify-end card-actions">
-                  <Link to={`/tests/`} className="border-none btn bg-mainColor">
+                  <Link to={`/student/tests/`} className="border-none btn bg-mainColor">
                     View now
                   </Link>
                 </div>
@@ -64,7 +64,7 @@ export default function Home() {
                 </div>
 
                 <div className="justify-end card-actions">
-                  <Link to={`/grades`} className="border-none btn bg-mainColor">
+                  <Link to={`/student/grades`} className="border-none btn bg-mainColor">
                     View now
                   </Link>
                 </div>
@@ -83,7 +83,7 @@ export default function Home() {
 
                 <div className="justify-end card-actions">
                   <Link
-                    to={`/assignments`}
+                    to={`/student/assignments`}
                     className="border-none btn bg-mainColor"
                   >
                     View now

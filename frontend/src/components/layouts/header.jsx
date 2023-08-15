@@ -17,7 +17,7 @@ import {
 } from "@tanstack/react-location";
 import React, { useState } from "react";
 import clsx from "clsx";
-import { auth } from "/src/firebase";
+import { auth,logout } from "/src/firebase";
 import { signOut } from "firebase/auth";
 import Logo from "../../assets/dbe_logo.png";
 
@@ -32,22 +32,6 @@ export default function Header() {
     current: { pathname },
   } = useLocation();
   const user = JSON.parse(localStorage.getItem("user"));
-  const logout = () => {
-    signOut(auth)
-      .then(() => {
-        console.log("Successfully signed out");
-        localStorage.removeItem("user");
-
-        if (user.role === "teacher") {
-          navigate({ to: "/login/teacher" });
-        } else {
-          navigate({ to: "/login/" });
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
 
   const isAdminPage = null;
 
@@ -60,14 +44,14 @@ export default function Header() {
       <div className="container flex-wrap navbar">
         {/* start */}
         <div className="flex flex-wrap mr-auto">
-          <Link className="btn btn-ghost" to={user?.role === "teacher" ? "/teacher/dashboard" : "/"}>
+          <Link className="btn btn-ghost" to={user?.role === "teacher" ? "/teacher/dashboard" : "/student"}>
             <img src={Logo} alt="logo" className="w-32 pt-0" />
           </Link>
 
           {user?.email ? (
             <>
               <Link
-                to={user?.role === "teacher" ? "/teacher/dashboard" : "/"}
+                to={user?.role === "teacher" ? "/teacher/dashboard" : "/student"}
                 className="gap-1 btn btn-ghost"
               >
                 <HomeIcon className="w-5 h-5" />
@@ -77,8 +61,8 @@ export default function Header() {
                 <Link
                   to={
                     currentPath.endsWith("teacher")
-                      ? "/tests/teacher"
-                      : "/tests"
+                      ? "/teacher/tests"
+                      : "/student/tests"
                   }
                   className="gap-1 btn btn-ghost"
                 >
@@ -93,7 +77,7 @@ export default function Header() {
                   to={
                     currentPath.endsWith("teacher")
                       ? "/teacher/assignments"
-                      : "/assignments"
+                      : "/student/assignments"
                   }
                   className="gap-1 btn btn-ghost"
                 >
@@ -105,7 +89,7 @@ export default function Header() {
               )}
               <Link
                 to={
-                  user?.role === "teacher" ? `/teacher/grades/${user?.id}` : "/grades"
+                  user?.role === "teacher" ? `/teacher/grades/${user?.id}` : "/student/grades"
                 }
                 className="gap-1 btn btn-ghost"
               >
@@ -131,7 +115,7 @@ export default function Header() {
                     <UserIcon className="w-5 h-5" /> Profile
                   </Link>
                 </li>
-                <li onClick={logout}>
+                <li onClick={()=>logout(navigate)}>
                   <span>
                     <ArrowRightOnRectangleIcon className="w-5 h-5" /> Log out
                   </span>

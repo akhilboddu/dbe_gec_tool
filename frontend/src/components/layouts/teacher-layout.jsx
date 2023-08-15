@@ -3,7 +3,7 @@ import { Outlet } from "@tanstack/react-location";
 import NoAccess from "../no-access";
 import { auth } from "/src/firebase";
 
-export default function TeacherLayout() {
+export default function ProtectedTeacherLayout() {
   const currentUser = auth.currentUser;
   const userLocal = JSON.parse(localStorage.getItem("user"));
 

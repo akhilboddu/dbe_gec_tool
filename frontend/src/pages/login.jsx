@@ -46,6 +46,8 @@ export default function Login() {
         // Signed in
         const user = userCredential.user;
 
+        console.log("Login User: ", user)
+
         // Check if its a teacher
         if (role === "teacher") {
           localStorage.setItem(
@@ -66,7 +68,7 @@ export default function Login() {
               role: "student",
             })
           );
-          navigate({ to: "/", required: true });
+          navigate({ to: "/student", required: true });
         }
         // ...
       })

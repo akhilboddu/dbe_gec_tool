@@ -28,7 +28,8 @@ import CreateTest from "./pages/Teacher/Create-Tests/Create-Test";
 import TestList from "./pages/Teacher/Tests/List/Test-List";
 import AssignmentList from "./pages/Teacher/Create-Assessments/Assignment-List";
 import CreateAssessments from "./pages/Teacher/Create-Assessments/Create-Assessments";
-import TeacherLayout from "./components/layouts/teacher-layout";
+import ProtectedTeacherLayout from "./components/layouts/teacher-layout";
+import ProtectedStudentLayout from "./components/layouts/student-layout";
 
 const queryClient = new QueryClient();
 const location = new ReactLocation();
@@ -40,9 +41,9 @@ const routes = [
       {
         path: "/",
         element: (
-          <CheckLogin>
-            <Home />
-          </CheckLogin>
+          <CheckLogout>
+            <Login />
+          </CheckLogout>
         ),
       },
       {
@@ -53,33 +54,10 @@ const routes = [
           </CheckLogin>
         ),
       },
-      {
-        path: "/tests",
-        element: (
-          <CheckLogin>
-            <Tests />
-          </CheckLogin>
-        ),
-      },
-      {
-        path: "/assignments",
-        element: (
-          <CheckLogin>
-            <Assignments />
-          </CheckLogin>
-        ),
-      },
+
       {
         path: "/assignments/:teacher",
         element: <Assignments />,
-      },
-      {
-        path: "/grades/",
-        element: (
-          <CheckLogin>
-            <Grades />
-          </CheckLogin>
-        ),
       },
       {
         path: "/ranking",
@@ -101,12 +79,49 @@ const routes = [
           </CheckLogout>
         ),
       },
-
+      {
+        path: "student",
+        element: (
+          <CheckLogin>
+            <ProtectedStudentLayout />
+          </CheckLogin>
+        ),
+        children: [
+          {
+            path: "/",
+            element: <Home />,
+          },
+          {
+            path: "/dashboard",
+            element: <Home />,
+          },
+          {
+            path: "/assignments",
+            element: <Assignments />,
+          },
+          {
+            path: "detail-assignment/:assignmentId",
+            element: <UserCourseAssignment />,
+          },
+          {
+            path: "/grades",
+            element: <Grades />,
+          },
+          {
+            path: "/tests",
+            element: <Tests />,
+          },
+          {
+            path: ":testId",
+            element: <UserCourseTest />,
+          },
+        ],
+      },
       {
         path: "teacher",
         element: (
           <CheckLogin>
-            <TeacherLayout />
+            <ProtectedTeacherLayout />
           </CheckLogin>
         ),
         children: [
@@ -155,14 +170,15 @@ const routes = [
               },
             ],
           },
+        ],
+      },
+
+      {
+        path: "/result/:testId/:attemptId",
+        children: [
           {
-            path: "/result/:testId/:attemptId",
-            children: [
-              {
-                path: "/",
-                element: <UserCourseTest />,
-              },
-            ],
+            path: "/",
+            element: <UserCourseTest />,
           },
         ],
       },
@@ -170,14 +186,6 @@ const routes = [
       {
         path: "/ranking/:testId",
         element: <CourseLeaderboard />,
-      },
-      {
-        path: "detail-assignment/:assignmentId",
-        element: <UserCourseAssignment />,
-      },
-      {
-        path: "/:testId",
-        element: <UserCourseTest />,
       },
       {
         path: "/lessons/:lessonId/",

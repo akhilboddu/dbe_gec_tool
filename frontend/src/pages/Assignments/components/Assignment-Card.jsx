@@ -8,7 +8,7 @@ export default function AssignmentCard({ assignment }) {
   const navigate = useNavigate();
 
   const handleBtnClick = () => {
-    navigate({ to: currentPath.endsWith("teacher") ? `/${assignment.assignmentId}/teacher` : `/detail-assignment/${assignment.assignmentId}`, replace: true })
+    navigate({ to: currentPath.endsWith("teacher") ? `/teacher/${assignment.assignmentId}` : `/student/detail-assignment/${assignment.assignmentId}`, replace: true })
   }
 
   return (

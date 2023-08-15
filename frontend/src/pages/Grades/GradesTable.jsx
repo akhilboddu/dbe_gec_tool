@@ -3,13 +3,14 @@ import { Link } from "@tanstack/react-location";
 
 function GradesTable({ result, teacherId }) {
   console.log("table", result);
+  console.log("teacherId", teacherId);
 
   const renderButton = (tResult) => {
 
     if (tResult.status === "evaluated") {
       return (
         <Link
-          to={`/teacher/result/${tResult.test ? tResult.test: tResult.assignment}/${tResult.attemptId}`}
+          to={`/result/${tResult.test ? tResult.test: tResult.assignment}/${tResult.attemptId}`}
           className="btn-mainColor btn"
         >
           {console.log("tResult :: evaluated ::", tResult.assignment)}
@@ -20,7 +21,7 @@ function GradesTable({ result, teacherId }) {
       if (!teacherId) {
         return (
           <Link
-            to={`/teacher/result/${tResult.test ? tResult.test: tResult.assignment}/${tResult.attemptId}`}
+            to={`/result/${tResult.test ? tResult.test: tResult.assignment}/${tResult.attemptId}`}
             className="btn-mainColor btn"
           >
             {console.log("tResult :: !teacherId ::", tResult.assignment)}
