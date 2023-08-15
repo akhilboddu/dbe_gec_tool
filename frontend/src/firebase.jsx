@@ -30,7 +30,7 @@ export const logout = (navigate) => {
   const user = JSON.parse(localStorage.getItem("user"));
   signOut(auth)
     .then(() => {
-      console.log("Successfully signed out");
+      //console.log("Successfully signed out");
       localStorage.removeItem("user");
 
       if (user.role === "teacher") {
@@ -51,10 +51,10 @@ export const getUserProfile = async (collection, userId) => {
   if (docSnap.exists()) {
     // Spread out the data object and remove the uid field
     const { uid, ...userDataWithoutUid } = docSnap.data();
-    console.log("Document data:", {
+   /*  console.log("Document data:", {
       ...userDataWithoutUid,
       id: uid,
-    });
+    }); */
     localStorage.setItem(
       "user",
       JSON.stringify({
@@ -62,14 +62,14 @@ export const getUserProfile = async (collection, userId) => {
         id: uid,
       })
     );
+
+    return {
+      ...userDataWithoutUid,
+      id: uid,
+    };
   } else {
     // docSnap.data() will be undefined in this case
-    console.log("No such document!");
+    console.log("Acess Denied!");
     return null;
   }
-
-  return {
-    ...userDataWithoutUid,
-    id: uid,
-  };
 };

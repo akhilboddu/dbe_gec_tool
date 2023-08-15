@@ -1,8 +1,7 @@
-import { Outlet,useNavigate } from "@tanstack/react-location";
+import { Outlet, useNavigate } from "@tanstack/react-location";
 import NoAccess from "../no-access";
-import { auth, getUserProfile,logout } from "/src/firebase";
+import { auth, getUserProfile, logout } from "/src/firebase";
 import React, { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
 import Loading from "/src/components/shared/loading";
 
 export default function ProtectedStudentLayout() {
@@ -16,18 +15,20 @@ export default function ProtectedStudentLayout() {
 
   useEffect(() => {
     // Check authentication state whenever the component mounts
-    getUserProfile("users", userLocal.id).then(data=>{
-      if(data){
-        setLoading(false);
-      }else{
-        logout(navigate)
-      }
-      console.log("User1: ",user);
-    })
+
     const unsubscribe = auth.onAuthStateChanged(async (userAuth) => {
       if (userAuth) {
+        getUserProfile("users", userLocal.id).then((data) => {
+          if (data) {
+            setLoading(false);
+          } else {
+            logout(navigate);
+            return <NoAccess />;
+          }
+          //console.log("User1: ", data);
+        });
       } else {
-        logout(navigate)
+        logout(navigate);
       }
     });
 
@@ -36,11 +37,11 @@ export default function ProtectedStudentLayout() {
     };
   }, []);
 
-  if(loading) return <Loading />;
+  if (loading) return <Loading />;
 
-  if (userLocal?.role?.toLowerCase() !== "student") {
+  /*  if (userLocal?.role?.toLowerCase() !== "student") {
     return <NoAccess />;
-  }
+  } */
 
   return <Outlet />;
 }

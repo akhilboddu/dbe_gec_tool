@@ -8,7 +8,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { useAtom } from "jotai";
 import { useForm } from "react-hook-form";
 import { useMutation } from "react-query";
-import { auth } from "../firebase";
+import { auth, getUserProfile } from "../firebase";
 
 import Error from "/src/components/shared/error";
 
@@ -23,7 +23,7 @@ export default function Login() {
     params: { role },
   } = useMatch();
 
-  console.log(role);
+  //console.log(role);
   // atom
   const [user, setUser] = useAtom(userAtom);
 
@@ -46,29 +46,43 @@ export default function Login() {
         // Signed in
         const user = userCredential.user;
 
-        console.log("Login User: ", user)
+        //console.log("Login User: ", user.uid);
 
         // Check if its a teacher
         if (role === "teacher") {
-          localStorage.setItem(
-            "user",
-            JSON.stringify({
-              email: user.email,
-              id: user.uid,
-              role: "teacher",
-            })
-          );
-          navigate({ to: "/teacher/dashboard", required: true });
+          getUserProfile("teachers", user.uid).then((data) => {
+            if (data) {
+              if (!data?.role) {
+                localStorage.setItem(
+                  "user",
+                  JSON.stringify({
+                    ...data,
+                    role: "teacher",
+                  })
+                );
+              }
+              navigate({ to: "/teacher/dashboard", required: true });
+            } else {
+              notify.show(`No Teacher record found`, "error", 2000, "right");
+            }
+          });
         } else {
-          localStorage.setItem(
-            "user",
-            JSON.stringify({
-              email: user.email,
-              id: user.uid,
-              role: "student",
-            })
-          );
-          navigate({ to: "/student", required: true });
+          getUserProfile("users", user.uid).then((data) => {
+            if (data) {
+              if (!data?.role) {
+                localStorage.setItem(
+                  "user",
+                  JSON.stringify({
+                    ...data,
+                    role: "student",
+                  })
+                );
+              }
+              navigate({ to: "/student", required: true });
+            } else {
+              notify.show(`No Student record found`, "error", 2000, "right");
+            }
+          });
         }
         // ...
       })
@@ -80,9 +94,9 @@ export default function Login() {
   };
 
   return (
-    <div className="max-w-md mx-auto card card-bordered">
+    <div className="card card-bordered mx-auto max-w-md">
       <form className="card-body" onSubmit={handleSubmit(onSubmit)}>
-        <h2 className="mb-4 text-2xl card-title">
+        <h2 className="card-title mb-4 text-2xl">
           {role !== "teacher" ? "Log in to your account" : "Teacher Login"}
         </h2>
 
