@@ -13,11 +13,12 @@ function grades() {
   const [subjectList, setSubjectList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedSubject, setSelectedSubject] = useState("all");
+  const user = JSON.parse(localStorage.getItem("user"));
 
   const {
     params: { teacherId },
   } = useMatch();
-  console.log(teacherId);
+  //console.log(teacherId);
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -60,7 +61,7 @@ function grades() {
 
     const generateSubList = (subjectData) => {
       let subList = [{ name: "All" }];
-      console.log(subjectData, "subjectData");
+      //console.log(subjectData, "subjectData");
       subjectData.forEach((sub) => {
         if (subList.findIndex((s) => s.name === sub.subject) == -1) {
           subList.push({ name: sub.subject });
@@ -82,10 +83,10 @@ function grades() {
 
   const getResult = () => {
     if (selectedSubject == "all") {
-      return result;
+      return result.filter(x => x.school_name == user?.school_name);
     } else {
       const filteredData = result.filter(
-        (d) => d.subject.toLowerCase() == selectedSubject.toLowerCase()
+        (x) => x.subject.toLowerCase() == selectedSubject.toLowerCase() && x.school_name == user?.school_name
       );
       return filteredData;
     }

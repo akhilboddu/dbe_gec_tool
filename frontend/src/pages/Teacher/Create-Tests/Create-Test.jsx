@@ -338,19 +338,24 @@ const CreateTest = ({ action }) => {
         });
       }
       try {
+        const user = JSON.parse(localStorage.getItem("user"));
         if (action == 'update') {
           const editDoc = doc(db, "test", testId);
+          if(!editDoc?.school_name){
+            testObject.school_name = user.school_name;
+          }
           await setDoc(editDoc, testObject)
           notify.show(`Test Successfully Updated`, "success", 5000);
-          navigate({ to: `/teacher-dashboard`, replace: true });
+          navigate({ to: `/teacher/test-list`, replace: true });
         } else {
           const docRef = await addDoc(collection(db, "test"), testObject);
           await updateDoc(docRef, {
             testId: docRef.id,
+            school_name: user.school_name
           });
           notify.show(`test Successfully Published`, "success", 5000);
           setTotalMarks(0)
-          navigate({ to: `/teacher-dashboard`, replace: true });
+          navigate({ to: `/teacher/test-list`, replace: true });
         }
 
       } catch (e) {
@@ -377,7 +382,7 @@ const CreateTest = ({ action }) => {
     //     });
     //     notify.show(`Test Successfully Published`, "success", 5000);
     //     setTotalMarks(0)
-    //     navigate({ to: `/teacher-dashboard`, replace: true });
+    //     navigate({ to: `/teacher/test-list`, replace: true });
     //   } catch (e) {
     //     console.error("Error adding document: ", e);
     //     notify.show(

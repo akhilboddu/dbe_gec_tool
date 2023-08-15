@@ -201,16 +201,20 @@ export default function Question({
       ) {
         return <Info text={"Pending for evaluation"} />;
       }
-      
-      if (evaluatedResult?.isCorrect) {
-        return (
-          <Success
-            text="Your answer is correct."
-          />
-        );
-      } else {
-        return <Error text="Your answer is incorrect." />;
+
+      const user = JSON.parse(localStorage.getItem("user"));
+      if(user.role === "student"){
+        if (evaluatedResult?.isCorrect) {
+          return (
+            <Success
+              text="Your answer is correct."
+            />
+          );
+        } else {
+          return <Error text="Your answer is incorrect." />;
+        }
       }
+      
     }
   };
 

@@ -9,6 +9,7 @@ function TestList() {
   const navigate = useNavigate();
   const [results, setResult] = useState([]);
   const [loading, setLoading] = useState(true);
+  const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     fetchAllData();
@@ -34,7 +35,7 @@ function TestList() {
     await deleteDoc(doc(db, "test", id));
     fetchAllData();
   };
-  console.log("results ::", results);
+  //console.log("results ::", results);
   const updateTest = async (testId) => {
     navigate({ to: `/teacher/update-test/${testId}` })
   }
@@ -57,7 +58,7 @@ function TestList() {
             </thead>
 
             <tbody>
-              {results?.map((result, index) => (
+              {results?.filter(x => x.school_name == user?.school_name).map((result, index) => (
                 <tr key={index}>
                   {/* index */}
                   <th className="text-center" style={{ zIndex: 0 }}>{index + 1}</th>

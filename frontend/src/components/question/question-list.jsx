@@ -209,19 +209,34 @@ export default function QuestionList({
 
   const updateAttemptedTest = async (data) => {
     try {
+      const user = JSON.parse(localStorage.getItem("user"));
+
       const attemptRef = doc(db, "attempted_results", attemptedResultId);
       await updateDoc(attemptRef, {
         answers: data.answers,
         score: data.score,
       });
       const gradeRef = doc(db, "grades", gradeId);
-      await updateDoc(gradeRef, {
-        status: "evaluated",
-        score: data.score,
-        percentage:
-          Math.floor((data.score / totalMarks) * 100 * 100) / 100,
-      });
-      navigate({ to: `/grades/${auth.currentUser.uid}`, replace: true });
+      if(!gradeRef?.school_name){
+        //assignmentObject.school_name = user.school_name;
+        await updateDoc(gradeRef, {
+          status: "evaluated",
+          score: data.score,
+          percentage:
+            Math.floor((data.score / totalMarks) * 100 * 100) / 100,
+            school_name: user.school_name
+        });
+      }else{
+        await updateDoc(gradeRef, {
+          status: "evaluated",
+          score: data.score,
+          percentage:
+            Math.floor((data.score / totalMarks) * 100 * 100) / 100,
+        });
+      }
+
+      
+      navigate({ to: `/teacher/grades/${auth.currentUser.uid}`, replace: true });
     } catch (e) {
       console.log(e);
     }
@@ -229,7 +244,7 @@ export default function QuestionList({
 
   const saveTestScore = async (finalScore, textAnswersArr) => {
     fetchUserData().then(async () => {
-      const { uid } = userData;
+      const { uid,school_name } = userData;
       const current = new Date();
       const date = `${current.getDate()}/${current.getMonth() + 1
         }/${current.getFullYear()}`;
@@ -241,6 +256,7 @@ export default function QuestionList({
           score: finalScore,
           date: date,
           answers: selectedAnswers,
+          school_name: school_name,
         });
         saveGrades(finalScore, docRef.id, uid, textAnswersArr);
         console.log("Document written with ID: ", docRef.id);
@@ -284,7 +300,7 @@ export default function QuestionList({
   const renderButton = () => {
     if (!attemptData) {
       return score ? (
-        <Link to={`/grades`}>
+        <Link to={`/student/grades`}>
           <button className="btn-mainColor btn">See Grades</button>
         </Link>
       ) : (
@@ -362,7 +378,7 @@ export default function QuestionList({
                 to={
                   currentPath.endsWith(`teacher`)
                     ? `/ranking/${testId}/teacher`
-                    : `/grades`
+                    : `/student/grades`
                 }
               >
                 <button className="btn-mainColor btn">Ranking Page</button>

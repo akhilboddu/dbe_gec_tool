@@ -338,19 +338,27 @@ const CreateAssignment = ({ action }) => {
         });
       }
       try {
+        const user = JSON.parse(localStorage.getItem("user"));
+        
         if (action == 'update') {
           const editDoc = doc(db, "assignments", assignmentId);
+          if(!editDoc?.school_name){
+            assignmentObject.school_name = user.school_name;
+          }
+
           await setDoc(editDoc, assignmentObject)
           notify.show(`Assignment Successfully Updated`, "success", 5000);
-          navigate({ to: `/teacher-dashboard`, replace: true });
+          navigate({ to: `/teacher/assignment-list`, replace: true });
         } else {
           const docRef = await addDoc(collection(db, "assignments"), assignmentObject);
+
           await updateDoc(docRef, {
             assignmentId: docRef.id,
+            school_name: user.school_name
           });
           notify.show(`Assignment Successfully Published`, "success", 5000);
           setTotalMarks(0)
-          navigate({ to: `/teacher-dashboard`, replace: true });
+          navigate({ to: `/teacher/assignment-list`, replace: true });
         }
 
       } catch (e) {

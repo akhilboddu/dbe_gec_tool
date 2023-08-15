@@ -10,6 +10,9 @@ function AssignmentList() {
   const [results, setResult] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  
+  const user = JSON.parse(localStorage.getItem("user"));
+
   useEffect(() => {
     fetchAllData();
   }, []);
@@ -34,7 +37,7 @@ function AssignmentList() {
     await deleteDoc(doc(db, "assignments", id));
     fetchAllData();
   };
-  console.log("results ::", results);
+  //console.log("results ::", results);
   const updateAssignment = async (assignmentId) => {
     navigate({ to: `/teacher/update-assignments/${assignmentId}` })
   }
@@ -57,7 +60,7 @@ function AssignmentList() {
             </thead>
 
             <tbody>
-              {results?.map((result, index) => (
+              {results?.filter(x => x.school_name == user?.school_name).map((result, index) => (
                 <tr key={index}>
                   {/* index */}
                   <th className="text-center" style={{ zIndex: 0 }}>{index + 1}</th>

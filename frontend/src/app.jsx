@@ -64,20 +64,46 @@ const routes = [
         element: <Rankings />,
       },
       {
-        path: "/login/:role",
-        element: (
-          <CheckLogout>
-            <Login />
-          </CheckLogout>
-        ),
+        path: "login",
+        children: [
+          {
+            path: "/",
+            element: (
+              <CheckLogout>
+                <Login />
+              </CheckLogout>
+            ),
+          },
+          {
+            path: ":role",
+            element: (
+              <CheckLogout>
+                <Login />
+              </CheckLogout>
+            ),
+          },
+        ]
       },
       {
-        path: "/register/:role",
-        element: (
-          <CheckLogout>
-            <Register />
-          </CheckLogout>
-        ),
+        path: "register",
+        children: [
+          {
+            path: "/",
+            element: (
+              <CheckLogout>
+                <Register />
+              </CheckLogout>
+            ),
+          },
+          {
+            path: ":role",
+            element: (
+              <CheckLogout>
+                <Register />
+              </CheckLogout>
+            ),
+          },
+        ]
       },
       {
         path: "student",
