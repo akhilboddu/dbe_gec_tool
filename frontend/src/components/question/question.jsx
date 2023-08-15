@@ -203,7 +203,7 @@ export default function Question({
       }
 
       const user = JSON.parse(localStorage.getItem("user"));
-      if(user.role === "student"){
+      if(user?.role == "student" && !evaluatedResult?.teacherNote){
         if (evaluatedResult?.isCorrect) {
           return (
             <Success
