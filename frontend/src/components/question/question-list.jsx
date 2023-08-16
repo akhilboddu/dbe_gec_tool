@@ -26,7 +26,7 @@ import {
   addDoc,
   collection,
 } from "firebase/firestore";
-
+import { Mixpanel } from "../../mixpanel";
 
 export default function QuestionList({
   questions,
@@ -36,7 +36,7 @@ export default function QuestionList({
   attemptedResultId,
   gradeId,
   isMarking,
-  totalMarks
+  totalMarks,
 }) {
   const [selectedAnswers, setSelectedAnswers] = useState([]);
   const [correctAnswerIds, setCorrectAnswerIds] = useState();
@@ -166,6 +166,10 @@ export default function QuestionList({
 
   const onSubmit = () => {
     if (!teacherId) {
+      Mixpanel.track("Test completed",{
+        subject: subject,
+        attemptedResultId: attemptedResultId
+      });
       const correctAnswerIds = [];
       const textAnswersArr = [];
       let tempScore = 0;
@@ -173,13 +177,14 @@ export default function QuestionList({
       for (let index = 0; index < selectedAnswers.length; index++) {
         const selectedAnswer = selectedAnswers[index];
         console.log("selectedAnswer:: :: ", selectedAnswer);
-        if (selectedAnswer.questionType == "mcq" && selectedAnswer?.answer === "true") {
-          
-          correctAnswerIds.push(selectedAnswer)
-          tempScore = tempScore + Number(selectedAnswer.questionMarks)
-        }
-        else if (selectedAnswer.questionType == "text") {
-          textAnswersArr.push(selectedAnswer)
+        if (
+          selectedAnswer.questionType == "mcq" &&
+          selectedAnswer?.answer === "true"
+        ) {
+          correctAnswerIds.push(selectedAnswer);
+          tempScore = tempScore + Number(selectedAnswer.questionMarks);
+        } else if (selectedAnswer.questionType == "text") {
+          textAnswersArr.push(selectedAnswer);
         }
       }
       setCorrectAnswerIds(correctAnswerIds);
@@ -217,26 +222,26 @@ export default function QuestionList({
         score: data.score,
       });
       const gradeRef = doc(db, "grades", gradeId);
-      if(!gradeRef?.school_name){
+      if (!gradeRef?.school_name) {
         //assignmentObject.school_name = user.school_name;
         await updateDoc(gradeRef, {
           status: "evaluated",
           score: data.score,
-          percentage:
-            Math.floor((data.score / totalMarks) * 100 * 100) / 100,
-            school_name: user.school_name
+          percentage: Math.floor((data.score / totalMarks) * 100 * 100) / 100,
+          school_name: user.school_name,
         });
-      }else{
+      } else {
         await updateDoc(gradeRef, {
           status: "evaluated",
           score: data.score,
-          percentage:
-            Math.floor((data.score / totalMarks) * 100 * 100) / 100,
+          percentage: Math.floor((data.score / totalMarks) * 100 * 100) / 100,
         });
       }
 
-      
-      navigate({ to: `/teacher/grades/${auth.currentUser.uid}`, replace: true });
+      navigate({
+        to: `/teacher/grades/${auth.currentUser.uid}`,
+        replace: true,
+      });
     } catch (e) {
       console.log(e);
     }
@@ -244,10 +249,11 @@ export default function QuestionList({
 
   const saveTestScore = async (finalScore, textAnswersArr) => {
     fetchUserData().then(async () => {
-      const { uid,school_name } = userData;
+      const { uid, school_name } = userData;
       const current = new Date();
-      const date = `${current.getDate()}/${current.getMonth() + 1
-        }/${current.getFullYear()}`;
+      const date = `${current.getDate()}/${
+        current.getMonth() + 1
+      }/${current.getFullYear()}`;
 
       try {
         const docRef = await addDoc(collection(db, "attempted_results"), {
@@ -268,8 +274,9 @@ export default function QuestionList({
 
   const saveGrades = async (finalScore, attemptId, userId, textAnswersArr) => {
     const current = new Date();
-    const date = `${current.getDate()}/${current.getMonth() + 1
-      }/${current.getFullYear()}`;
+    const date = `${current.getDate()}/${
+      current.getMonth() + 1
+    }/${current.getFullYear()}`;
     try {
       const docRef = await addDoc(collection(db, "grades"), {
         totalMarks: totalMarks,
@@ -279,8 +286,7 @@ export default function QuestionList({
         date: date,
         subject: subject,
         attemptId: attemptId,
-        percentage:
-          Math.floor((finalScore / totalMarks) * 100 * 100) / 100,
+        percentage: Math.floor((finalScore / totalMarks) * 100 * 100) / 100,
         status: textAnswersArr.length > 0 ? "evaluationPending" : "evaluated",
       });
       console.log("Document written with ID: ", docRef.id);
@@ -290,7 +296,7 @@ export default function QuestionList({
   };
 
   const getAttemptedAnswer = (index) => {
-    const found = attemptData?.answers.find((o) => o.question === index+1);
+    const found = attemptData?.answers.find((o) => o.question === index + 1);
     return found;
   };
 
@@ -321,14 +327,14 @@ export default function QuestionList({
 
   return !isEmpty(questions) ? (
     <>
-      <form onSubmit={handleSubmit(onSubmit)} className="pl-4 space-y-8">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 pl-4">
         {!isEmpty(errors) && <Error text="You must answer all questions" />}
 
         {questions.map((question, index) => (
           <Question
             question={question}
             key={index}
-            index={index+1}
+            index={index + 1}
             register={register}
             image={question.image}
             heading={question.heading}
@@ -344,21 +350,19 @@ export default function QuestionList({
           />
         ))}
 
-       
-
         {renderButton()}
       </form>
 
       {/* modal */}
       <div>
         <div className={clsx("modal mt-0", { "modal-open": isModal })}>
-          <div className="space-y-4 modal-box">
+          <div className="modal-box space-y-4">
             <h3 className="text-lg font-bold uppercase">
               {textAnswers.length > 0 ? "Provisional Result" : "Test result"}
             </h3>
             <p>
-              You scored <span className="font-bold">{score}</span> marks out
-              of {totalMarks}
+              You scored <span className="font-bold">{score}</span> marks out of{" "}
+              {totalMarks}
             </p>
             {textAnswers.length > 0 ? (
               textAnswers.length == 1 ? (

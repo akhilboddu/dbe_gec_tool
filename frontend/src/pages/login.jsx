@@ -15,6 +15,8 @@ import Error from "/src/components/shared/error";
 import { loginApi } from "/src/helpers/fetchers";
 import { userAtom } from "/src/stores/auth.store";
 import { notify } from "react-notify-toast";
+import { Mixpanel } from '../mixpanel';
+import { method } from "lodash-es";
 
 export default function Login() {
   // router
@@ -38,6 +40,8 @@ export default function Login() {
     },
   });
 
+  
+
   const onSubmit = (data) => {
     //loginMutation.mutate(data);
 
@@ -47,11 +51,22 @@ export default function Login() {
         const user = userCredential.user;
 
         //console.log("Login User: ", user.uid);
+        //Track user Id
+        Mixpanel.identify(data.username);
+        Mixpanel.people.set({
+          $email: data.username,
+          $distict_id: data.username,
+        });
+        Mixpanel.track('Login',{method: "normal"});
 
         // Check if its a teacher
-        if (role === "teacher") {
+        if (role === "teacher") { 
+          
           getUserProfile("teachers", user.uid).then((data) => {
             if (data) {
+              //Track Teacher
+              Mixpanel.track('Successful login - Teacher');
+
               if (!data?.role) {
                 localStorage.setItem(
                   "user",
@@ -63,12 +78,16 @@ export default function Login() {
               }
               navigate({ to: "/teacher/dashboard", required: true });
             } else {
+              Mixpanel.track('Unregistered teacher tried logging in.');
               notify.show(`No Teacher record found`, "error", 2000, "right");
             }
           });
         } else {
           getUserProfile("users", user.uid).then((data) => {
             if (data) {
+              //Track Student
+              Mixpanel.track('Successful login - Student');
+
               if (!data?.role) {
                 localStorage.setItem(
                   "user",
@@ -80,6 +99,7 @@ export default function Login() {
               }
               navigate({ to: "/student", required: true });
             } else {
+              Mixpanel.track('Unregistered student tried logging in.');
               notify.show(`No Student record found`, "error", 2000, "right");
             }
           });
@@ -88,8 +108,13 @@ export default function Login() {
       })
       .catch((error) => {
         console.log(error.code);
-        if (error.code === "auth/wrong-password")
+        
+        if (error.code === "auth/wrong-password"){
           notify.show(`Incorrect Password`, "error", 2000, "right");
+          Mixpanel.track('Incorrect Password');
+        }
+        else
+          Mixpanel.track('Unsuccessful login');
       });
   };
 

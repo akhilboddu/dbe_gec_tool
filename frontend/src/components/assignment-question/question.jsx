@@ -173,20 +173,20 @@ export default function Question({
       disabled ||
       (disabled === 0 && !resultCheck && question.type !== "text")
     ) {
-      if (isCorrect == "true") {
+      /* if (isCorrect == "true") {
         return <Success text={explanation ? explanation : "This is the correct answer."} />;
       } else {
         return <Error text={explanation ? explanation : "Wrong Answer"} />;
-      }
+      } */
     } else if (resultCheck) {
       if (question.questionType == "text" && prevSelected?.answer == undefined) {
         return <Info text={"Pending for evaluation"} />;
       }
-      if (prevSelected?.answer == "true") {
+      /* if (prevSelected?.answer == "true") {
         return <Success text={explanation ? explanation : "This is the correct answer."} />;
       } else {
         return <Error text={explanation ? explanation : "Wrong Answer"} />;
-      }
+      } */
     }
   };
 

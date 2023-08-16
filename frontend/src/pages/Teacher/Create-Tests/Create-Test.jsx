@@ -6,6 +6,7 @@ import { db } from "/src/firebase";
 import { notify } from "react-notify-toast";
 import { useNavigate, useMatch } from "@tanstack/react-location";
 import TestQuestions from "../Test-questions";
+import { Mixpanel } from "../../../mixpanel";
 
 const CreateTest = ({ action }) => {
 
@@ -344,11 +345,19 @@ const CreateTest = ({ action }) => {
           if(!editDoc?.school_name){
             testObject.school_name = user.school_name;
           }
+          Mixpanel.track("Test updated",{
+            title: testObject.title,
+            testId: testId
+          });
           await setDoc(editDoc, testObject)
           notify.show(`Test Successfully Updated`, "success", 5000);
           navigate({ to: `/teacher/test-list`, replace: true });
         } else {
           const docRef = await addDoc(collection(db, "test"), testObject);
+          Mixpanel.track("Test created",{
+            title: testObject.title,
+            testId: docRef.id
+          });
           await updateDoc(docRef, {
             testId: docRef.id,
             school_name: user.school_name
@@ -359,6 +368,7 @@ const CreateTest = ({ action }) => {
         }
 
       } catch (e) {
+        Mixpanel.track("Error occurred while publishing test.");
         console.error("Error adding document: ", e);
         notify.show(
           "Error occurred while publishing test. Please try again.",

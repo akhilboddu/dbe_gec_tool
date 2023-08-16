@@ -27,6 +27,7 @@ import {
   addDoc,
   collection,
 } from "firebase/firestore";
+import { Mixpanel } from "../../mixpanel";
 
 export default function QuestionList({
   questions,
@@ -166,6 +167,11 @@ export default function QuestionList({
 
   const onSubmit = () => {
     if (!teacherId) {
+      Mixpanel.track("Asignment completed",{
+        subject: subject,
+        attemptedResultId: attemptedResultId
+      });
+
       const correctAnswerIds = [];
       const textAnswersArr = [];
       let tempScore = 0;
@@ -284,7 +290,7 @@ export default function QuestionList({
   const renderButton = () => {
     if (!attemptData) {
       return assignmentAttempted ? (
-        <Link to={`/grades`}>
+        <Link to={`/student/grades`}>
           <button className="btn-mainColor btn">See Grades</button>
         </Link>
       ) : (

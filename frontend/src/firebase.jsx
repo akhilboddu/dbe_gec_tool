@@ -2,12 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, signOut } from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useMatch,
-} from "@tanstack/react-location";
+import { Mixpanel } from "./mixpanel";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -33,6 +28,8 @@ export const logout = (navigate) => {
       //console.log("Successfully signed out");
       localStorage.removeItem("user");
 
+      Mixpanel.reset();
+
       if (user.role === "teacher") {
         navigate({ to: "/login/teacher" });
       } else {
@@ -51,7 +48,7 @@ export const getUserProfile = async (collection, userId) => {
   if (docSnap.exists()) {
     // Spread out the data object and remove the uid field
     const { uid, ...userDataWithoutUid } = docSnap.data();
-   /*  console.log("Document data:", {
+    /*  console.log("Document data:", {
       ...userDataWithoutUid,
       id: uid,
     }); */

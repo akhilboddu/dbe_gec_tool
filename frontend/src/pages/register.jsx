@@ -17,6 +17,7 @@ import {
 import "../index.css";
 import Error from "../components/shared/error";
 import schoolsData from "../assets/schools_data.json";
+import { Mixpanel } from '../mixpanel';
 
 export default function Register() {
   // router
@@ -41,14 +42,21 @@ export default function Register() {
     } = data;
 
     createUserWithEmailAndPassword(auth, email, password).then(async(results) => {
-      console.log(results.user.uid);
+      //console.log(results.user.uid);
+      //Track user Id
+      Mixpanel.alias(data.username);
+      Mixpanel.people.set({
+        $email: data.username,
+        $distict_id: data.username,
+      });
+      Mixpanel.track('Signup',{method: "normal"});
 
       // Check if its a teacher
       if (role === "teacher") {
         try {
-          /* var _ = await admin.auth().setCustomUserClaims(results.user.uid, {
-            role: "teacher",
-          }) */
+          //Track Teacher
+          Mixpanel.track('Successful register - Teacher');
+
           setDoc(doc(db, "teachers", results.user.uid), {
             uid: results.user.uid,
             email: email,
@@ -71,13 +79,14 @@ export default function Register() {
             navigate({ to: "/teacher/dashboard" });
           });
         } catch (e) {
+          Mixpanel.track('Error adding document.');
           console.log(e.message);
         }
       } else {
         try {
-           /* var _ = await admin.auth().setCustomUserClaims(results.user.uid, {
-            role: "student",
-          }) */
+           //Track Student
+           Mixpanel.track('Successful register - Student');
+
           setDoc(doc(db, "users", results.user.uid), {
             uid: results.user.uid,
             email: email,
@@ -101,13 +110,11 @@ export default function Register() {
           });
           console.log("Document written with ID: ");
         } catch (e) {
+          Mixpanel.track('Error adding document.');
           console.error("Error adding document: ", e);
         }
       }
     });
-    // .then(() => {
-    //   navigate({ to: "/" });
-    // });
   };
 
   return (

@@ -7,6 +7,7 @@ import { notify } from "react-notify-toast";
 import { useNavigate, useMatch } from "@tanstack/react-location";
 import AssignmentQuestions from "./components/Assignmnet-Questions";
 import moment from 'moment';
+import { Mixpanel } from "../../../mixpanel";
 
 const CreateAssignment = ({ action }) => {
 
@@ -346,12 +347,20 @@ const CreateAssignment = ({ action }) => {
             assignmentObject.school_name = user.school_name;
           }
 
+          Mixpanel.track("Test updated",{
+            title: assignmentObject.title,
+            assignmentId: assignmentId
+          });
+
           await setDoc(editDoc, assignmentObject)
           notify.show(`Assignment Successfully Updated`, "success", 5000);
           navigate({ to: `/teacher/assignment-list`, replace: true });
         } else {
           const docRef = await addDoc(collection(db, "assignments"), assignmentObject);
-
+          Mixpanel.track("Assignment created",{
+            title: assignmentObject.title,
+            assignmentId: docRef.id
+          });
           await updateDoc(docRef, {
             assignmentId: docRef.id,
             school_name: user.school_name

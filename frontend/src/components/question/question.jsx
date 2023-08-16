@@ -176,24 +176,29 @@ export default function Question({
   };
 
   const renderMessage = () => {
+    //console.log(evaluatedResult)
     if (disabled && !resultCheck && question.questionType === "text") {
       return <Info text={"Pending for evaluation"} />;
     }
+    
+    const user = JSON.parse(localStorage.getItem("user"));
+
 
     if (
       disabled ||
       (disabled === 0 && !resultCheck && question.questionType !== "text")
     ) {
-      //To-Do: Currently disabled for future evaluation
-     /*  if (isCorrect) {
-        return (
-          <Success
-            text="Your answer is correct."
-          />
-        );
-      } else {
-        return <Error text="Your answer is incorrect.1" />;
-      } */
+      if(user?.role == "student" && !evaluatedResult?.teacherNote){
+        if (evaluatedResult?.isCorrect) {
+          return (
+            <Success
+              text="Your answer is correct."
+            />
+          );
+        } else {
+          return <Error text="Your answer is incorrect." />;
+        }
+      }
     } else if (resultCheck) {
       if (
         question.questionType == "text" &&
@@ -202,8 +207,7 @@ export default function Question({
         return <Info text={"Pending for evaluation"} />;
       }
 
-      const user = JSON.parse(localStorage.getItem("user"));
-      if(user?.role == "student" && !evaluatedResult?.teacherNote){
+      if(user?.role == "student" && evaluatedResult?.teacherNote?.length > 0){
         if (evaluatedResult?.isCorrect) {
           return (
             <Success
@@ -246,7 +250,7 @@ export default function Question({
       ) : (
         ""
       )}
-      {evaluatedResult?.teacherNote && <div className="py-4">{renderMessage()}</div>}
+      <div className="py-4">{renderMessage()}</div>
 
       {teacher && question.questionType == "text"
         ? renderTeacherInputs()
