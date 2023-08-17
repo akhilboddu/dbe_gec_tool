@@ -7,10 +7,17 @@ import Rankings from "./rankings";
 
 export default function UserInfo() {
   const [userData, setUserData] = useState(null);
+  const user = JSON.parse(localStorage.getItem("user"));
 
   const getUserData = async () => {
-    const docRef = doc(db, "users", auth.currentUser.uid);
+    let collection = "";
+    if (user.role == "teacher") collection = "teachers";
+    else collection = "users";
+
+    const docRef = doc(db, collection, auth.currentUser.uid);
     const docSnap = await getDoc(docRef);
+
+    console.log("Student: ",docSnap.data())
 
     setUserData(docSnap.data());
   };
