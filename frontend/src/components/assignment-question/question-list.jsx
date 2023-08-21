@@ -36,7 +36,7 @@ export default function QuestionList({
   teacherId,
   attemptedResultId,
   gradeId,
-  totalMarks
+  totalMarks,
 }) {
   const [selectedAnswers, setSelectedAnswers] = useState([]);
   const [correctAnswerIds, setCorrectAnswerIds] = useState();
@@ -167,9 +167,9 @@ export default function QuestionList({
 
   const onSubmit = () => {
     if (!teacherId) {
-      Mixpanel.track("Asignment completed",{
+      Mixpanel.track("Asignment completed", {
         subject: subject,
-        attemptedResultId: attemptedResultId
+        attemptedResultId: attemptedResultId,
       });
 
       const correctAnswerIds = [];
@@ -180,11 +180,10 @@ export default function QuestionList({
         const selectedAnswer = selectedAnswers[index];
         console.log("selectedAnswer:: :: ", selectedAnswer);
         if (selectedAnswer.type == "mcq" && selectedAnswer?.answer === "true") {
-          correctAnswerIds.push(selectedAnswer)
-          tempScore = tempScore + Number(selectedAnswer.questionMarks)
-        }
-        else if (selectedAnswer.type == "text") {
-          textAnswersArr.push(selectedAnswer)
+          correctAnswerIds.push(selectedAnswer);
+          tempScore = tempScore + Number(selectedAnswer.questionMarks);
+        } else if (selectedAnswer.type == "text") {
+          textAnswersArr.push(selectedAnswer);
         }
       }
       setCorrectAnswerIds(correctAnswerIds);
@@ -214,18 +213,31 @@ export default function QuestionList({
 
   const updateAttemptedAssignment = async (data) => {
     try {
+      const user = JSON.parse(localStorage.getItem("user"));
       const attemptRef = doc(db, "attempted_results", attemptedResultId);
+     
       await updateDoc(attemptRef, {
         answers: data.answers,
         score: data.score,
       });
+
       const gradeRef = doc(db, "grades", gradeId);
-      await updateDoc(gradeRef, {
-        status: "evaluated",
-        score: data.score,
-        percentage:
-          Math.floor((data.score / totalMarks) * 100 * 100) / 100,
-      });
+      if (gradeRef?.school_name <= 0) {
+        //assignmentObject.school_name = user.school_name;
+        await updateDoc(gradeRef, {
+          status: "evaluated",
+          score: data.score,
+          percentage: Math.floor((data.score / totalMarks) * 100 * 100) / 100,
+          school_name: user.school_name,
+        });
+      } else {
+        await updateDoc(gradeRef, {
+          status: "evaluated",
+          score: data.score,
+          percentage: Math.floor((data.score / totalMarks) * 100 * 100) / 100,
+        });
+      }
+
       navigate({ to: `/grades/${auth.currentUser.uid}`, replace: true });
     } catch (e) {
       console.log(e);
@@ -236,16 +248,19 @@ export default function QuestionList({
     fetchUserData().then(async () => {
       const { uid } = userData;
       const current = new Date();
-      const date = `${current.getDate()}/${current.getMonth() + 1
-        }/${current.getFullYear()}`;
+      const date = `${current.getDate()}/${
+        current.getMonth() + 1
+      }/${current.getFullYear()}`;
 
       try {
+        const user = JSON.parse(localStorage.getItem("user"));
         const docRef = await addDoc(collection(db, "attempted_results"), {
           student: uid,
           assignment: assignmentId,
           score: finalScore,
           date: date,
           answers: selectedAnswers,
+          school_name: user.school_name,
         });
         setAssignmentAttempted(true);
         saveGrades(finalScore, docRef.id, uid, textAnswersArr);
@@ -258,9 +273,11 @@ export default function QuestionList({
 
   const saveGrades = async (finalScore, attemptId, userId, textAnswersArr) => {
     const current = new Date();
-    const date = `${current.getDate()}/${current.getMonth() + 1
-      }/${current.getFullYear()}`;
+    const date = `${current.getDate()}/${
+      current.getMonth() + 1
+    }/${current.getFullYear()}`;
     try {
+      const user = JSON.parse(localStorage.getItem("user"));
       const docRef = await addDoc(collection(db, "grades"), {
         totalMarks: totalMarks,
         student: userId,
@@ -269,8 +286,8 @@ export default function QuestionList({
         date: date,
         subject: subject,
         attemptId: attemptId,
-        percentage:
-          Math.floor((finalScore / totalMarks) * 100 * 100) / 100,
+        school_name: user.school_name,
+        percentage: Math.floor((finalScore / totalMarks) * 100 * 100) / 100,
         status: textAnswersArr.length > 0 ? "evaluationPending" : "evaluated",
       });
       console.log("Document written with ID: ", docRef.id);
@@ -280,7 +297,7 @@ export default function QuestionList({
   };
 
   const getAttemptedAnswer = (index) => {
-    const found = attemptData?.answers.find((o) => o.question === index+1);
+    const found = attemptData?.answers.find((o) => o.question === index + 1);
     return found;
   };
 
@@ -301,7 +318,7 @@ export default function QuestionList({
         return <button className="btn-mainColor btn">Submit</button>;
       } else {
         return (
-          <Link to={`/ranking/${assignmentId}`}>
+          <Link to={`/student/grades`}>
             <button className="btn-mainColor btn">Ranking</button>
           </Link>
         );
@@ -311,14 +328,14 @@ export default function QuestionList({
 
   return !isEmpty(questions) ? (
     <>
-      <form onSubmit={handleSubmit(onSubmit)} className="pl-4 space-y-8">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 pl-4">
         {!isEmpty(errors) && <Error text="You must answer all questions" />}
 
         {questions.map((question, index) => (
           <Question
             question={question}
             key={index}
-            index={index+1}
+            index={index + 1}
             register={register}
             image={question.image}
             heading={question.heading}
@@ -339,13 +356,15 @@ export default function QuestionList({
       {/* modal */}
       <div>
         <div className={clsx("modal mt-0", { "modal-open": isModal })}>
-          <div className="space-y-4 modal-box">
+          <div className="modal-box space-y-4">
             <h3 className="text-lg font-bold uppercase">
-              {textAnswers.length > 0 ? "Provisional Result" : "Assignment result"}
+              {textAnswers.length > 0
+                ? "Provisional Result"
+                : "Assignment result"}
             </h3>
             <p>
-              You scored <span className="font-bold">{score}</span> marks out
-              of {totalMarks}
+              You scored <span className="font-bold">{score}</span> marks out of{" "}
+              {totalMarks}
             </p>
             {textAnswers.length > 0 ? (
               textAnswers.length == 1 ? (
@@ -365,7 +384,7 @@ export default function QuestionList({
                 to={
                   currentPath.endsWith(`teacher`)
                     ? `/ranking/${assignmentId}/teacher`
-                    : `/ranking/${assignmentId}`
+                    : `/student/grades`
                 }
               >
                 <button className="btn-mainColor btn">Ranking Page</button>

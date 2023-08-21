@@ -176,7 +176,7 @@ export default function Question({
   };
 
   const renderMessage = () => {
-    //console.log(evaluatedResult)
+    console.log(evaluatedResult)
     if (disabled && !resultCheck && question.questionType === "text") {
       return <Info text={"Pending for evaluation"} />;
     }
@@ -201,14 +201,14 @@ export default function Question({
       }
     } else if (resultCheck) {
       if (
-        question.questionType == "text" &&
+        question.questionType == "text" ||
         prevSelected?.answer == undefined
       ) {
         return <Info text={"Pending for evaluation"} />;
       }
 
-      if(user?.role == "student" && evaluatedResult?.teacherNote?.length > 0){
-        if (evaluatedResult?.isCorrect) {
+      if(user?.role == "student"){
+        if (evaluatedResult?.isCorrect || evaluatedResult?.answer == "true") {
           return (
             <Success
               text="Your answer is correct."

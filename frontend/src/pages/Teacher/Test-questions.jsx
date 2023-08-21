@@ -139,8 +139,7 @@ const TestQuestions = ({
               alt="Course image"
             />
           )}
-          {isEditQuestion && (
-            <div>
+          <div>
               <label className="text-md block font-medium text-gray-700">
                 {question?.image ? "Replace" : "Upload"} image
               </label>
@@ -154,7 +153,6 @@ const TestQuestions = ({
                 }
               />
             </div>
-          )}
         </div>
         {question.questionType == "mcq" && (
           <>

@@ -181,6 +181,7 @@ export default function QuestionList({
           selectedAnswer.questionType == "mcq" &&
           selectedAnswer?.answer === "true"
         ) {
+          selectedAnswer.IsCorrect = true;
           correctAnswerIds.push(selectedAnswer);
           tempScore = tempScore + Number(selectedAnswer.questionMarks);
         } else if (selectedAnswer.questionType == "text") {
@@ -256,13 +257,14 @@ export default function QuestionList({
       }/${current.getFullYear()}`;
 
       try {
+        const user = JSON.parse(localStorage.getItem("user"));
         const docRef = await addDoc(collection(db, "attempted_results"), {
           student: uid,
           test: testId,
           score: finalScore,
           date: date,
           answers: selectedAnswers,
-          school_name: school_name,
+          school_name: user.school_name,
         });
         saveGrades(finalScore, docRef.id, uid, textAnswersArr);
         console.log("Document written with ID: ", docRef.id);
@@ -274,16 +276,19 @@ export default function QuestionList({
 
   const saveGrades = async (finalScore, attemptId, userId, textAnswersArr) => {
     const current = new Date();
+    const { uid, school_name } = userData;
     const date = `${current.getDate()}/${
       current.getMonth() + 1
     }/${current.getFullYear()}`;
     try {
+      const user = JSON.parse(localStorage.getItem("user"));
       const docRef = await addDoc(collection(db, "grades"), {
         totalMarks: totalMarks,
         student: userId,
         test: testId,
         score: finalScore,
         date: date,
+        school_name: user.school_name,
         subject: subject,
         attemptId: attemptId,
         percentage: Math.floor((finalScore / totalMarks) * 100 * 100) / 100,
@@ -317,7 +322,7 @@ export default function QuestionList({
         return <button className="btn-mainColor btn">Submit</button>;
       } else {
         return (
-          <Link to={`/ranking/${testId}`}>
+          <Link to={`/student/grades`}>
             <button className="btn-mainColor btn">Ranking</button>
           </Link>
         );

@@ -108,6 +108,14 @@ const AssignmentQuestions = ({
           </select>
         </div>
         <div className="flex flex-col col-span-2 mt-4">
+        {question?.image && (
+            <img
+              className="h-[200px] w-[300px]"
+              src={question.image ?? "/placeholder.png"}
+              alt="Course image"
+            />
+          )}
+          <div>
           <label className="block font-medium text-gray-700 text-md">
             Upload image
           </label>
@@ -118,6 +126,8 @@ const AssignmentQuestions = ({
             className="mt-1 block cursor-pointer h-[36px] w-full rounded-md px-2  focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             onChange={(event) => onChangeImage(event.target.files[0], questionIndex)}
           />
+
+          </div>
         </div>
         {question.questionType == "mcq" &&
           <>
