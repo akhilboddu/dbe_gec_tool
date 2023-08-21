@@ -176,7 +176,7 @@ export default function Question({
   };
 
   const renderMessage = () => {
-    console.log(evaluatedResult)
+    ///console.log(evaluatedResult)
     if (disabled && !resultCheck && question.questionType === "text") {
       return <Info text={"Pending for evaluation"} />;
     }

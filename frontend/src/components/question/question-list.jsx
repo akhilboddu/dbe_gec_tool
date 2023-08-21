@@ -78,6 +78,8 @@ export default function QuestionList({
         } else {
           data.push(answer);
         }
+
+        console.log("Data: ", data);
         return data;
       });
     }
@@ -166,17 +168,17 @@ export default function QuestionList({
 
   const onSubmit = () => {
     if (!teacherId) {
-      Mixpanel.track("Test completed",{
+      /* Mixpanel.track("Test completed",{
         subject: subject,
         attemptedResultId: attemptedResultId
-      });
+      }); */
       const correctAnswerIds = [];
       const textAnswersArr = [];
       let tempScore = 0;
 
       for (let index = 0; index < selectedAnswers.length; index++) {
         const selectedAnswer = selectedAnswers[index];
-        console.log("selectedAnswer:: :: ", selectedAnswer);
+        //console.log("selectedAnswer:: :: ", selectedAnswer);
         if (
           selectedAnswer.questionType == "mcq" &&
           selectedAnswer?.answer === "true"
@@ -198,8 +200,11 @@ export default function QuestionList({
     } else {
       let newCorrectAnswers = 0;
       teacherNotes.forEach((element) => {
-        if (element.answer == "true") {
-          newCorrectAnswers = Number(newCorrectAnswers) + Number(element.marks);
+        if (
+          (element.isCorrect && element.type === "text") ||
+          (element.answer === "true" && element.type == "mcq")
+        ) {
+          newCorrectAnswers += Number(element.marks);
         }
         attemptData.answers = attemptData.answers.map((a) => {
           if (a.question == element.question) {
@@ -208,8 +213,10 @@ export default function QuestionList({
           return a;
         });
       });
-      attemptData.score = Number(attemptData.score) + Number(newCorrectAnswers);
+      
+      attemptData.score = Number(attemptData.score) + newCorrectAnswers;
       updateAttemptedTest(attemptData);
+      //console.log("attemptData After:", attemptData);
     }
   };
 
@@ -239,10 +246,10 @@ export default function QuestionList({
         });
       }
 
-      navigate({
+      /*  navigate({
         to: `/teacher/grades/${auth.currentUser.uid}`,
         replace: true,
-      });
+      }); */
     } catch (e) {
       console.log(e);
     }
