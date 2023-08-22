@@ -168,10 +168,10 @@ export default function QuestionList({
 
   const onSubmit = () => {
     if (!teacherId) {
-      /* Mixpanel.track("Test completed",{
+      Mixpanel.track("Test completed",{
         subject: subject,
         attemptedResultId: attemptedResultId
-      }); */
+      });
       const correctAnswerIds = [];
       const textAnswersArr = [];
       let tempScore = 0;
@@ -199,10 +199,11 @@ export default function QuestionList({
       saveTestScore(tempScore, textAnswersArr);
     } else {
       let newCorrectAnswers = 0;
+      
       teacherNotes.forEach((element) => {
         if (
-          (element.isCorrect && element.type === "text") ||
-          (element.answer === "true" && element.type == "mcq")
+          (element.isCorrect && (element.type || element.questionType) === "text") ||
+          (element.answer === "true" && (element.type || element.questionType) == "mcq")
         ) {
           newCorrectAnswers += Number(element.marks);
         }
@@ -213,7 +214,7 @@ export default function QuestionList({
           return a;
         });
       });
-      
+
       attemptData.score = Number(attemptData.score) + newCorrectAnswers;
       updateAttemptedTest(attemptData);
       //console.log("attemptData After:", attemptData);
@@ -246,10 +247,10 @@ export default function QuestionList({
         });
       }
 
-      /*  navigate({
+       navigate({
         to: `/teacher/grades/${auth.currentUser.uid}`,
         replace: true,
-      }); */
+      });
     } catch (e) {
       console.log(e);
     }

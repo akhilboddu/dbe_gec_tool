@@ -176,8 +176,8 @@ export default function Question({
   };
 
   const renderMessage = () => {
-    ///console.log(evaluatedResult)
-    if (disabled && !resultCheck && question.questionType === "text") {
+    console.log(evaluatedResult)
+    if (disabled && !resultCheck && (question.questionType || question.type) === "text") {
       return <Info text={"Pending for evaluation"} />;
     }
     
@@ -186,7 +186,7 @@ export default function Question({
 
     if (
       disabled ||
-      (disabled === 0 && !resultCheck && question.questionType !== "text")
+      (disabled === 0 && !resultCheck && (question.questionType || question.type) !== "text")
     ) {
       if(user?.role == "student" && !evaluatedResult?.teacherNote){
         if (evaluatedResult?.isCorrect) {
@@ -200,10 +200,13 @@ export default function Question({
         }
       }
     } else if (resultCheck) {
+
       if (
-        question.questionType == "text" ||
+        (question.questionType || question.type) == "text" && !evaluatedResult?.isCorrect && !evaluatedResult?.teacherNote ||
         prevSelected?.answer == undefined
       ) {
+        
+      console.log("Pending for evaluation1")
         return <Info text={"Pending for evaluation"} />;
       }
 
@@ -214,7 +217,7 @@ export default function Question({
               text="Your answer is correct."
             />
           );
-        } else {
+        } else if (!evaluatedResult?.isCorrect || evaluatedResult?.answer == "false"){
           return <Error text="Your answer is incorrect." />;
         }
       }

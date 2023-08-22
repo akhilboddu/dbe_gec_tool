@@ -140,41 +140,37 @@ const TestQuestions = ({
             />
           )}
           <div>
-              <label className="text-md block font-medium text-gray-700">
-                {question?.image ? "Replace" : "Upload"} image
-              </label>
-              <input
-                type="file"
-                disabled={question.isSaved}
-                name="image"
-                className="mt-1 block h-[36px] w-full cursor-pointer rounded-md px-2  focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                onChange={(event) =>
-                  onChangeImage(event.target.files[0], questionIndex)
-                }
-              />
-            </div>
+            <label className="text-md block font-medium text-gray-700">
+              {question?.image ? "Replace" : "Upload"} image
+            </label>
+            <input
+              type="file"
+              disabled={question.isSaved}
+              name="image"
+              className="mt-1 block h-[36px] w-full cursor-pointer rounded-md px-2  focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              onChange={(event) =>
+                onChangeImage(event.target.files[0], questionIndex)
+              }
+            />
+          </div>
         </div>
-        {question.questionType == "mcq" && (
-          <>
-            <h2 className="text-md block font-medium text-gray-700"></h2>
-            {question.answers.length > 0 &&
-              question.answers.map((answer, answerIndex) => {
-                return (
-                  <QuestionAnswer
-                    answer={answer}
-                    question={question}
-                    answerIndex={answerIndex}
-                    questionIndex={questionIndex}
-                    handleSaveAnswer={handleSaveAnswer}
-                    handleEditAnswer={handleEditAnswer}
-                    handleDeleteAnswer={handleDeleteAnswer}
-                    onChange={onChange}
-                    answerLength={question.answers.length}
-                  />
-                );
-              })}
-          </>
-        )}
+        {question.questionType == "mcq" &&
+          question.answers.length > 0 &&
+          question.answers.map((answer, answerIndex) => {
+            return (
+              <QuestionAnswer
+                answer={answer}
+                question={question}
+                answerIndex={answerIndex}
+                questionIndex={questionIndex}
+                handleSaveAnswer={handleSaveAnswer}
+                handleEditAnswer={handleEditAnswer}
+                handleDeleteAnswer={handleDeleteAnswer}
+                onChange={onChange}
+                answerLength={question.answers.length}
+              />
+            );
+          })}
         {question.questionType == "mcq" && !question.isSaved ? (
           <div className="col-span-6">
             <button
