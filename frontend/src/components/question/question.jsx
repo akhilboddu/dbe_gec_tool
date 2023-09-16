@@ -176,65 +176,74 @@ export default function Question({
   };
 
   const renderMessage = () => {
-    console.log(evaluatedResult)
-    if (disabled && !resultCheck && (question.questionType || question.type) === "text") {
-      return <Info text={"Pending for evaluation"} />;
-    }
-    
+    console.log("starting...");
     const user = JSON.parse(localStorage.getItem("user"));
 
+    if (!user || !evaluatedResult) {
+      return null; // Handle the case when user data is not available
+    }
+
+    // Extract variables if needed
+    const { role } = user;
+
+    if (
+      disabled &&
+      !resultCheck &&
+      (question.questionType || question.type) === "text"
+    ) {
+      return <Info text={"Pending for evaluation"} />;
+    }
+
+    let answer = null;
+    if (evaluatedResult?.answer) {
+      answer =
+        typeof evaluatedResult?.answer === "string"
+          ? evaluatedResult?.answer.toLowerCase() === "true"
+          : evaluatedResult?.answer;
+      console.log(answer, typeof answer); // false "boolean"
+    }
 
     if (
       disabled ||
-      (disabled === 0 && !resultCheck && (question.questionType || question.type) !== "text")
+      (disabled === 0 &&
+        !resultCheck &&
+        (question.questionType || question.type) !== "text")
     ) {
-      if(user?.role == "student" && !evaluatedResult?.teacherNote){
-        if (evaluatedResult?.isCorrect) {
-          return (
-            <Success
-              text="Your answer is correct."
-            />
-          );
-        } else {
+      console.log("evaluatedResult: ", evaluatedResult);
+      if (role === "student" && !evaluatedResult?.teacherNote) {
+        if (evaluatedResult?.IsCorrect || answer) {
+          return <Success text="Your answer is correct." />;
+        } else if (
+          !evaluatedResult?.IsCorrect ||
+          evaluatedResult?.answer === false
+        ) {
           return <Error text="Your answer is incorrect." />;
         }
       }
     } else if (resultCheck) {
-
+      console.log("we are here...", evaluatedResult);
       if (
-        (question.questionType || question.type) == "text" && !evaluatedResult?.isCorrect && !evaluatedResult?.teacherNote ||
-        prevSelected?.answer == undefined
+        (question.questionType || question.type) === "text" &&
+        !evaluatedResult?.IsCorrect &&
+        !evaluatedResult?.teacherNote
       ) {
-        
-      console.log("Pending for evaluation1")
         return <Info text={"Pending for evaluation"} />;
       }
 
-      if(user?.role == "student"){
-        if (evaluatedResult?.isCorrect || evaluatedResult?.answer == "true") {
-          return (
-            <Success
-              text="Your answer is correct."
-            />
-          );
-        } else if (!evaluatedResult?.isCorrect || evaluatedResult?.answer == "false"){
+      if (role === "student") {
+        if (evaluatedResult?.IsCorrect || answer) {
+          return <Success text="Your answer is correct." />;
+        } else if (!evaluatedResult?.IsCorrect || !answer) {
           return <Error text="Your answer is incorrect." />;
         }
       }
-      
     }
+
+    return null; // Handle any remaining cases or return a default value
   };
 
   return (
     <div className="space-y-4" id={`question${index}`}>
-      {/* {question.questionHeading && (
-        <h1 className="font-bold">{question.questionHeading}</h1>
-      )}
-
-
-
-      {heading ? <h1 className="font-bold">{heading}</h1> : ""}
-    */}
       <div className="flex items-center justify-between">
         <p>
           {index}. {question.questionText}

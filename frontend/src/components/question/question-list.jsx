@@ -12,6 +12,7 @@ import { useMutation, useQueryClient } from "react-query";
 import Question from "/src/components/question/question";
 import Error from "/src/components/shared/error";
 import Info from "/src/components/shared/info";
+import Loading from "/src/components/shared/loading";
 import { QueryKeys } from "/src/constants/query-keys";
 import { auth, db } from "/src/firebase";
 import { postTestResultsInCourseApi } from "/src/helpers/fetchers";
@@ -42,8 +43,9 @@ export default function QuestionList({
   const [correctAnswerIds, setCorrectAnswerIds] = useState();
   const [teacherNotes, setTeacherNotes] = useState([]);
   const [isModal, setIsModal] = useState(false);
-  const [score, setScore] = useState(attemptData?.score);
+  const [score, setScore] = useState(attemptData?.score ?? 0);
   const [textAnswers, setTextAnswers] = useState([]);
+  const [attemptedId, setAttemptId] = useState("");
   const navigate = useNavigate();
   const currentLocation = useLocation();
   const currentPath = currentLocation.current.pathname;
@@ -168,9 +170,9 @@ export default function QuestionList({
 
   const onSubmit = () => {
     if (!teacherId) {
-      Mixpanel.track("Test completed",{
+      Mixpanel.track("Test completed", {
         subject: subject,
-        attemptedResultId: attemptedResultId
+        attemptedResultId: attemptedResultId,
       });
       const correctAnswerIds = [];
       const textAnswersArr = [];
@@ -178,10 +180,10 @@ export default function QuestionList({
 
       for (let index = 0; index < selectedAnswers.length; index++) {
         const selectedAnswer = selectedAnswers[index];
-        //console.log("selectedAnswer:: :: ", selectedAnswer);
+        console.log("selectedAnswer:: :: ", selectedAnswer);
         if (
           selectedAnswer.questionType == "mcq" &&
-          selectedAnswer?.answer === "true"
+          selectedAnswer?.answer === true
         ) {
           selectedAnswer.IsCorrect = true;
           correctAnswerIds.push(selectedAnswer);
@@ -199,11 +201,13 @@ export default function QuestionList({
       saveTestScore(tempScore, textAnswersArr);
     } else {
       let newCorrectAnswers = 0;
-      
+
       teacherNotes.forEach((element) => {
         if (
-          (element.isCorrect && (element.type || element.questionType) === "text") ||
-          (element.answer === "true" && (element.type || element.questionType) == "mcq")
+          (element.isCorrect &&
+            (element.type || element.questionType) === "text") ||
+          (element.answer === true &&
+            (element.type || element.questionType) == "mcq")
         ) {
           newCorrectAnswers += Number(element.marks);
         }
@@ -247,7 +251,7 @@ export default function QuestionList({
         });
       }
 
-       navigate({
+      navigate({
         to: `/teacher/grades/${auth.currentUser.uid}`,
         replace: true,
       });
@@ -274,6 +278,7 @@ export default function QuestionList({
           answers: selectedAnswers,
           school_name: user.school_name,
         });
+        setAttemptId(docRef.id);
         saveGrades(finalScore, docRef.id, uid, textAnswersArr);
         console.log("Document written with ID: ", docRef.id);
       } catch (e) {
@@ -369,39 +374,49 @@ export default function QuestionList({
       {/* modal */}
       <div>
         <div className={clsx("modal mt-0", { "modal-open": isModal })}>
-          <div className="modal-box space-y-4">
-            <h3 className="text-lg font-bold uppercase">
-              {textAnswers.length > 0 ? "Provisional Result" : "Test result"}
-            </h3>
-            <p>
-              You scored <span className="font-bold">{score}</span> marks out of{" "}
-              {totalMarks}
-            </p>
-            {textAnswers.length > 0 ? (
-              textAnswers.length == 1 ? (
-                <p>{textAnswers.length} question is pending for evaluation.</p>
-              ) : (
-                <p>
-                  {textAnswers.length} questions are pending for evaluation.
-                </p>
-              )
-            ) : null}
+          {attemptedId ? (
+            <div className="modal-box space-y-4">
+              <h3 className="text-lg font-bold uppercase">
+                {textAnswers.length > 0 ? "Provisional Result" : "Test result"}
+              </h3>
+              <p>
+                You scored <span className="font-bold">{score}</span> marks out
+                of {totalMarks}
+              </p>
+              {textAnswers.length > 0 ? (
+                textAnswers.length == 1 ? (
+                  <p>
+                    {textAnswers.length} question is pending for evaluation.
+                  </p>
+                ) : (
+                  <p>
+                    {textAnswers.length} questions are pending for evaluation.
+                  </p>
+                )
+              ) : null}
 
-            <div className="modal-action">
-              <button onClick={closeModal} className="btn-main-Color btn">
-                View Results
-              </button>
-              <Link
-                to={
-                  currentPath.endsWith(`teacher`)
-                    ? `/ranking/${testId}/teacher`
-                    : `/student/grades`
-                }
-              >
-                <button className="btn-mainColor btn">Ranking Page</button>
-              </Link>
+              <div className="modal-action">
+                {attemptedId && (
+                  <Link to={`/result/${testId}/${attemptedId}`}>
+                    <button className="btn-main-Color btn">View Results</button>
+                  </Link>
+                )}
+                <Link
+                  to={
+                    currentPath.endsWith(`teacher`)
+                      ? `/ranking/${testId}/teacher`
+                      : `/student/grades`
+                  }
+                >
+                  <button className="btn-mainColor btn">Ranking Page</button>
+                </Link>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="modal-box space-y-4">
+              <Loading text="Retrieving result..." />
+            </div>
+          )}
         </div>
       </div>
     </>
