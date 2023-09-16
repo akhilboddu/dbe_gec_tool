@@ -18,7 +18,6 @@ export default function Question({
   evaluatedResult,
   teacher,
 }) {
-  const [isCorrect, setIsCorrect] = useState();
   const [teacherRadioButton, setTeacherRadioButton] = useState();
 
   const checkCorrectAnswer = (answer) => {
@@ -67,6 +66,7 @@ export default function Question({
 
   const renderMcq = () => {
     if (answers) {
+      console.log("questionId: ", question)
       return answers.map((answer, index) => (
         <div key={index} className="flex items-center gap-2 ">
           <input
@@ -74,7 +74,7 @@ export default function Question({
             type="radio"
             className={`radio radio-sm`}
             value={answer.answerId}
-            name={question.questionId}
+            name={question?.questionId ?? question.questionText}
             checked={isChecked(answer)}
             disabled={resultCheck}
             onChange={() => checkCorrectAnswer(answer)}

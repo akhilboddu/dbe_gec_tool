@@ -64,7 +64,7 @@ export default function Question({
             type="radio"
             className={`radio radio-sm`}
             value={answer.answerId}
-            name={question.questionId}
+            name={question?.questionId ?? question.questionText}
             checked={isChecked(answer)}
             disabled={resultCheck}
             onChange={() => checkCorrectAnswer(answer)}
