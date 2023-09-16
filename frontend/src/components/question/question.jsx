@@ -21,7 +21,6 @@ export default function Question({
   const [teacherRadioButton, setTeacherRadioButton] = useState();
 
   const checkCorrectAnswer = (answer) => {
-    setIsCorrect(answer.answer);
     const finalAnswer = {
       question: index,
       questionType: "mcq",
@@ -66,7 +65,7 @@ export default function Question({
 
   const renderMcq = () => {
     if (answers) {
-      console.log("questionId: ", question)
+      console.log("questionId: ", question);
       return answers.map((answer, index) => (
         <div key={index} className="flex items-center gap-2 ">
           <input
@@ -176,7 +175,6 @@ export default function Question({
   };
 
   const renderMessage = () => {
-    console.log("starting...");
     const user = JSON.parse(localStorage.getItem("user"));
 
     if (!user || !evaluatedResult) {
@@ -200,7 +198,6 @@ export default function Question({
         typeof evaluatedResult?.answer === "string"
           ? evaluatedResult?.answer.toLowerCase() === "true"
           : evaluatedResult?.answer;
-      console.log(answer, typeof answer); // false "boolean"
     }
 
     if (
@@ -209,7 +206,6 @@ export default function Question({
         !resultCheck &&
         (question.questionType || question.type) !== "text")
     ) {
-      console.log("evaluatedResult: ", evaluatedResult);
       if (role === "student" && !evaluatedResult?.teacherNote) {
         if (evaluatedResult?.IsCorrect || answer) {
           return <Success text="Your answer is correct." />;
@@ -221,7 +217,6 @@ export default function Question({
         }
       }
     } else if (resultCheck) {
-      console.log("we are here...", evaluatedResult);
       if (
         (question.questionType || question.type) === "text" &&
         !evaluatedResult?.IsCorrect &&

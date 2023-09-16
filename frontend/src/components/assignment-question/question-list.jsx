@@ -9,10 +9,10 @@ import { isEmpty } from "lodash-es";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "react-query";
-
 import Question from "/src/components/assignment-question/question";
 import Error from "/src/components/shared/error";
 import Info from "/src/components/shared/info";
+import Loading from "/src/components/shared/loading";
 import { QueryKeys } from "/src/constants/query-keys";
 import { auth, db } from "/src/firebase";
 import { postTestResultsInCourseApi } from "/src/helpers/fetchers";
@@ -45,6 +45,7 @@ export default function QuestionList({
   const [assignmentAttempted, setAssignmentAttempted] = useState(false);
   const [score, setScore] = useState(attemptData?.score);
   const [textAnswers, setTextAnswers] = useState([]);
+  const [attemptedId, setAttemptId] = useState("");
   const navigate = useNavigate();
   const currentLocation = useLocation();
   const currentPath = currentLocation.current.pathname;
@@ -215,7 +216,7 @@ export default function QuestionList({
     try {
       const user = JSON.parse(localStorage.getItem("user"));
       const attemptRef = doc(db, "attempted_results", attemptedResultId);
-     
+
       await updateDoc(attemptRef, {
         answers: data.answers,
         score: data.score,
@@ -265,6 +266,7 @@ export default function QuestionList({
         setAssignmentAttempted(true);
         saveGrades(finalScore, docRef.id, uid, textAnswersArr);
         console.log("Document written with ID: ", docRef.id);
+        setAttemptId(docRef.id);
       } catch (e) {
         console.error("Error adding document: ", e);
       }
@@ -345,6 +347,7 @@ export default function QuestionList({
             disabled={score}
             handelSelectedAnswers={handelSelectedAnswers}
             resultCheck={attemptData ? true : false}
+            evaluatedResult={attemptData?.answers[index]}
             prevSelected={getAttemptedAnswer(index)}
             teacher={teacherId}
           />
@@ -356,41 +359,51 @@ export default function QuestionList({
       {/* modal */}
       <div>
         <div className={clsx("modal mt-0", { "modal-open": isModal })}>
-          <div className="modal-box space-y-4">
-            <h3 className="text-lg font-bold uppercase">
-              {textAnswers.length > 0
-                ? "Provisional Result"
-                : "Assignment result"}
-            </h3>
-            <p>
-              You scored <span className="font-bold">{score}</span> marks out of{" "}
-              {totalMarks}
-            </p>
-            {textAnswers.length > 0 ? (
-              textAnswers.length == 1 ? (
-                <p>{textAnswers.length} question is pending for evaluation.</p>
-              ) : (
-                <p>
-                  {textAnswers.length} questions are pending for evaluation.
-                </p>
-              )
-            ) : null}
+          {attemptedId ? (
+            <div className="modal-box space-y-4">
+              <h3 className="text-lg font-bold uppercase">
+                {textAnswers.length > 0
+                  ? "Provisional Result"
+                  : "Assignment result"}
+              </h3>
+              <p>
+                You scored <span className="font-bold">{score}</span> marks out
+                of {totalMarks}
+              </p>
+              {textAnswers.length > 0 ? (
+                textAnswers.length == 1 ? (
+                  <p>
+                    {textAnswers.length} question is pending for evaluation.
+                  </p>
+                ) : (
+                  <p>
+                    {textAnswers.length} questions are pending for evaluation.
+                  </p>
+                )
+              ) : null}
 
-            <div className="modal-action">
-              <button onClick={closeModal} className="btn-main-Color btn">
-                View Results
-              </button>
-              <Link
-                to={
-                  currentPath.endsWith(`teacher`)
-                    ? `/ranking/${assignmentId}/teacher`
-                    : `/student/grades`
-                }
-              >
-                <button className="btn-mainColor btn">Ranking Page</button>
-              </Link>
+              <div className="modal-action">
+                {attemptedId && (
+                  <Link to={`/result/${assignmentId}/${attemptedId}`}>
+                    <button className="btn-main-Color btn">View Results</button>
+                  </Link>
+                )}
+                <Link
+                  to={
+                    currentPath.endsWith(`teacher`)
+                      ? `/ranking/${assignmentId}/teacher`
+                      : `/student/grades`
+                  }
+                >
+                  <button className="btn-mainColor btn">Ranking Page</button>
+                </Link>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="modal-box space-y-4">
+              <Loading text="Retrieving result..." />
+            </div>
+          )}
         </div>
       </div>
     </>

@@ -43,7 +43,7 @@ export default function QuestionList({
   const [correctAnswerIds, setCorrectAnswerIds] = useState();
   const [teacherNotes, setTeacherNotes] = useState([]);
   const [isModal, setIsModal] = useState(false);
-  const [score, setScore] = useState(attemptData?.score ?? 0);
+  const [score, setScore] = useState(attemptData?.score);
   const [textAnswers, setTextAnswers] = useState([]);
   const [attemptedId, setAttemptId] = useState("");
   const navigate = useNavigate();

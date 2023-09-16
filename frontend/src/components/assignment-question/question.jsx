@@ -14,6 +14,7 @@ export default function Question({
   resultCheck,
   prevSelected,
   explanation,
+  evaluatedResult,
   teacher,
 }) {
   const [isCorrect, setIsCorrect] = useState();
@@ -45,7 +46,13 @@ export default function Question({
   };
 
   const handleMarks = (e) => {
-    const finalAnswer = { ...prevSelected, marks: e.target.value <= prevSelected.questionMarks ? e.target.value : prevSelected.questionMarks };
+    const finalAnswer = {
+      ...prevSelected,
+      marks:
+        e.target.value <= prevSelected.questionMarks
+          ? e.target.value
+          : prevSelected.questionMarks,
+    };
     handelSelectedAnswers(finalAnswer);
   };
 
@@ -126,7 +133,7 @@ export default function Question({
     return (
       <div>
         <p className="mb-2">Above answer is:</p>
-        <div className="flex items-center gap-2 mb-3">
+        <div className="mb-3 flex items-center gap-2">
           <input
             key={"yes-" + question.index}
             type="radio"
@@ -147,7 +154,7 @@ export default function Question({
           <label htmlFor={"teacher-" + question.index}>Incorrect</label>
         </div>
 
-        <div className="pl-4 space-y-2">
+        <div className="space-y-2 pl-4">
           <p>Marks</p>
           <input
             className="input input-bordered"
@@ -164,7 +171,7 @@ export default function Question({
     );
   };
 
-  const renderMessage = () => {
+  const renderMessage1 = () => {
     if (disabled && !resultCheck && question.type === "text") {
       return <Info text={"Pending for evaluation"} />;
     }
@@ -179,7 +186,10 @@ export default function Question({
         return <Error text={explanation ? explanation : "Wrong Answer"} />;
       } */
     } else if (resultCheck) {
-      if (question.questionType == "text" && prevSelected?.answer == undefined) {
+      if (
+        question.questionType == "text" &&
+        prevSelected?.answer == undefined
+      ) {
         return <Info text={"Pending for evaluation"} />;
       }
       /* if (prevSelected?.answer == "true") {
@@ -190,20 +200,82 @@ export default function Question({
     }
   };
 
+  const renderMessage = () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user || !evaluatedResult) {
+      return null; // Handle the case when user data is not available
+    }
+
+    // Extract variables if needed
+    const { role } = user;
+
+    if (
+      disabled &&
+      !resultCheck &&
+      (question.questionType || question.type) === "text"
+    ) {
+      return <Info text={"Pending for evaluation"} />;
+    }
+
+    let answer = null;
+    if (evaluatedResult?.answer) {
+      answer =
+        typeof evaluatedResult?.answer === "string"
+          ? evaluatedResult?.answer.toLowerCase() === "true"
+          : evaluatedResult?.answer;
+    }
+
+    if (
+      disabled ||
+      (disabled === 0 &&
+        !resultCheck &&
+        (question.questionType || question.type) !== "text")
+    ) {
+      if (role === "student" && !evaluatedResult?.teacherNote) {
+        if (evaluatedResult?.IsCorrect || answer) {
+          return <Success text="Your answer is correct." />;
+        } else if (
+          !evaluatedResult?.IsCorrect ||
+          evaluatedResult?.answer === false
+        ) {
+          return <Error text="Your answer is incorrect." />;
+        }
+      }
+    } else if (resultCheck) {
+      if (
+        (question.questionType || question.type) === "text" &&
+        !evaluatedResult?.IsCorrect &&
+        !evaluatedResult?.teacherNote
+      ) {
+        return <Info text={"Pending for evaluation"} />;
+      }
+
+      if (role === "student") {
+        if (evaluatedResult?.IsCorrect || answer) {
+          return <Success text="Your answer is correct." />;
+        } else if (!evaluatedResult?.IsCorrect || !answer) {
+          return <Error text="Your answer is incorrect." />;
+        }
+      }
+    }
+
+    return null; // Handle any remaining cases or return a default value
+  };
+
   return (
     <div className="space-y-4" id={`question${index}`}>
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <p>
           {index}. {question.questionText}
         </p>
-        <div className="font-bold">
-          Marks: {question.questionMarks}
-        </div>
-
+        <div className="font-bold">Marks: {question.questionMarks}</div>
       </div>
       {image ? <img src={image} alt="someimage" /> : ""}
-      <div className="pl-4 space-y-2">
-        {question.questionType == "mcq" ? renderMcq() : renderAssignmentInput(index)}
+      <div className="space-y-2 pl-4">
+        {question.questionType == "mcq"
+          ? renderMcq()
+          : renderAssignmentInput(index)}
       </div>
       {resultCheck && prevSelected?.teacherNote ? (
         <p>
