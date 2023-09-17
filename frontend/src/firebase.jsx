@@ -31,9 +31,9 @@ export const logout = (navigate) => {
       Mixpanel.reset();
 
       if (user.role === "teacher") {
-        navigate({ to: "/login/teacher" });
+        navigate({ to: "/login/teacher", replace: true });
       } else {
-        navigate({ to: "/login/" });
+        navigate({ to: "/login/", replace: true });
       }
     })
     .catch((error) => {

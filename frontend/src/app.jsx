@@ -61,10 +61,6 @@ const routes = [
         element: <Assignments />,
       },
       {
-        path: "/ranking",
-        element: <Rankings />,
-      },
-      {
         path: "login",
         children: [
           {
@@ -83,7 +79,7 @@ const routes = [
               </CheckLogout>
             ),
           },
-        ]
+        ],
       },
       {
         path: "register",
@@ -104,7 +100,7 @@ const routes = [
               </CheckLogout>
             ),
           },
-        ]
+        ],
       },
       {
         path: "student",
@@ -197,9 +193,12 @@ const routes = [
               },
             ],
           },
+          {
+            path: "/ranking",
+            element: <Rankings />,
+          },
         ],
       },
-
       {
         path: "/result/:testId/:attemptId",
         children: [

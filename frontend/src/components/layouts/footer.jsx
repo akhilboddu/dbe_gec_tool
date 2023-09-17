@@ -1,8 +1,15 @@
-import { Link } from "@tanstack/react-location";
+import {
+  Link,
+  useMatch,
+  useLocation
+} from "@tanstack/react-location";
 import logo from "../../assets/dbe_logo.png";
+import { useAtom } from "jotai";
+import { userAtom } from "/src/stores/auth.store";
 
 export default function Footer() {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const location = useLocation();
+  const userLocal = JSON.parse(localStorage.getItem("user"));
   return (
     <footer className="">
       <div className="container footer p-8">
@@ -11,15 +18,16 @@ export default function Footer() {
         </div>
         <div>
           <span className="footer-title w-full">Company</span>
-          <Link className="link link-hover" to="/ranking">
+          {userLocal?.role === "teacher" && <Link className="link link-hover" to="/teacher/ranking">
             Rankings
-          </Link>
+          </Link>}
+          {!userLocal && 
           <Link
             className="link link-hover"
-            to={user?.role === "teacher" ? "/login/student" : "/login/teacher"}
+            to={location.current.pathname.includes("teacher") ? "/login/student" : "/login/teacher"}
           >
-            {user?.role === "teacher" ? "Student " : "Teacher "} Login
-          </Link>
+            {location.current.pathname.includes("teacher") ? "Student " : "Teacher "} Login
+          </Link>}
           <a className="link link-hover">About us</a>
           <a className="link link-hover">Contact</a>
         </div>

@@ -17,7 +17,7 @@ import {
 } from "@tanstack/react-location";
 import React, { useState } from "react";
 import clsx from "clsx";
-import { auth,logout } from "/src/firebase";
+import { auth, logout } from "/src/firebase";
 import { signOut } from "firebase/auth";
 import Logo from "../../assets/dbe_logo.png";
 
@@ -41,20 +41,25 @@ export default function Header() {
         "bg-error": isAdminPage,
       })}
     >
-      <div className="container flex-wrap navbar">
+      <div className="container navbar flex-wrap">
         {/* start */}
-        <div className="flex flex-wrap mr-auto">
-          <Link className="btn btn-ghost" to={user?.role === "teacher" ? "/teacher/dashboard" : "/student"}>
+        <div className="mr-auto flex flex-wrap">
+          <Link
+            className="btn btn-ghost"
+            to={user?.role === "teacher" ? "/teacher/dashboard" : "/student"}
+          >
             <img src={Logo} alt="logo" className="w-32 pt-0" />
           </Link>
 
           {user?.email ? (
             <>
               <Link
-                to={user?.role === "teacher" ? "/teacher/dashboard" : "/student"}
-                className="gap-1 btn btn-ghost"
+                to={
+                  user?.role === "teacher" ? "/teacher/dashboard" : "/student"
+                }
+                className="btn btn-ghost gap-1"
               >
-                <HomeIcon className="w-5 h-5" />
+                <HomeIcon className="h-5 w-5" />
                 Home
               </Link>
               {user.role !== "teacher" ? (
@@ -64,9 +69,9 @@ export default function Header() {
                       ? "/teacher/tests"
                       : "/student/tests"
                   }
-                  className="gap-1 btn btn-ghost"
+                  className="btn btn-ghost gap-1"
                 >
-                  <ShieldExclamationIcon className="w-5 h-5" />
+                  <ShieldExclamationIcon className="h-5 w-5" />
                   Tests
                 </Link>
               ) : (
@@ -79,9 +84,9 @@ export default function Header() {
                       ? "/teacher/assignments"
                       : "/student/assignments"
                   }
-                  className="gap-1 btn btn-ghost"
+                  className="btn btn-ghost gap-1"
                 >
-                  <BookOpenIcon className="w-5 h-5" />
+                  <BookOpenIcon className="h-5 w-5" />
                   Assignments
                 </Link>
               ) : (
@@ -89,11 +94,13 @@ export default function Header() {
               )}
               <Link
                 to={
-                  user?.role === "teacher" ? `/teacher/grades/${user?.id}` : "/student/grades"
+                  user?.role === "teacher"
+                    ? `/teacher/grades/${user?.id}`
+                    : "/student/grades"
                 }
-                className="gap-1 btn btn-ghost"
+                className="btn btn-ghost gap-1"
               >
-                <StarIcon className="w-5 h-5" />
+                <StarIcon className="h-5 w-5" />
                 Grades
               </Link>
             </>
@@ -108,24 +115,26 @@ export default function Header() {
               </label>
               <ul
                 tabIndex={0}
-                className="p-2 mt-3 shadow-lg dropdown-content menu rounded-box menu-compact w-52 bg-base-200"
+                className="dropdown-content menu rounded-box menu-compact mt-3 w-52 bg-base-200 p-2 shadow-lg"
               >
                 <li>
                   <Link to="/user">
-                    <UserIcon className="w-5 h-5" /> Profile
+                    <UserIcon className="h-5 w-5" /> Profile
                   </Link>
                 </li>
-                <li onClick={()=>logout(navigate)}>
+                <li onClick={() => logout(navigate)}>
                   <span>
-                    <ArrowRightOnRectangleIcon className="w-5 h-5" /> Log out
+                    <ArrowRightOnRectangleIcon className="h-5 w-5" /> Log out
                   </span>
                 </li>
               </ul>
             </div>
           ) : (
-            <Link className="btn-mainColor btn" to="/login/">
-              Log in
-            </Link>
+            pathname.includes("register") && (
+              <Link className="btn-mainColor btn" to="/login/">
+                Log in
+              </Link>
+            )
           )}
         </div>
         {/* end navbar-end */}

@@ -1,23 +1,16 @@
+import { useEffect,useState } from "react";
 import { Link, useNavigate, useMatch } from "@tanstack/react-location";
 import clsx from "clsx";
-import {
-  createUserWithEmailAndPassword,
-  EmailAuthCredential,
-} from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useForm } from "react-hook-form";
+import { useAtom } from "jotai";
+import { userAtom } from "/src/stores/auth.store";
 import { auth, db } from "../firebase";
-import {
-  addDoc,
-  collection,
-  setDoc,
-  doc,
-  startAfter,
-} from "firebase/firestore";
+import { setDoc, doc } from "firebase/firestore";
 //import * as admin from 'firebase-admin'
 import "../index.css";
-import Error from "../components/shared/error";
 import schoolsData from "../assets/schools_data.json";
-import { Mixpanel } from '../mixpanel';
+import { Mixpanel } from "../mixpanel";
 
 export default function Register() {
   // router
@@ -26,9 +19,10 @@ export default function Register() {
     params: { role },
   } = useMatch();
 
-  console.log(role);
+  const [user, setUser] = useAtom(userAtom);
   // form
   const { register, handleSubmit } = useForm();
+  const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = (data) => {
     const {
@@ -41,81 +35,96 @@ export default function Register() {
       Grade,
     } = data;
 
-    createUserWithEmailAndPassword(auth, email, password).then(async(results) => {
-      //console.log(results.user.uid);
-      //Track user Id
-      Mixpanel.alias(data.username);
-      Mixpanel.people.set({
-        $email: data.username,
-        $distict_id: data.username,
-      });
-      Mixpanel.track('Signup',{method: "normal"});
+    setIsLoading(true);
 
-      // Check if its a teacher
-      if (role === "teacher") {
-        try {
-          //Track Teacher
-          Mixpanel.track('Successful register - Teacher');
+    createUserWithEmailAndPassword(auth, email, password).then(
+      async (results) => {
+        //console.log(results.user.uid);
+        //Track user Id
+        Mixpanel.alias(data.username);
+        Mixpanel.people.set({
+          $email: data.username,
+          $distict_id: data.username,
+        });
+        Mixpanel.track("Signup", { method: "normal" });
 
-          setDoc(doc(db, "teachers", results.user.uid), {
-            uid: results.user.uid,
-            email: email,
-            full_name: full_name,
-            class_name: class_name,
-            school_name: school_name,
-            emis_number: emis_number,
-            Grade: Grade,
-            role: "teacher"
-          }).then((data) => {
-            console.log(data);
-            localStorage.setItem(
-              "user",
-              JSON.stringify({
-                email: email,
-                id: results.user.uid,
-                role: "teacher",
-              })
-            );
-            navigate({ to: "/teacher/dashboard" });
-          });
-        } catch (e) {
-          Mixpanel.track('Error adding document.');
-          console.log(e.message);
-        }
-      } else {
-        try {
-           //Track Student
-           Mixpanel.track('Successful register - Student');
+        // Check if its a teacher
+        if (role === "teacher") {
+          try {
+            //Track Teacher
+            Mixpanel.track("Successful register - Teacher");
 
-          setDoc(doc(db, "users", results.user.uid), {
-            uid: results.user.uid,
-            email: email,
-            full_name: full_name,
-            class_name: class_name,
-            school_name: school_name,
-            emis_number: emis_number,
-            grade: Grade,
-            role: "student"
-          }).then((data) => {
-            console.log(data);
-            localStorage.setItem(
-              "user",
-              JSON.stringify({
-                email: email,
-                id: results.user.uid,
-                role: "student",
-              })
-            );
-            navigate({ to: "/" });
-          });
-          console.log("Document written with ID: ");
-        } catch (e) {
-          Mixpanel.track('Error adding document.');
-          console.error("Error adding document: ", e);
+            setDoc(doc(db, "teachers", results.user.uid), {
+              uid: results.user.uid,
+              email: email,
+              full_name: full_name,
+              class_name: class_name,
+              school_name: school_name,
+              emis_number: emis_number,
+              Grade: Grade,
+              role: "teacher",
+            }).then((data) => {
+              console.log(data);
+              localStorage.setItem(
+                "user",
+                JSON.stringify({
+                  email: email,
+                  id: results.user.uid,
+                  role: "teacher",
+                })
+              );
+              navigate({ to: "/teacher/dashboard" });
+            });
+          } catch (e) {
+            setIsLoading(false);
+            Mixpanel.track("Error adding document.");
+            //console.log(e.message);
+          }
+        } else {
+          try {
+            //Track Student
+            Mixpanel.track("Successful register - Student");
+
+            setDoc(doc(db, "users", results.user.uid), {
+              uid: results.user.uid,
+              email: email,
+              full_name: full_name,
+              class_name: class_name,
+              school_name: school_name,
+              emis_number: emis_number,
+              grade: Grade,
+              role: "student",
+            }).then((data) => {
+              console.log(data);
+              localStorage.setItem(
+                "user",
+                JSON.stringify({
+                  email: email,
+                  id: results.user.uid,
+                  role: "student",
+                })
+              );
+              navigate({ to: "/" });
+            });
+            //console.log("Document written with ID: ");
+          } catch (e) {
+            setIsLoading(false);
+            Mixpanel.track("Error adding document.");
+            console.error("Error adding document: ", e);
+          }
         }
       }
-    });
+    );
   };
+
+  useEffect(() => {
+    if (user?.role === "teacher")
+      navigate({ to: "/teacher/dashboard", replace: true });
+    else if (user?.role === "student")
+      navigate({ to: "/student", replace: true });
+  }, [user?.role]);
+
+  if (user?.role) return null;
 
   return (
     <div className="card card-bordered mx-auto max-w-md">
@@ -165,7 +174,7 @@ export default function Register() {
           </label>
           <select
             {...register("school_name", { required: true })}
-            className="input w-full rounded border input-bordered bg-gray-50 p-2"
+            className="input input-bordered w-full rounded border bg-gray-50 p-2"
             placeholder="Select school"
           >
             {schoolsData.map((item, index) => (

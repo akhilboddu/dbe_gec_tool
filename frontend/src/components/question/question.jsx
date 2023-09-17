@@ -207,11 +207,10 @@ export default function Question({
         (question.questionType || question.type) !== "text")
     ) {
       if (role === "student" && !evaluatedResult?.teacherNote) {
-        if (evaluatedResult?.IsCorrect || answer) {
+        if (answer || evaluatedResult?.IsCorrect) {
           return <Success text="Your answer is correct." />;
         } else if (
-          !evaluatedResult?.IsCorrect ||
-          evaluatedResult?.answer === false
+          !answer || !evaluatedResult?.IsCorrect
         ) {
           return <Error text="Your answer is incorrect." />;
         }
@@ -226,9 +225,9 @@ export default function Question({
       }
 
       if (role === "student") {
-        if (evaluatedResult?.IsCorrect || answer) {
+        if (answer || evaluatedResult?.IsCorrect) {
           return <Success text="Your answer is correct." />;
-        } else if (!evaluatedResult?.IsCorrect || !answer) {
+        } else if (!answer || !evaluatedResult?.IsCorrect) {
           return <Error text="Your answer is incorrect." />;
         }
       }
