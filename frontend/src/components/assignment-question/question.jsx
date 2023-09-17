@@ -2,7 +2,7 @@ import { useState } from "react";
 import Info from "../shared/info";
 import Error from "/src/components/shared/error";
 import Success from "/src/components/shared/success";
-
+import {handleIsAnswer} from "/src/helpers";
 export default function Question({
   question,
   index,
@@ -171,35 +171,6 @@ export default function Question({
     );
   };
 
-  const renderMessage1 = () => {
-    if (disabled && !resultCheck && question.type === "text") {
-      return <Info text={"Pending for evaluation"} />;
-    }
-
-    if (
-      disabled ||
-      (disabled === 0 && !resultCheck && question.type !== "text")
-    ) {
-      /* if (isCorrect == "true") {
-        return <Success text={explanation ? explanation : "This is the correct answer."} />;
-      } else {
-        return <Error text={explanation ? explanation : "Wrong Answer"} />;
-      } */
-    } else if (resultCheck) {
-      if (
-        question.questionType == "text" &&
-        prevSelected?.answer == undefined
-      ) {
-        return <Info text={"Pending for evaluation"} />;
-      }
-      /* if (prevSelected?.answer == "true") {
-        return <Success text={explanation ? explanation : "This is the correct answer."} />;
-      } else {
-        return <Error text={explanation ? explanation : "Wrong Answer"} />;
-      } */
-    }
-  };
-
   const renderMessage = () => {
     const user = JSON.parse(localStorage.getItem("user"));
 
@@ -218,13 +189,7 @@ export default function Question({
       return <Info text={"Pending for evaluation"} />;
     }
 
-    let answer = null;
-    if (evaluatedResult?.answer) {
-      answer =
-        typeof evaluatedResult?.answer === "string"
-          ? evaluatedResult?.answer.toLowerCase() === "true"
-          : evaluatedResult?.answer;
-    }
+    let answer = handleIsAnswer(evaluatedResult?.answer);
 
     if (
       disabled ||

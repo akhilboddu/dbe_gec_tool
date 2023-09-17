@@ -16,7 +16,7 @@ import Loading from "/src/components/shared/loading";
 import { QueryKeys } from "/src/constants/query-keys";
 import { auth, db } from "/src/firebase";
 import { postTestResultsInCourseApi } from "/src/helpers/fetchers";
-
+import {handleIsAnswer} from "/src/helpers";
 import {
   arrayRemove,
   arrayUnion,
@@ -180,7 +180,7 @@ export default function QuestionList({
       for (let index = 0; index < selectedAnswers.length; index++) {
         const selectedAnswer = selectedAnswers[index];
         console.log("selectedAnswer:: :: ", selectedAnswer);
-        if (selectedAnswer.type == "mcq" && selectedAnswer?.answer === "true") {
+        if (selectedAnswer.type == "mcq" && handleIsAnswer(selectedAnswer?.answer)) {
           correctAnswerIds.push(selectedAnswer);
           tempScore = tempScore + Number(selectedAnswer.questionMarks);
         } else if (selectedAnswer.type == "text") {
@@ -197,7 +197,7 @@ export default function QuestionList({
     } else {
       let newCorrectAnswers = 0;
       teacherNotes.forEach((element) => {
-        if (element.answer == "true") {
+        if (handleIsAnswer(element.answer)) {
           newCorrectAnswers = Number(newCorrectAnswers) + Number(element.marks);
         }
         attemptData.answers = attemptData.answers.map((a) => {
