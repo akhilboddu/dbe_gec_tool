@@ -275,7 +275,7 @@ const CreateTest = ({ action }) => {
             isValid = false
             notify.show(`Answer can't be empty`, "error", 5000);
           }
-          if (answer.answer == "true") {
+          if (answer.answer === true) {
             trueValueCounter++
           }
 
@@ -378,31 +378,6 @@ const CreateTest = ({ action }) => {
         setTotalMarks(0)
       }
     }
-
-    // let tempQuestions = testObject.questions;
-    // if (validateForm()) {
-    //   tempQuestions.splice(-1)
-    //   setTestObject(prevTest => {
-    //     return { ...prevTest, questions: tempQuestions }
-    //   });
-    //   try {
-    //     const docRef = await addDoc(collection(db, "test"), testObject);
-    //     await updateDoc(docRef, {
-    //       testId: docRef.id,
-    //     });
-    //     notify.show(`Test Successfully Published`, "success", 5000);
-    //     setTotalMarks(0)
-    //     navigate({ to: `/teacher/test-list`, replace: true });
-    //   } catch (e) {
-    //     console.error("Error adding document: ", e);
-    //     notify.show(
-    //       "Error occured while publishing test. Please try again.",
-    //       "error",
-    //       5000
-    //     );
-    //     setTotalMarks(0)
-    //   }
-    // }
   };
 
   const handleDeleteQuestion = (qIndex) => {
@@ -472,6 +447,8 @@ const CreateTest = ({ action }) => {
         }
         return question;
       });
+
+      console.log("tempQuestion: ",tempQuestion)
 
       setTestObject(prevTest => {
         return { ...prevTest, questions: tempQuestion }

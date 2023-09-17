@@ -2,6 +2,7 @@ import { useState } from "react";
 import Info from "../shared/info";
 import Error from "/src/components/shared/error";
 import Success from "/src/components/shared/success";
+import {handleIsAnswer} from "/src/helpers";
 
 export default function Question({
   question,
@@ -65,7 +66,7 @@ export default function Question({
 
   const renderMcq = () => {
     if (answers) {
-      console.log("questionId: ", question);
+      //console.log("questionId: ", question);
       return answers.map((answer, index) => (
         <div key={index} className="flex items-center gap-2 ">
           <input
@@ -192,14 +193,7 @@ export default function Question({
       return <Info text={"Pending for evaluation"} />;
     }
 
-    let answer = null;
-    if (evaluatedResult?.answer) {
-      answer =
-        typeof evaluatedResult?.answer === "string"
-          ? evaluatedResult?.answer.toLowerCase() === "true"
-          : evaluatedResult?.answer;
-    }
-
+    let answer = handleIsAnswer(evaluatedResult?.answer);
     if (
       disabled ||
       (disabled === 0 &&

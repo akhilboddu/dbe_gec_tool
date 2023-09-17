@@ -50,6 +50,7 @@ export default function UserCourseTest() {
     const attemptedAnswersFetch = async () => {
       const docRef = doc(db, "attempted_results", attemptId);
       const docSnap = await getDoc(docRef);
+      console.log("Data: ", docSnap.data())
       setAttemptData(docSnap.data());
       setLoading(false);
     };

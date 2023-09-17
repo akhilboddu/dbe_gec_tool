@@ -16,6 +16,7 @@ import Loading from "/src/components/shared/loading";
 import { QueryKeys } from "/src/constants/query-keys";
 import { auth, db } from "/src/firebase";
 import { postTestResultsInCourseApi } from "/src/helpers/fetchers";
+import {handleIsAnswer} from "/src/helpers";
 
 import {
   arrayRemove,
@@ -183,7 +184,7 @@ export default function QuestionList({
         console.log("selectedAnswer:: :: ", selectedAnswer);
         if (
           selectedAnswer.questionType == "mcq" &&
-          selectedAnswer?.answer === true
+          handleIsAnswer(selectedAnswer?.answer)
         ) {
           selectedAnswer.IsCorrect = true;
           correctAnswerIds.push(selectedAnswer);
@@ -194,6 +195,7 @@ export default function QuestionList({
       }
       setCorrectAnswerIds(correctAnswerIds);
       setTextAnswers(textAnswersArr);
+      console.log("Score: ", tempScore);
       setScore(tempScore);
       openModal();
 
@@ -206,7 +208,7 @@ export default function QuestionList({
         if (
           (element.isCorrect &&
             (element.type || element.questionType) === "text") ||
-          (element.answer === true &&
+          (handleIsAnswer(selectedAnswer?.answer) &&
             (element.type || element.questionType) == "mcq")
         ) {
           newCorrectAnswers += Number(element.marks);
