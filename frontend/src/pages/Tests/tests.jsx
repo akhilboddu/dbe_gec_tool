@@ -19,6 +19,7 @@ function tests() {
 
 
   useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
     const dataFetch = async () => {
       try {
         let dataArray = [];
@@ -27,7 +28,7 @@ function tests() {
           dataArray.push(doc.data());
         });
 
-        setTest(dataArray);
+        setTest(dataArray.filter(x => x.school_name == user?.school_name));
         setLoading(false);
       } catch (e) {
         console.error("Nothing found ", e);

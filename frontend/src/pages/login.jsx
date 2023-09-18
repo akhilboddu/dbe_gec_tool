@@ -70,6 +70,8 @@ export default function Login() {
                   })
                 );
               }
+              
+              notify.show(`Welcome back, ${data.full_name}!`, "success", 2000, "right");
               navigate({ to: "/teacher/dashboard", required: true });
             } else {
               setIsLoading(false);
@@ -92,6 +94,8 @@ export default function Login() {
                   })
                 );
               }
+
+              notify.show(`Welcome back, ${data.full_name}!`, "success", 2000, "right");
               navigate({ to: "/student", required: true });
             } else {
               setIsLoading(false);

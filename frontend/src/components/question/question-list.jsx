@@ -16,8 +16,8 @@ import Loading from "/src/components/shared/loading";
 import { QueryKeys } from "/src/constants/query-keys";
 import { auth, db } from "/src/firebase";
 import { postTestResultsInCourseApi } from "/src/helpers/fetchers";
-import {handleIsAnswer} from "/src/helpers";
-
+import { handleIsAnswer } from "/src/helpers";
+import { notify } from "react-notify-toast";
 import {
   arrayRemove,
   arrayUnion,
@@ -52,7 +52,12 @@ export default function QuestionList({
   const currentPath = currentLocation.current.pathname;
   const userData = {};
 
+ /*  console.log("questions: ",questions.length)
+  console.log("selectedAnswers: ",selectedAnswers)
+  console.log("textAnswers: ",textAnswers.length) */
+
   const handelSelectedAnswers = (answer) => {
+    console.log("answer: ",answer)
     if (!teacherId) {
       setSelectedAnswers((prev) => {
         let data = prev;
@@ -171,6 +176,16 @@ export default function QuestionList({
 
   const onSubmit = () => {
     if (!teacherId) {
+      if (questions.length !== selectedAnswers.length + textAnswers.length) {
+        notify.show(
+          `Please answer all the questions before submiting`,
+          "error",
+          2000,
+          "right"
+        );
+        return;
+      }
+
       Mixpanel.track("Test completed", {
         subject: subject,
         attemptedResultId: attemptedResultId,
@@ -181,7 +196,7 @@ export default function QuestionList({
 
       for (let index = 0; index < selectedAnswers.length; index++) {
         const selectedAnswer = selectedAnswers[index];
-        console.log("selectedAnswer:: :: ", selectedAnswer);
+        //console.log("selectedAnswer:: :: ", selectedAnswer);
         if (
           selectedAnswer.questionType == "mcq" &&
           handleIsAnswer(selectedAnswer?.answer)
@@ -195,7 +210,7 @@ export default function QuestionList({
       }
       setCorrectAnswerIds(correctAnswerIds);
       setTextAnswers(textAnswersArr);
-      console.log("Score: ", tempScore);
+      //console.log("Score: ", tempScore);
       setScore(tempScore);
       openModal();
 
@@ -330,7 +345,22 @@ export default function QuestionList({
           <button className="btn-mainColor btn">See Grades</button>
         </Link>
       ) : (
-        <button className="btn-mainColor btn">Submit</button>
+        <>
+        
+          <div>
+            <strong>
+            {questions.length !== selectedAnswers.length + textAnswers.length ? "NB: Please answer all the questions before submiting" : "Ready to submit!"}
+            </strong>
+          </div>
+          <button
+            className="btn-mainColor btn"
+            /* disabled={
+              questions.length !== selectedAnswers.length + textAnswers.length
+            } */
+          >
+            Submit
+          </button>
+        </>
       );
     } else {
       if (teacherId) {

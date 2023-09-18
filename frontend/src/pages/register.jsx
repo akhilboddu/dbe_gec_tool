@@ -2,6 +2,7 @@ import { useEffect,useState } from "react";
 import { Link, useNavigate, useMatch } from "@tanstack/react-location";
 import clsx from "clsx";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { notify } from "react-notify-toast";
 import { useForm } from "react-hook-form";
 import { useAtom } from "jotai";
 import { userAtom } from "/src/stores/auth.store";
@@ -64,7 +65,7 @@ export default function Register() {
               Grade: Grade,
               role: "teacher",
             }).then((data) => {
-              console.log(data);
+              //console.log(data);
               localStorage.setItem(
                 "user",
                 JSON.stringify({
@@ -73,6 +74,8 @@ export default function Register() {
                   role: "teacher",
                 })
               );
+              
+              notify.show(`You have successfully created an account.`, "success", 2000, "right");
               navigate({ to: "/teacher/dashboard" });
             });
           } catch (e) {
@@ -95,7 +98,7 @@ export default function Register() {
               grade: Grade,
               role: "student",
             }).then((data) => {
-              console.log(data);
+              //console.log(data);
               localStorage.setItem(
                 "user",
                 JSON.stringify({
@@ -104,6 +107,8 @@ export default function Register() {
                   role: "student",
                 })
               );
+              
+              notify.show(`You have successfully created an account.`, "success", 2000, "right");
               navigate({ to: "/" });
             });
             //console.log("Document written with ID: ");

@@ -4,14 +4,17 @@ import { collection, getDocs } from "firebase/firestore";
 import AssignmentCardList from "./components/Assignment-Card-List";
 
 function Assignments() {
-  const [assignments, setAssignment] = useState([]);
-
+  const [assignments, setAssignments] = useState([]);
+  
   const fetchAssignments = async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    let dataArray = [];
 
     const querySnapshot = await getDocs(collection(db, "assignments"));
     querySnapshot.forEach((doc) => {
-      setAssignment((prev) => [...prev, doc.data()])
+      dataArray.push(doc.data());
     });
+    setAssignments(dataArray.filter(x => x.school_name == user?.school_name));
     console.log("querySnapshot :: ", querySnapshot);
   }
 
